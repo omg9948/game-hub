@@ -7,9 +7,10 @@ interface UpdateBannerProps {
   isAdmin: boolean;
   onShowAll: () => void;
   onAddUpdate: () => void;
+  onDelete?: () => void;
 }
 
-export default function UpdateBanner({ latestUpdate, isAdmin, onShowAll, onAddUpdate }: UpdateBannerProps) {
+export default function UpdateBanner({ latestUpdate, isAdmin, onShowAll, onAddUpdate, onDelete }: UpdateBannerProps) {
   const shortContent = latestUpdate.content.split('\n')[0];
   const displayContent = shortContent.length > 60 ? shortContent.substring(0, 60) + '...' : shortContent;
 
@@ -31,6 +32,11 @@ export default function UpdateBanner({ latestUpdate, isAdmin, onShowAll, onAddUp
             <button className="update-banner-btn" style={{ background: 'linear-gradient(135deg, var(--info), #0284c7)' }} onClick={onAddUpdate}>
               <i className="fas fa-plus"></i> เขียนอัปเดต
             </button>
+            {onDelete && (
+              <button className="update-banner-btn" style={{ background: 'linear-gradient(135deg, var(--danger), #b91c1c)' }} onClick={onDelete}>
+                <i className="fas fa-trash"></i> ลบ
+              </button>
+            )}
           </div>
         )}
       </div>

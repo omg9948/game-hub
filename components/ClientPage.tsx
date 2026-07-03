@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Game, Category, Update, SiteSettings } from '@/types';
 import Menu from './Menu';
 import UpdateBanner from './UpdateBanner';
@@ -37,6 +37,7 @@ export default function ClientPage({
   const [updates, setUpdates] = useState<Update[]>(initialUpdates);
   const [settings, setSettings] = useState<SiteSettings>(initialSettings);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [currentCategory, setCurrentCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,6 +51,14 @@ export default function ClientPage({
   const [aboutOpen, setAboutOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
+
+  // จำเครื่องแอดมิน - เช็ค localStorage ตอนโหลด
+  useEffect(() => {
+    const savedAdmin = localStorage.getItem('gamehub_admin');
+    if (savedAdmin === 'true') {
+      setIsAdmin(true);
+    }
+  }, []);
 
   const refreshData = useCallback(async () => {
     const [g, c, u, s] = await Promise.all([
@@ -77,6 +86,7 @@ export default function ClientPage({
     });
     if (res.ok) {
       setIsAdmin(true);
+      localStorage.setItem('gamehub_admin', 'true'); // จำเครื่องนี้เป็นแอดมิน
       setLoginOpen(false);
       showToast('เข้าสู่ระบบสำเร็จ', 'ยินดีต้อนรับแอดมิน!');
     } else {
@@ -86,7 +96,23 @@ export default function ClientPage({
 
   const handleLogout = () => {
     setIsAdmin(false);
+    localStorage.removeItem('gamehub_admin'); // ลบการจำ
     showToast('ออกจากระบบ', 'ออกจากระบบแอดมินเรียบร้อย');
+  };
+
+  // ฟังก์ชันบันทึกพร้อมแสดงสถานะ
+  const handleSave = async (saveFn: () => Promise<void>, successMsg: string) => {
+    setIsSaving(true);
+    showToast('กำลังบันทึก...', 'รอสักครู่ กำลังบันทึกข้อมูล', 'success');
+    try {
+      await saveFn();
+      await refreshData();
+      showToast('บันทึกสำเร็จ!', successMsg, 'success');
+    } catch (error) {
+      showToast('บันทึกไม่สำเร็จ', 'เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const filteredGames = games.filter(g => {
@@ -105,6 +131,16 @@ export default function ClientPage({
     <div className={isAdmin ? 'admin-mode' : ''}>
       <div className="bg-animation" />
       <Particles />
+
+      {/* Loading Overlay */}
+      {isSaving && (
+        <div className="saving-overlay">
+          <div className="saving-spinner">
+            <i className="fas fa-spinner fa-spin"></i>
+            <span>กำลังบันทึก...</span>
+          </div>
+        </div>
+      )}
 
       <Menu 
         categories={categories}
@@ -134,7 +170,7 @@ export default function ClientPage({
         onImport={() => { setMenuOpen(false); setImportOpen(true); }}
       />
 
-      {/* Header - เอาปุ่ม Admin ออก ให้เหลือแค่ปุ่มเมนู */}
+      {/* Header - เอาปุ่ม Admin ออก */}
       <header className="header">
         <a href="#" className="logo" onClick={(e) => { e.preventDefault(); window.location.reload(); }}>
           <i className="fas fa-gamepad"></i>
@@ -161,12 +197,13 @@ export default function ClientPage({
           settings={settings} 
           isAdmin={isAdmin}
           onUpdate={async (newSettings) => {
-            await fetch('/api/settings', { 
-              method: 'PUT', 
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(newSettings) 
-            });
-            refreshData();
+            await handleSave(async () => {
+              await fetch('/api/settings', { 
+                method: 'PUT', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newSettings) 
+              });
+            }, 'ตั้งค่าหน้าเว็บบันทึกเรียบร้อย');
           }}
         />
 
@@ -198,13 +235,13 @@ export default function ClientPage({
               onEdit={() => { setEditingGame(game); setGameModalOpen(true); }}
               onDelete={async () => {
                 if (confirm(`คุณแน่ใจหรือไม่ที่จะลบเกม "${game.title}"?`)) {
-                  await fetch('/api/games', { 
-                    method: 'DELETE', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: game.id }) 
-                  });
-                  refreshData();
-                  showToast('ลบสำเร็จ', `เกม "${game.title}" ถูกลบเรียบร้อย`);
+                  await handleSave(async () => {
+                    await fetch('/api/games', { 
+                      method: 'DELETE', 
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ id: game.id }) 
+                    });
+                  }, `เกม "${game.title}" ถูกลบเรียบร้อย`);
                 }
               }}
             />
@@ -241,14 +278,14 @@ export default function ClientPage({
         game={editingGame}
         categories={categories}
         onSubmit={async (data) => {
-          await fetch('/api/games', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-          });
-          refreshData();
+          await handleSave(async () => {
+            await fetch('/api/games', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+          }, editingGame ? 'เกมถูกอัปเดตแล้ว' : 'เกมใหม่ถูกเพิ่มแล้ว');
           setGameModalOpen(false);
-          showToast(editingGame ? 'แก้ไขสำเร็จ' : 'เพิ่มสำเร็จ', editingGame ? 'เกมถูกอัปเดตแล้ว' : 'เกมใหม่ถูกเพิ่มแล้ว');
         }}
       />
 
@@ -256,18 +293,15 @@ export default function ClientPage({
         isOpen={categoryModalOpen}
         onClose={() => setCategoryModalOpen(false)}
         onSubmit={async (data) => {
-          const res = await fetch('/api/categories', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-          });
-          if (res.ok) {
-            refreshData();
-            setCategoryModalOpen(false);
-            showToast('เพิ่มหมวดหมู่สำเร็จ', `หมวดหมู่ "${data.name}" ถูกเพิ่มแล้ว`);
-          } else {
-            showToast('ข้อผิดพลาด', 'มีหมวดหมู่นี้อยู่แล้ว', 'error');
-          }
+          await handleSave(async () => {
+            const res = await fetch('/api/categories', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('Category already exists');
+          }, `หมวดหมู่ "${data.name}" ถูกเพิ่มแล้ว`);
+          setCategoryModalOpen(false);
         }}
       />
 
@@ -275,14 +309,14 @@ export default function ClientPage({
         isOpen={updateModalOpen}
         onClose={() => setUpdateModalOpen(false)}
         onSubmit={async (data) => {
-          await fetch('/api/updates', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-          });
-          refreshData();
+          await handleSave(async () => {
+            await fetch('/api/updates', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+          }, 'อัปเดตใหม่ถูกเพิ่มแล้ว');
           setUpdateModalOpen(false);
-          showToast('ส่งอัปเดตสำเร็จ', 'อัปเดตใหม่ถูกเพิ่มแล้ว');
         }}
       />
 
@@ -292,13 +326,13 @@ export default function ClientPage({
         updates={updates}
         isAdmin={isAdmin}
         onDelete={async (id) => {
-          await fetch('/api/updates', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-          });
-          refreshData();
-          showToast('ลบอัปเดตสำเร็จ', 'อัปเดตถูกลบแล้ว');
+          await handleSave(async () => {
+            await fetch('/api/updates', {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id })
+            });
+          }, 'อัปเดตถูกลบแล้ว');
         }}
       />
 
@@ -308,6 +342,8 @@ export default function ClientPage({
         isOpen={importOpen}
         onClose={() => setImportOpen(false)}
         onImport={async (data) => {
+          setIsSaving(true);
+          showToast('กำลังนำเข้า...', 'รอสักครู่ กำลังนำเข้าข้อมูล', 'success');
           try {
             const imported = JSON.parse(data);
             if (imported.games) {
@@ -328,11 +364,13 @@ export default function ClientPage({
             if (imported.settings) {
               await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imported.settings) });
             }
-            refreshData();
-            setImportOpen(false);
-            showToast('นำเข้าสำเร็จ', 'ข้อมูลถูกนำเข้าเรียบร้อย');
+            await refreshData();
+            showToast('นำเข้าสำเร็จ!', 'ข้อมูลถูกนำเข้าเรียบร้อย');
           } catch (e) {
             showToast('ข้อผิดพลาด', 'ข้อมูล JSON ไม่ถูกต้อง', 'error');
+          } finally {
+            setIsSaving(false);
+            setImportOpen(false);
           }
         }}
       />
