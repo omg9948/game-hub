@@ -284,15 +284,7 @@ export default function ClientPage({
         )}
       </div>
 
-      {/* Footer - แก้ไข/ปิดได้ */}
-      {(settings.showFooter !== false) && (
-        <footer className="footer">
-          <p>{settings.footerText || 'Game Hub v3.0'}</p>
-          <p style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
-            {settings.footerSubtext || 'สร้างด้วย love โดยทีมของเรา'}
-          </p>
-        </footer>
-      )}
+      {/* Footer ถูกลบออกแล้ว */}
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
@@ -372,7 +364,6 @@ export default function ClientPage({
         }}
       />
 
-      {/* AboutModal - ส่ง isAdmin + onUpdate เพื่อให้แก้ไขได้ */}
       <AboutModal 
         isOpen={aboutOpen} 
         onClose={() => setAboutOpen(false)}
