@@ -41,8 +41,7 @@ function textToHtml(text: string): string {
     // แปลง 1. เป็น li
     .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
     // แปลงขึ้นบรรทัดใหม่เป็น <br>
-    .replace(/
-/g, '<br>');
+    .replace(/\n/g, '<br>');
 }
 
 export default function AboutModal({ isOpen, onClose, content, isAdmin, onUpdate }: AboutModalProps) {
