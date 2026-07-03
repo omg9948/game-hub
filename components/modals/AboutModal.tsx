@@ -10,17 +10,40 @@ interface AboutModalProps {
   onUpdate?: (content: string) => void;
 }
 
-const DEFAULT_ABOUT = `<p><strong style="color: var(--text)">Game Hub</strong> เป็นเว็บไซต์สำหรับรวบรวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น</p>
-<p><strong style="color: var(--text)">ฟีเจอร์หลัก:</strong></p>
-<ul style="margin-left: 1.5rem; margin-bottom: 1rem">
-  <li>ระบบจัดหมวดหมู่เกม</li>
-  <li>ค้นหาเกมได้ง่าย</li>
-  <li>ระบบแอดมินสำหรับจัดการข้อมูล</li>
-  <li>ข้อมูลจัดเก็บบน Cloud (ทุกคนเห็นเหมือนกัน)</li>
-  <li>รองรับทุกอุปกรณ์</li>
-</ul>
-<p><strong style="color: var(--text)">เวอร์ชัน:</strong> 3.0</p>
-<p><strong style="color: var(--text)">สร้างโดย:</strong> ทีม Game Dev ของเรา</p>`;
+const DEFAULT_ABOUT = `Game Hub เป็นเว็บไซต์สำหรับรวบรวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น
+
+ฟีเจอร์หลัก:
+- ระบบจัดหมวดหมู่เกม
+- ค้นหาเกมได้ง่าย
+- ระบบแอดมินสำหรับจัดการข้อมูล
+- ข้อมูลจัดเก็บบน Cloud (ทุกคนเห็นเหมือนกัน)
+- รองรับทุกอุปกรณ์
+
+เวอร์ชัน: 3.0
+สร้างโดย: ทีม Game Dev ของเรา`;
+
+// แปลงข้อความธรรมดาเป็น HTML อัตโนมัติ
+function textToHtml(text: string): string {
+  if (!text) return '';
+
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // แปลง URL เป็นลิงก์อัตโนมัติ
+    .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>')
+    // แปลง **ข้อความ** เป็นตัวหนา
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // แปลง *ข้อความ* เป็นตัวเอียง
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // แปลง - เป็น li
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    // แปลง 1. เป็น li
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    // แปลงขึ้นบรรทัดใหม่เป็น <br>
+    .replace(/
+/g, '<br>');
+}
 
 export default function AboutModal({ isOpen, onClose, content, isAdmin, onUpdate }: AboutModalProps) {
   const [isEditing, setIsEditing] = useState(false);
@@ -67,21 +90,22 @@ export default function AboutModal({ isOpen, onClose, content, isAdmin, onUpdate
 
         {isEditing ? (
           <div className="about-edit">
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-              รองรับ HTML tags: &lt;p&gt;, &lt;strong&gt;, &lt;img src=&quot;url&quot;&gt;, &lt;a href=&quot;url&quot;&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;br&gt;
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.8rem' }}>
+              <i className="fas fa-lightbulb"></i> พิมพ์ข้อความธรรมดาได้เลย รองรับ:<br/>
+              <strong>**ข้อความ**</strong> = ตัวหนา | <strong>*ข้อความ*</strong> = ตัวเอียง | <strong>- ข้อความ</strong> = รายการ | ลิงก์จะเป็นลิงก์อัตโนมัติ
             </p>
             <textarea
-              className="form-textarea"
+              className="form-textarea about-textarea"
               value={editContent}
               onChange={e => setEditContent(e.target.value)}
-              rows={12}
-              placeholder="พิมพ์ข้อความเกี่ยวกับเรา... รองรับ HTML"
+              rows={15}
+              placeholder="พิมพ์ข้อความเกี่ยวกับเรา..."
             />
           </div>
         ) : (
           <div 
             className="about-content"
-            dangerouslySetInnerHTML={{ __html: displayContent }}
+            dangerouslySetInnerHTML={{ __html: textToHtml(displayContent) }}
           />
         )}
       </div>
