@@ -4,6 +4,7 @@ export interface Game {
   category: string;
   link: string;
   image?: string;
+  images?: string[];  // รูปภาพเพิ่มเติมหลายรูป
   description?: string;
   icon: string;
   date: string;
