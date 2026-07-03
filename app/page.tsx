@@ -3,20 +3,18 @@ import { Game, Category, Update, SiteSettings } from '@/types';
 import ClientPage from '@/components/ClientPage';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function HomePage() {
   const [games, categories, updates, settings] = await Promise.all([
-    getBlobData('games.json') || [],
-    getBlobData('categories.json') || [],
-    getBlobData('updates.json') || [],
-    getBlobData('settings.json') || {
-      heroTitle: 'ศูนย์รวมเกมของทีมเรา',
-      heroDesc: 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น พร้อมคำอธิบายและการจัดหมวดหมู่'
-    }
+    getBlobData('games.json'),
+    getBlobData('categories.json'),
+    getBlobData('updates.json'),
+    getBlobData('settings.json')
   ]);
 
   const defaultCategories = [
-    { name: 'RPG', icon: '🗡️' },
+    { name: 'RPG', icon: '⚔️' },
     { name: 'Action', icon: '⚔️' },
     { name: 'Puzzle', icon: '🧩' },
     { name: 'Strategy', icon: '♟️' },
