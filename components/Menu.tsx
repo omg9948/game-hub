@@ -55,6 +55,7 @@ export default function Menu({
           ))}
         </div>
 
+        {/* แอดมิน - ย้ายมาอยู่ในเมนู 3 ขีดอย่างเดียว */}
         <div className="menu-section">
           <div className="menu-section-title">แอดมิน</div>
           {!isAdmin ? (
@@ -63,6 +64,9 @@ export default function Menu({
             </button>
           ) : (
             <>
+              <div className="admin-status">
+                <i className="fas fa-check-circle"></i> เข้าสู่ระบบแล้ว
+              </div>
               <button className="menu-item admin-only" onClick={onAddGame}>
                 <i className="fas fa-plus-circle"></i> เพิ่มเกมใหม่
               </button>
@@ -78,7 +82,7 @@ export default function Menu({
               <button className="menu-item admin-only" onClick={onImport}>
                 <i className="fas fa-upload"></i> นำเข้าข้อมูล
               </button>
-              <button className="menu-item admin-only" onClick={onLogout}>
+              <button className="menu-item admin-only logout" onClick={onLogout}>
                 <i className="fas fa-sign-out-alt"></i> ออกจากระบบแอดมิน
               </button>
             </>

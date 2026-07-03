@@ -134,19 +134,13 @@ export default function ClientPage({
         onImport={() => { setMenuOpen(false); setImportOpen(true); }}
       />
 
+      {/* Header - เอาปุ่ม Admin ออก ให้เหลือแค่ปุ่มเมนู */}
       <header className="header">
         <a href="#" className="logo" onClick={(e) => { e.preventDefault(); window.location.reload(); }}>
           <i className="fas fa-gamepad"></i>
           <span>Game Hub</span>
         </a>
         <div className="header-right">
-          <button 
-            className={`admin-btn ${isAdmin ? 'logged-in' : ''}`}
-            onClick={() => isAdmin ? handleLogout() : setLoginOpen(true)}
-          >
-            <i className={`fas ${isAdmin ? 'fa-sign-out-alt' : 'fa-shield-alt'}`}></i>
-            <span>{isAdmin ? 'ออกจากระบบแอดมิน' : 'เข้าสู่ระบบแอดมิน'}</span>
-          </button>
           <button className="hamburger-btn" onClick={() => setMenuOpen(true)}>
             <i className="fas fa-bars"></i>
           </button>
