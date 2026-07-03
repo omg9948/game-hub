@@ -55,7 +55,6 @@ export default function Menu({
           ))}
         </div>
 
-        {/* แอดมิน - ย้ายมาอยู่ในเมนู 3 ขีดอย่างเดียว */}
         <div className="menu-section">
           <div className="menu-section-title">แอดมิน</div>
           {!isAdmin ? (
@@ -99,10 +98,7 @@ export default function Menu({
           </button>
         </div>
 
-        <div className="menu-footer">
-          <p>Game Hub v3.0</p>
-          <p style={{ marginTop: '0.3rem' }}>สร้างด้วย love โดยทีมของเรา</p>
-        </div>
+        {/* ลบข้อความ "Game Hub v3.0 / สร้างด้วย love" ออกแล้ว */}
       </div>
     </>
   );
