@@ -1561,3 +1561,157 @@ body {
   color: var(--text);
   font-size: 0.9rem;
 }
+
+
+/* ============================================
+   Welcome Modal - หน้าแจ้งเตือนอัปเดตตอนเปิดเว็บ
+   ============================================ */
+
+.welcome-overlay {
+  z-index: 9999;
+}
+
+.welcome-modal {
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-content {
+  overflow-y: auto;
+  max-height: calc(85vh - 140px);
+  padding-right: 0.5rem;
+}
+
+.welcome-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.welcome-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.welcome-content::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.welcome-latest {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.05));
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.welcome-badge {
+  position: absolute;
+  top: -10px;
+  right: 1rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+}
+
+.welcome-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.welcome-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.welcome-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Kanit', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin: 0;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.welcome-history {
+  border-top: 1px solid var(--card-border);
+  padding-top: 1rem;
+}
+
+.welcome-history-title {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.welcome-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.welcome-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+}
+
+.welcome-history-title-text {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.welcome-history-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.welcome-footer {
+  border-top: 1px solid var(--card-border);
+  padding-top: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-close-btn {
+  background: linear-gradient(135deg, var(--success), #16a34a);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Kanit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.welcome-close-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
