@@ -9,6 +9,7 @@ import SearchBar from './SearchBar';
 import AdminPanel from './AdminPanel';
 import CategoryTabs from './CategoryTabs';
 import GameCard from './GameCard';
+import GameDetailModal from './GameDetailModal';
 import Toast from './Toast';
 import LoginModal from './modals/LoginModal';
 import GameModal from './modals/GameModal';
@@ -42,7 +43,11 @@ export default function ClientPage({
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<{title: string, message: string, type: 'success'|'error'} | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0); // ใช้ force re-render
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Pop Up ดูรายละเอียดเกม
+  const [detailGame, setDetailGame] = useState<Game | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const [loginOpen, setLoginOpen] = useState(false);
   const [gameModalOpen, setGameModalOpen] = useState(false);
@@ -77,7 +82,7 @@ export default function ClientPage({
       setCategories(c);
       setUpdates(u);
       setSettings(s);
-      setRefreshKey(prev => prev + 1); // force re-render
+      setRefreshKey(prev => prev + 1);
       console.log('Data refreshed:', { games: g.length, updates: u.length });
     } catch (error) {
       console.error('refreshData error:', error);
@@ -209,7 +214,6 @@ export default function ClientPage({
       </header>
 
       <div className="container">
-        {/* UpdateBanner - ใช้ key เพื่อ force re-render */}
         {latestUpdate && (
           <UpdateBanner 
             key={`update-${latestUpdate.id}-${refreshKey}`}
@@ -272,6 +276,7 @@ export default function ClientPage({
                   }, `เกม "${game.title}" ถูกลบเรียบร้อย`);
                 }
               }}
+              onViewDetail={() => { setDetailGame(game); setDetailOpen(true); }}
             />
           ))}
         </div>
@@ -293,6 +298,13 @@ export default function ClientPage({
       </footer>
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+
+      {/* Pop Up ดูรายละเอียดเกม */}
+      <GameDetailModal
+        isOpen={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        game={detailGame}
+      />
 
       <LoginModal 
         isOpen={loginOpen} 
