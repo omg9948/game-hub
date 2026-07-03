@@ -1368,3 +1368,196 @@ body {
   background: var(--primary);
   border-radius: 3px;
 }
+
+
+/* ============================================
+   Icon Picker
+   ============================================ */
+
+.icon-picker {
+  position: relative;
+}
+
+.icon-selected {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'Kanit', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.icon-selected:hover {
+  border-color: var(--primary);
+}
+
+.icon-selected > i:first-child {
+  font-size: 1.5rem;
+  color: var(--primary);
+  width: 30px;
+  text-align: center;
+}
+
+.icon-selected > span {
+  flex: 1;
+  text-align: left;
+}
+
+.icon-selected > i:last-child {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: var(--dark);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.icon-item {
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text);
+  font-size: 1.3rem;
+}
+
+.icon-item:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--primary);
+  transform: scale(1.1);
+}
+
+.icon-item.active {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ============================================
+   About Modal
+   ============================================ */
+
+.about-modal {
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.about-modal .modal-header {
+  position: sticky;
+  top: 0;
+  background: var(--dark);
+  z-index: 10;
+  padding-top: 1.5rem;
+}
+
+.about-content {
+  line-height: 1.8;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.about-content p {
+  margin-bottom: 1rem;
+}
+
+.about-content ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.about-content li {
+  margin-bottom: 0.3rem;
+}
+
+.about-content a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.about-content a:hover {
+  color: var(--secondary);
+}
+
+.about-content img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin: 1rem 0;
+}
+
+.about-content strong {
+  color: var(--text);
+}
+
+.about-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.about-edit textarea {
+  font-family: 'Kanit', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* ============================================
+   Footer Settings
+   ============================================ */
+
+.footer-settings {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.footer-settings-title {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+}
+
+.footer-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
+.footer-toggle span {
+  color: var(--text);
+  font-size: 0.9rem;
+}

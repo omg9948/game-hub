@@ -4,7 +4,7 @@ export interface Game {
   category: string;
   link: string;
   image?: string;
-  images?: string[];  // รูปภาพเพิ่มเติมหลายรูป
+  images?: string[];
   description?: string;
   icon: string;
   date: string;
@@ -26,6 +26,10 @@ export interface Update {
 export interface SiteSettings {
   heroTitle: string;
   heroDesc: string;
+  footerText?: string;
+  footerSubtext?: string;
+  showFooter?: boolean;
+  aboutContent?: string;
 }
 
 export interface AppData {

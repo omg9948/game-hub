@@ -11,26 +11,55 @@ interface GameModalProps {
   onSubmit: (data: any) => void;
 }
 
+// ไอคอนให้เลือก
+const GAME_ICONS = [
+  { class: 'fas fa-gamepad', name: 'Gamepad' },
+  { class: 'fas fa-crown', name: 'Crown' },
+  { class: 'fas fa-rocket', name: 'Rocket' },
+  { class: 'fas fa-brain', name: 'Brain' },
+  { class: 'fas fa-chess-king', name: 'Chess' },
+  { class: 'fas fa-car', name: 'Car' },
+  { class: 'fas fa-city', name: 'City' },
+  { class: 'fas fa-dragon', name: 'Dragon' },
+  { class: 'fas fa-ghost', name: 'Ghost' },
+  { class: 'fas fa-map', name: 'Map' },
+  { class: 'fas fa-users', name: 'Users' },
+  { class: 'fas fa-dice', name: 'Dice' },
+  { class: 'fas fa-sword', name: 'Sword' },
+  { class: 'fas fa-shield-alt', name: 'Shield' },
+  { class: 'fas fa-star', name: 'Star' },
+  { class: 'fas fa-gem', name: 'Gem' },
+  { class: 'fas fa-magic', name: 'Magic' },
+  { class: 'fas fa-skull', name: 'Skull' },
+  { class: 'fas fa-robot', name: 'Robot' },
+  { class: 'fas fa-puzzle-piece', name: 'Puzzle' },
+  { class: 'fas fa-trophy', name: 'Trophy' },
+  { class: 'fas fa-flag', name: 'Flag' },
+  { class: 'fas fa-bomb', name: 'Bomb' },
+  { class: 'fas fa-fire', name: 'Fire' },
+];
+
 export default function GameModal({ isOpen, onClose, game, categories, onSubmit }: GameModalProps) {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [image, setImage] = useState('');
-  const [images, setImages] = useState<string[]>([]); // รูปเพิ่มเติมหลายรูป
-  const [newImageUrl, setNewImageUrl] = useState(''); // สำหรับเพิ่มรูปใหม่
+  const [images, setImages] = useState<string[]>([]);
+  const [newImageUrl, setNewImageUrl] = useState('');
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
   const [icon, setIcon] = useState('fas fa-gamepad');
+  const [showIconPicker, setShowIconPicker] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       if (game) {
         setTitle(game.title);
-        setCategory(game.category);
+        setCategory(game.category || '');
         setImage(game.image || '');
         setImages(game.images || []);
         setLink(game.link);
         setDescription(game.description || '');
-        setIcon(game.icon);
+        setIcon(game.icon || 'fas fa-gamepad');
       } else {
         setTitle('');
         setCategory('');
@@ -41,6 +70,7 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
         setIcon('fas fa-gamepad');
       }
       setNewImageUrl('');
+      setShowIconPicker(false);
     }
   }, [isOpen, game]);
 
@@ -60,11 +90,11 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
     onSubmit({
       id: game?.id,
       title: title.trim(),
-      category,
+      category: category || 'Other', // ถ้าไม่เลือกให้เป็น Other
       image: image.trim(),
-      images: images.filter(Boolean), // ส่งรูปเพิ่มเติมไปด้วย
+      images: images.filter(Boolean),
       link: link.trim(),
-      description: description, // ไม่ trim เพื่อรักษาเว้นวรรค/enter
+      description: description,
       icon: icon.trim() || 'fas fa-gamepad'
     });
   };
@@ -85,13 +115,40 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
           </div>
 
           <div className="form-group">
-            <label className="form-label">หมวดหมู่ *</label>
-            <select className="form-select" value={category} onChange={e => setCategory(e.target.value)} required>
-              <option value="">เลือกหมวดหมู่...</option>
+            <label className="form-label">หมวดหมู่ (ไม่บังคับ)</label>
+            <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
+              <option value="">ไม่มีหมวดหมู่ (Other)</option>
               {categories.map(c => (
                 <option key={c.name} value={c.name}>{c.icon} {c.name}</option>
               ))}
             </select>
+          </div>
+
+          {/* ไอคอน - เลือกได้ */}
+          <div className="form-group">
+            <label className="form-label">ไอคอน</label>
+            <div className="icon-picker">
+              <button type="button" className="icon-selected" onClick={() => setShowIconPicker(!showIconPicker)}>
+                <i className={icon}></i>
+                <span>เลือกไอคอน</span>
+                <i className={`fas fa-chevron-${showIconPicker ? 'up' : 'down'}`}></i>
+              </button>
+              {showIconPicker && (
+                <div className="icon-grid">
+                  {GAME_ICONS.map((ic) => (
+                    <button
+                      key={ic.class}
+                      type="button"
+                      className={`icon-item ${icon === ic.class ? 'active' : ''}`}
+                      onClick={() => { setIcon(ic.class); setShowIconPicker(false); }}
+                      title={ic.name}
+                    >
+                      <i className={ic.class}></i>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* รูปภาพหลัก */}
@@ -100,7 +157,7 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
             <input type="url" className="form-input" value={image} onChange={e => setImage(e.target.value)} placeholder="https://example.com/image.jpg" />
           </div>
 
-          {/* รูปภาพเพิ่มเติมหลายรูป */}
+          {/* รูปภาพเพิ่มเติม */}
           <div className="form-group">
             <label className="form-label">รูปภาพเพิ่มเติม (หลายรูป)</label>
             <div className="image-input-group">
@@ -116,11 +173,7 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
                 <i className="fas fa-plus"></i> เพิ่มรูป
               </button>
             </div>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
-              ใส่ลิงก์รูปภาพแล้วกด Enter หรือปุ่มเพิ่มรูป (เพิ่มได้หลายรูป)
-            </p>
 
-            {/* แสดงรูปที่เพิ่มแล้ว */}
             {images.length > 0 && (
               <div className="image-preview-list">
                 {images.map((img, idx) => (
@@ -149,14 +202,6 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
               placeholder="คำอธิบายเกม... (กด Enter เพื่อขึ้นบรรทัดใหม่)"
               rows={6}
             />
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
-              ข้อความจะแสดงตามที่พิมพ์เป๊ะๆ รวมถึงการเว้นวรรคและขึ้นบรรทัดใหม่
-            </p>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">ไอคอน (Font Awesome class)</label>
-            <input type="text" className="form-input" value={icon} onChange={e => setIcon(e.target.value)} placeholder="fas fa-gamepad" />
           </div>
 
           <button type="submit" className="form-submit">
