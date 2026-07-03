@@ -1,3 +1,5 @@
+import './globals.css';
+
 export const metadata = {
   title: 'Game Hub - ศูนย์รวมเกมของเรา',
   description: 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น',
