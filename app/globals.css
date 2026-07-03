@@ -1200,3 +1200,171 @@ body {
   background: var(--danger);
   transform: scale(1.1);
 }
+
+
+/* ============================================
+   Update Log Modal - Scrollable
+   ============================================ */
+
+.update-log-modal {
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.update-log-list {
+  overflow-y: auto;
+  max-height: calc(85vh - 100px);
+  padding-right: 0.5rem;
+}
+
+.update-log-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.update-log-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.update-log-list::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.update-log-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.update-log-item.deleting {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.update-log-item:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.update-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.update-log-version {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.update-log-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.update-log-content {
+  color: var(--text-muted);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  font-family: 'Kanit', sans-serif;
+  margin: 0;
+}
+
+.update-log-delete {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 0.9rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.update-log-item:hover .update-log-delete {
+  opacity: 1;
+}
+
+.update-log-delete:hover {
+  background: rgba(239, 68, 68, 0.4);
+  transform: scale(1.1);
+}
+
+.update-log-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Modal Scrollable - แก้ปัญหาเลยขอบจอ
+   ============================================ */
+
+.modal {
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+.modal::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+/* Game Modal - ให้ form เลื่อนได้ */
+.modal.wide {
+  max-width: 700px;
+  width: 90%;
+}
+
+.modal form {
+  overflow-y: auto;
+  max-height: calc(90vh - 120px);
+  padding-right: 0.5rem;
+}
+
+.modal form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal form::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
