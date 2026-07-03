@@ -42,6 +42,7 @@ export default function ClientPage({
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<{title: string, message: string, type: 'success'|'error'} | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0); // ใช้ force re-render
 
   const [loginOpen, setLoginOpen] = useState(false);
   const [gameModalOpen, setGameModalOpen] = useState(false);
@@ -52,7 +53,7 @@ export default function ClientPage({
   const [importOpen, setImportOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
 
-  // จำเครื่องแอดมิน - เช็ค localStorage ตอนโหลด
+  // จำเครื่องแอดมิน
   useEffect(() => {
     const savedAdmin = localStorage.getItem('gamehub_admin');
     if (savedAdmin === 'true') {
@@ -60,17 +61,27 @@ export default function ClientPage({
     }
   }, []);
 
+  // โหลดข้อมูลใหม่จาก API
   const refreshData = useCallback(async () => {
-    const [g, c, u, s] = await Promise.all([
-      fetch('/api/games').then(r => r.json()),
-      fetch('/api/categories').then(r => r.json()),
-      fetch('/api/updates').then(r => r.json()),
-      fetch('/api/settings').then(r => r.json())
-    ]);
-    setGames(g);
-    setCategories(c);
-    setUpdates(u);
-    setSettings(s);
+    try {
+      const [g, c, u, s] = await Promise.all([
+        fetch('/api/games').then(r => r.json()).catch(() => []),
+        fetch('/api/categories').then(r => r.json()).catch(() => []),
+        fetch('/api/updates').then(r => r.json()).catch(() => []),
+        fetch('/api/settings').then(r => r.json()).catch(() => ({
+          heroTitle: 'ศูนย์รวมเกมของทีมเรา',
+          heroDesc: 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น พร้อมคำอธิบายและการจัดหมวดหมู่'
+        }))
+      ]);
+      setGames(g);
+      setCategories(c);
+      setUpdates(u);
+      setSettings(s);
+      setRefreshKey(prev => prev + 1); // force re-render
+      console.log('Data refreshed:', { games: g.length, updates: u.length });
+    } catch (error) {
+      console.error('refreshData error:', error);
+    }
   }, []);
 
   const showToast = (title: string, message: string, type: 'success'|'error' = 'success') => {
@@ -86,7 +97,7 @@ export default function ClientPage({
     });
     if (res.ok) {
       setIsAdmin(true);
-      localStorage.setItem('gamehub_admin', 'true'); // จำเครื่องนี้เป็นแอดมิน
+      localStorage.setItem('gamehub_admin', 'true');
       setLoginOpen(false);
       showToast('เข้าสู่ระบบสำเร็จ', 'ยินดีต้อนรับแอดมิน!');
     } else {
@@ -96,11 +107,11 @@ export default function ClientPage({
 
   const handleLogout = () => {
     setIsAdmin(false);
-    localStorage.removeItem('gamehub_admin'); // ลบการจำ
+    localStorage.removeItem('gamehub_admin');
     showToast('ออกจากระบบ', 'ออกจากระบบแอดมินเรียบร้อย');
   };
 
-  // ฟังก์ชันบันทึกพร้อมแสดงสถานะ
+  // ฟังก์ชันบันทึกพร้อมแสดงสถานะ + force refresh
   const handleSave = async (saveFn: () => Promise<void>, successMsg: string) => {
     setIsSaving(true);
     showToast('กำลังบันทึก...', 'รอสักครู่ กำลังบันทึกข้อมูล', 'success');
@@ -109,10 +120,25 @@ export default function ClientPage({
       await refreshData();
       showToast('บันทึกสำเร็จ!', successMsg, 'success');
     } catch (error) {
+      console.error('handleSave error:', error);
       showToast('บันทึกไม่สำเร็จ', 'เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // ลบประกาศจากแบนเนอร์โดยตรง
+  const handleDeleteLatestUpdate = async () => {
+    if (!latestUpdate) return;
+    if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบประกาศ "${latestUpdate.title}"?`)) return;
+
+    await handleSave(async () => {
+      await fetch('/api/updates', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: latestUpdate.id })
+      });
+    }, 'ประกาศถูกลบเรียบร้อย');
   };
 
   const filteredGames = games.filter(g => {
@@ -128,7 +154,7 @@ export default function ClientPage({
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
   return (
-    <div className={isAdmin ? 'admin-mode' : ''}>
+    <div className={isAdmin ? 'admin-mode' : ''} key={refreshKey}>
       <div className="bg-animation" />
       <Particles />
 
@@ -170,7 +196,6 @@ export default function ClientPage({
         onImport={() => { setMenuOpen(false); setImportOpen(true); }}
       />
 
-      {/* Header - เอาปุ่ม Admin ออก */}
       <header className="header">
         <a href="#" className="logo" onClick={(e) => { e.preventDefault(); window.location.reload(); }}>
           <i className="fas fa-gamepad"></i>
@@ -184,12 +209,15 @@ export default function ClientPage({
       </header>
 
       <div className="container">
+        {/* UpdateBanner - ใช้ key เพื่อ force re-render */}
         {latestUpdate && (
           <UpdateBanner 
+            key={`update-${latestUpdate.id}-${refreshKey}`}
             latestUpdate={latestUpdate} 
             isAdmin={isAdmin} 
             onShowAll={() => setUpdateLogOpen(true)}
             onAddUpdate={() => setUpdateModalOpen(true)}
+            onDelete={handleDeleteLatestUpdate}
           />
         )}
 
