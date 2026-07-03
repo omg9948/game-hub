@@ -12,7 +12,8 @@ export async function getBlobData(filename: string): Promise<any> {
 
     const text = await response.text();
     return JSON.parse(text);
-  } catch {
+  } catch (error) {
+    console.error('getBlobData error:', error);
     return null;
   }
 }
@@ -22,16 +23,25 @@ export async function setBlobData(filename: string, data: any): Promise<void> {
   const blob = new Blob([jsonString], { type: 'application/json' });
 
   try {
+    // ลบ blob เก่าที่มี prefix เดียวกัน
     const { blobs } = await list({ prefix: `${DB_PREFIX}${filename}` });
     for (const b of blobs) {
       await del(b.url);
     }
-  } catch {
+  } catch (error) {
+    console.error('delete old blob error:', error);
     // ignore delete errors
   }
 
-  await put(`${DB_PREFIX}${filename}`, blob, {
-    access: 'public',
-    contentType: 'application/json'
-  });
+  try {
+    await put(`${DB_PREFIX}${filename}`, blob, {
+      access: 'public',
+      contentType: 'application/json',
+      addRandomSuffix: false, // สำคัญ! ต้องใช้ชื่อเดิมเพื่อ overwrite
+    });
+    console.log(`setBlobData success: ${DB_PREFIX}${filename}`);
+  } catch (error) {
+    console.error('setBlobData error:', error);
+    throw error;
+  }
 }
