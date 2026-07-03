@@ -45,7 +45,6 @@ export default function ClientPage({
   const [toast, setToast] = useState<{title: string, message: string, type: 'success'|'error'} | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Pop Up ดูรายละเอียดเกม
   const [detailGame, setDetailGame] = useState<Game | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -58,7 +57,6 @@ export default function ClientPage({
   const [importOpen, setImportOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
 
-  // จำเครื่องแอดมิน
   useEffect(() => {
     const savedAdmin = localStorage.getItem('gamehub_admin');
     if (savedAdmin === 'true') {
@@ -66,7 +64,6 @@ export default function ClientPage({
     }
   }, []);
 
-  // โหลดข้อมูลใหม่จาก API
   const refreshData = useCallback(async () => {
     try {
       const [g, c, u, s] = await Promise.all([
@@ -116,7 +113,6 @@ export default function ClientPage({
     showToast('ออกจากระบบ', 'ออกจากระบบแอดมินเรียบร้อย');
   };
 
-  // ฟังก์ชันบันทึกพร้อมแสดงสถานะ + force refresh
   const handleSave = async (saveFn: () => Promise<void>, successMsg: string) => {
     setIsSaving(true);
     showToast('กำลังบันทึก...', 'รอสักครู่ กำลังบันทึกข้อมูล', 'success');
@@ -132,7 +128,6 @@ export default function ClientPage({
     }
   };
 
-  // ลบประกาศจากแบนเนอร์โดยตรง
   const handleDeleteLatestUpdate = async () => {
     if (!latestUpdate) return;
     if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบประกาศ "${latestUpdate.title}"?`)) return;
@@ -163,7 +158,6 @@ export default function ClientPage({
       <div className="bg-animation" />
       <Particles />
 
-      {/* Loading Overlay */}
       {isSaving && (
         <div className="saving-overlay">
           <div className="saving-spinner">
@@ -290,16 +284,18 @@ export default function ClientPage({
         )}
       </div>
 
-      <footer className="footer">
-        <p>Game Hub - สร้างด้วย love โดยทีมของเรา</p>
-        <p style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
-          ข้อมูลจัดเก็บบน Cloud - ทุกคนเห็นเหมือนกัน
-        </p>
-      </footer>
+      {/* Footer - แก้ไข/ปิดได้ */}
+      {(settings.showFooter !== false) && (
+        <footer className="footer">
+          <p>{settings.footerText || 'Game Hub v3.0'}</p>
+          <p style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
+            {settings.footerSubtext || 'สร้างด้วย love โดยทีมของเรา'}
+          </p>
+        </footer>
+      )}
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-      {/* Pop Up ดูรายละเอียดเกม */}
       <GameDetailModal
         isOpen={detailOpen}
         onClose={() => setDetailOpen(false)}
@@ -376,7 +372,22 @@ export default function ClientPage({
         }}
       />
 
-      <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} />
+      {/* AboutModal - ส่ง isAdmin + onUpdate เพื่อให้แก้ไขได้ */}
+      <AboutModal 
+        isOpen={aboutOpen} 
+        onClose={() => setAboutOpen(false)}
+        content={settings.aboutContent}
+        isAdmin={isAdmin}
+        onUpdate={async (content) => {
+          await handleSave(async () => {
+            await fetch('/api/settings', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...settings, aboutContent: content })
+            });
+          }, 'ข้อมูลเกี่ยวกับเราบันทึกเรียบร้อย');
+        }}
+      />
 
       <ImportModal
         isOpen={importOpen}
