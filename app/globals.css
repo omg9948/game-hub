@@ -2660,3 +2660,128 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ============================================
+   Text Toolbar - Discord-style formatting
+   ============================================ */
+
+.text-toolbar {
+  display: flex;
+  gap: 0.3rem;
+  background: #2b2d31;
+  border: 1px solid #1e1f22;
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: toolbarPop 0.15s ease;
+}
+
+@keyframes toolbarPop {
+  from { opacity: 0; transform: translateY(5px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.text-toolbar-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #b5bac1;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.text-toolbar-btn:hover {
+  background: #404249;
+  color: #dbdee1;
+}
+
+.text-toolbar-btn:active {
+  background: #5c5e66;
+  transform: scale(0.92);
+}
+
+.textarea-with-toolbar {
+  position: relative;
+}
+
+/* ============================================
+   Pin Toggle Switch
+   ============================================ */
+
+.pin-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pin-toggle input {
+  display: none;
+}
+
+.pin-toggle-slider {
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid var(--card-border);
+  flex-shrink: 0;
+}
+
+.pin-toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.pin-toggle input:checked + .pin-toggle-slider {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: var(--primary);
+}
+
+.pin-toggle input:checked + .pin-toggle-slider::after {
+  left: 22px;
+  background: white;
+}
+
+.pin-toggle-label {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+/* ============================================
+   Pin Badge on Game Card
+   ============================================ */
+
+.game-pin-badge {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  animation: pinPulse 2s ease-in-out infinite;
+}
+
+@keyframes pinPulse {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-10deg) scale(1.1); }
+}

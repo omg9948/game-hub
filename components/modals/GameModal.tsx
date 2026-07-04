@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Game, Category } from '@/types';
 import { useLanguage } from '../LanguageContext';
+import TextToolbar from '../TextToolbar';
 
 interface GameModalProps {
   isOpen: boolean;
@@ -13,12 +14,30 @@ interface GameModalProps {
 }
 
 const icons = [
-  'fas fa-gamepad', 'fas fa-ghost', 'fas fa-dragon', 'fas fa-dungeon',
-  'fas fa-chess-knight', 'fas fa-puzzle-piece', 'fas fa-brain', 'fas fa-car',
-  'fas fa-plane', 'fas fa-ship', 'fas fa-rocket', 'fas fa-user-ninja',
-  'fas fa-skull', 'fas fa-crown', 'fas fa-gem', 'fas fa-star',
-  'fas fa-fire', 'fas fa-bolt', 'fas fa-heart', 'fas fa-shield-alt',
-  'fas fa-sword', 'fas fa-hat-wizard', 'fas fa-scroll', 'fas fa-dice-d20'
+  { class: 'fas fa-gamepad', label: 'Gamepad' },
+  { class: 'fas fa-ghost', label: 'Ghost' },
+  { class: 'fas fa-dragon', label: 'Dragon' },
+  { class: 'fas fa-dungeon', label: 'Dungeon' },
+  { class: 'fas fa-chess-knight', label: 'Knight' },
+  { class: 'fas fa-puzzle-piece', label: 'Puzzle' },
+  { class: 'fas fa-brain', label: 'Brain' },
+  { class: 'fas fa-car', label: 'Car' },
+  { class: 'fas fa-plane', label: 'Plane' },
+  { class: 'fas fa-ship', label: 'Ship' },
+  { class: 'fas fa-rocket', label: 'Rocket' },
+  { class: 'fas fa-user-ninja', label: 'Ninja' },
+  { class: 'fas fa-skull', label: 'Skull' },
+  { class: 'fas fa-crown', label: 'Crown' },
+  { class: 'fas fa-gem', label: 'Gem' },
+  { class: 'fas fa-star', label: 'Star' },
+  { class: 'fas fa-fire', label: 'Fire' },
+  { class: 'fas fa-bolt', label: 'Bolt' },
+  { class: 'fas fa-heart', label: 'Heart' },
+  { class: 'fas fa-shield-alt', label: 'Shield' },
+  { class: 'fas fa-sword', label: 'Sword' },
+  { class: 'fas fa-hat-wizard', label: 'Wizard' },
+  { class: 'fas fa-scroll', label: 'Scroll' },
+  { class: 'fas fa-dice-d20', label: 'Dice' }
 ];
 
 export default function GameModal({ isOpen, onClose, game, categories, onSubmit }: GameModalProps) {
@@ -30,16 +49,19 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
   const [images, setImages] = useState<string[]>([]);
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
+  const [pinned, setPinned] = useState(false);
+  const descRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (game) {
       setTitle(game.title);
       setCategory(game.category);
-      setIcon(game.icon || '');
+      setIcon(game.icon || 'fas fa-gamepad');
       setImage(game.image || '');
       setImages(game.images || []);
       setLink(game.link);
       setDescription(game.description || '');
+      setPinned(game.pinned || false);
     } else {
       setTitle('');
       setCategory('');
@@ -48,6 +70,7 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
       setImages([]);
       setLink('');
       setDescription('');
+      setPinned(false);
     }
   }, [game, isOpen]);
 
@@ -61,7 +84,8 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
       image,
       images: images.filter(Boolean),
       link,
-      description
+      description,
+      pinned
     });
   };
 
@@ -99,12 +123,41 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
             </select>
           </div>
 
+          {/* Pin Toggle */}
+          <div className="form-group">
+            <label className="form-label">
+              <i className="fas fa-thumbtack"></i> ปักหมุดเกม
+            </label>
+            <label className="pin-toggle">
+              <input
+                type="checkbox"
+                checked={pinned}
+                onChange={e => setPinned(e.target.checked)}
+              />
+              <span className="pin-toggle-slider"></span>
+              <span className="pin-toggle-label">
+                {pinned ? (
+                  <><i className="fas fa-thumbtack" style={{ color: 'var(--primary)', marginRight: '0.3rem' }}></i> ปักหมุดแล้ว (แสดงแรกสุด)</>
+                ) : (
+                  <><i className="fas fa-thumbtack" style={{ opacity: 0.4, marginRight: '0.3rem' }}></i> ไม่ปักหมุด</>
+                )}
+              </span>
+            </label>
+          </div>
+
           <div className="form-group">
             <label className="form-label">{t('modal.icon')}</label>
             <div className="icon-grid">
               {icons.map(ic => (
-                <button type="button" key={ic} className={`icon-btn ${icon === ic ? 'active' : ''}`} onClick={() => setIcon(ic)}>
-                  <i className={ic}></i>
+                <button 
+                  type="button" 
+                  key={ic.class} 
+                  className={`icon-btn ${icon === ic.class ? 'active' : ''}`} 
+                  onClick={() => setIcon(ic.class)}
+                  data-tooltip={ic.label}
+                  title={ic.label}
+                >
+                  <i className={ic.class}></i>
                 </button>
               ))}
             </div>
@@ -131,16 +184,23 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
             <input className="form-input" value={link} onChange={e => setLink(e.target.value)} required placeholder="https://..." />
           </div>
 
-          {/* ช่องคำอธิบายใหญ่ขึ้น */}
+          {/* ช่องคำอธิบายใหญ่ขึ้น + TextToolbar */}
           <div className="form-group">
             <label className="form-label">{t('modal.description')}</label>
-            <textarea 
-              className="form-input form-textarea-large" 
-              value={description} 
-              onChange={e => setDescription(e.target.value)} 
-              placeholder={t('modal.description')}
-              rows={6}
-            />
+            <div className="textarea-with-toolbar">
+              <textarea 
+                ref={descRef}
+                className="form-input form-textarea-large" 
+                value={description} 
+                onChange={e => setDescription(e.target.value)} 
+                placeholder={t('modal.description')}
+                rows={6}
+              />
+              <TextToolbar textareaRef={descRef} />
+            </div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              <i className="fas fa-mouse-pointer"></i> ลากคลุมข้อความเพื่อตั้งค่า Bold, Italic, Underline, Strikethrough, Quote, Code, Spoiler
+            </p>
           </div>
 
           <button type="submit" className="form-submit"><i className="fas fa-save"></i> {t('modal.save')}</button>
