@@ -73,7 +73,7 @@ export default function GameDetailModal({ isOpen, onClose, game }: GameDetailMod
             <div className="game-info-header">
               <span className="game-category-badge">{game.category}</span>
               <span className="game-date">
-                <i className="fas fa-calendar"></i> {new Date(game.date).toLocaleDateString('th-TH')}
+                <i className="fas fa-calendar"></i> {game.date ? new Date(game.date).toLocaleDateString('th-TH') : '-'}
               </span>
             </div>
 
