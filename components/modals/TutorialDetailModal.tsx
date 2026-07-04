@@ -1,8 +1,8 @@
 'use client';
 
 import { Tutorial } from '@/types';
-import { useLanguage } from '@/components/LanguageContext';
-import AutoLinkText from '@/components/AutoLinkText';
+import { useLanguage } from '../LanguageContext';
+import AutoLinkText from '../AutoLinkText';
 
 interface TutorialDetailModalProps {
   isOpen: boolean;

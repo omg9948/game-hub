@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Game, Category } from '@/types';
-import { useLanguage } from '@/components/LanguageContext';
-import TextToolbar from '@/components/TextToolbar';
+import { useLanguage } from '../LanguageContext';
+import TextToolbar from '../TextToolbar';
 
 interface GameModalProps {
   isOpen: boolean;

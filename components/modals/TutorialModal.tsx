@@ -1,7 +1,7 @@
 'use client';
 
 import { Tutorial } from '@/types';
-import { useLanguage } from '@/components/LanguageContext';
+import { useLanguage } from '../LanguageContext';
 
 interface TutorialModalProps {
   isOpen: boolean;

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useLanguage } from '@/components/LanguageContext';
-import TextToolbar from '@/components/TextToolbar';
+import { useLanguage } from '../LanguageContext';
+import TextToolbar from '../TextToolbar';
 
 interface UpdateModalProps {
   isOpen: boolean;
