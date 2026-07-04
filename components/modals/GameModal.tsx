@@ -35,7 +35,7 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
     if (game) {
       setTitle(game.title);
       setCategory(game.category);
-      setIcon(game.icon);
+      setIcon(game.icon || '');
       setImage(game.image || '');
       setImages(game.images || []);
       setLink(game.link);
