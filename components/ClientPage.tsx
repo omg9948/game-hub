@@ -250,7 +250,16 @@ export default function ClientPage({
 
   return (
     <div className={isAdmin ? 'admin-mode' : ''} key={refreshKey}>
-      <div className="bg-animation" />
+      <div 
+        className="bg-animation" 
+        style={settings.backgroundImage ? {
+          backgroundImage: `url(${settings.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        } : {}}
+      />
       <Particles />
 
       <WelcomeModal updates={updates} onClose={() => {}} />
@@ -348,13 +357,8 @@ export default function ClientPage({
             onAddCategory={() => setCategoryModalOpen(true)}
             onUpdateSettings={(newSettings) => {
               setSettings(newSettings);
-              handleSave(async () => {
-                await fetch('/api/settings', {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(newSettings)
-                });
-              }, 'บันทึกการตั้งค่าสำเร็จ!');
+              // บันทึกทั้ง settings และข้อมูลอื่นๆ ลง Vercel Blob
+              saveData({ games, categories, updates, tutorials, settings: newSettings });
             }}
           />
         )}

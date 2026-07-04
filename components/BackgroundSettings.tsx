@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface BackgroundSettingsProps {
   backgroundImage: string;
@@ -12,14 +12,35 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
   const [previewError, setPreviewError] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
+  // Sync with parent when backgroundImage changes
+  useEffect(() => {
+    setUrl(backgroundImage || '');
+  }, [backgroundImage]);
+
   const handleSave = () => {
-    onChange(url.trim());
+    const trimmedUrl = url.trim();
+
+    // ถ้าใส่รูปใหม่ ให้ลบรูปเก่าออก (ส่งค่าว่างก่อน แล้วค่อยใส่ค่าใหม่)
+    if (trimmedUrl && trimmedUrl !== backgroundImage) {
+      // ลบรูปเก่าก่อน
+      if (backgroundImage) {
+        onChange(''); // ลบออกก่อน
+        setTimeout(() => {
+          onChange(trimmedUrl); // แล้วค่อยใส่รูปใหม่
+        }, 100);
+      } else {
+        onChange(trimmedUrl);
+      }
+    } else if (!trimmedUrl) {
+      onChange(''); // ลบรูปออก
+    }
+
     setShowPreview(false);
   };
 
   const handleClear = () => {
     setUrl('');
-    onChange('');
+    onChange(''); // ลบรูปออกจริงๆ
     setPreviewError(false);
     setShowPreview(false);
   };
@@ -54,7 +75,31 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
         </div>
       </div>
 
+      {/* แสดงสถานะรูปที่ใช้งานอยู่ */}
+      {backgroundImage ? (
+        <div className="background-current-active">
+          <div className="background-current-header">
+            <i className="fas fa-check-circle" style={{ color: '#22c55e' }}></i>
+            <span className="background-current-title">กำลังใช้งานอยู่</span>
+          </div>
+          <div className="background-current-url">
+            {backgroundImage.length > 60 ? backgroundImage.substring(0, 60) + '...' : backgroundImage}
+          </div>
+          <div className="background-current-preview">
+            <img src={backgroundImage} alt="Current background" />
+          </div>
+        </div>
+      ) : (
+        <div className="background-current-empty">
+          <i className="fas fa-image" style={{ opacity: 0.3 }}></i>
+          <span>ไม่มีภาพพื้นหลัง (ใช้พื้นหลังเริ่มต้น)</span>
+        </div>
+      )}
+
       <div className="background-input-group">
+        <label className="background-input-label">
+          <i className="fas fa-link"></i> ลิงก์ภาพพื้นหลังใหม่:
+        </label>
         <input
           type="text"
           className="form-input"
@@ -91,7 +136,7 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
               className="admin-btn-small delete"
               onClick={handleClear}
             >
-              <i className="fas fa-trash"></i> ลบ
+              <i className="fas fa-trash"></i> ลบรูป
             </button>
           )}
         </div>
@@ -101,7 +146,7 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
       {showPreview && isValidUrl && !previewError && (
         <div className="background-preview">
           <p className="background-preview-label">
-            <i className="fas fa-eye"></i> ตัวอย่างภาพพื้นหลัง:
+            <i className="fas fa-eye"></i> ตัวอย่างภาพพื้นหลังใหม่:
           </p>
           <div className="background-preview-box">
             <img
@@ -117,14 +162,6 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
         <div className="background-preview-error">
           <i className="fas fa-exclamation-triangle"></i>
           <span>ไม่สามารถโหลดภาพได้ กรุณาตรวจสอบลิงก์</span>
-        </div>
-      )}
-
-      {/* Current background indicator */}
-      {backgroundImage && (
-        <div className="background-current">
-          <i className="fas fa-check-circle"></i>
-          <span>กำลังใช้งาน: {backgroundImage.length > 50 ? backgroundImage.substring(0, 50) + '...' : backgroundImage}</span>
         </div>
       )}
     </div>
