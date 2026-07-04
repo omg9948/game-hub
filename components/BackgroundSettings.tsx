@@ -10,18 +10,28 @@ interface BackgroundSettingsProps {
 export default function BackgroundSettings({ backgroundImage, onChange }: BackgroundSettingsProps) {
   const [url, setUrl] = useState(backgroundImage || '');
   const [previewError, setPreviewError] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleSave = () => {
     onChange(url.trim());
+    setShowPreview(false);
   };
 
   const handleClear = () => {
     setUrl('');
     onChange('');
     setPreviewError(false);
+    setShowPreview(false);
   };
 
   const isValidUrl = url.trim().length > 0 && (url.startsWith('http://') || url.startsWith('https://'));
+
+  const togglePreview = () => {
+    if (!showPreview) {
+      setPreviewError(false);
+    }
+    setShowPreview(!showPreview);
+  };
 
   return (
     <div className="background-settings">
@@ -52,6 +62,7 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
           onChange={(e) => {
             setUrl(e.target.value);
             setPreviewError(false);
+            setShowPreview(false);
           }}
           placeholder="https://example.com/background.jpg หรือ .gif"
         />
@@ -64,6 +75,16 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
           >
             <i className="fas fa-save"></i> บันทึก
           </button>
+          {isValidUrl && (
+            <button
+              type="button"
+              className={`admin-btn-small ${showPreview ? 'active' : ''}`}
+              onClick={togglePreview}
+            >
+              <i className={`fas ${showPreview ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+              {showPreview ? ' ซ่อนตัวอย่าง' : ' ดูตัวอย่าง'}
+            </button>
+          )}
           {(url || backgroundImage) && (
             <button
               type="button"
@@ -76,8 +97,8 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
         </div>
       </div>
 
-      {/* Preview */}
-      {isValidUrl && !previewError && (
+      {/* Preview - แสดงเฉพาะเมื่อกดปุ่ม */}
+      {showPreview && isValidUrl && !previewError && (
         <div className="background-preview">
           <p className="background-preview-label">
             <i className="fas fa-eye"></i> ตัวอย่างภาพพื้นหลัง:
@@ -92,7 +113,7 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
         </div>
       )}
 
-      {previewError && isValidUrl && (
+      {showPreview && previewError && isValidUrl && (
         <div className="background-preview-error">
           <i className="fas fa-exclamation-triangle"></i>
           <span>ไม่สามารถโหลดภาพได้ กรุณาตรวจสอบลิงก์</span>
