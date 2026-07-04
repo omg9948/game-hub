@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../LanguageContext';
+import TextToolbar from '../TextToolbar';
 
 interface UpdateModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ export default function UpdateModal({ isOpen, onClose, onSubmit }: UpdateModalPr
   const { t } = useLanguage();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -42,17 +44,28 @@ export default function UpdateModal({ isOpen, onClose, onSubmit }: UpdateModalPr
             <input className="form-input" value={title} onChange={e => setTitle(e.target.value)} required />
           </div>
 
-          {/* ช่องรายละเอียดใหญ่ขึ้น */}
+          {/* ช่องรายละเอียดใหญ่ขึ้น + TextToolbar */}
           <div className="form-group">
             <label className="form-label">{t('modal.updateContent')}</label>
-            <textarea 
-              className="form-input form-textarea-large" 
-              value={content} 
-              onChange={e => setContent(e.target.value)} 
-              required 
-              placeholder={t('modal.updateContent')}
-              rows={8}
-            />
+            <div className="textarea-with-toolbar">
+              <textarea 
+                ref={contentRef}
+                className="form-input form-textarea-large" 
+                value={content} 
+                onChange={e => setContent(e.target.value)} 
+                required 
+                placeholder={t('modal.updateContent')}
+                rows={8}
+              />
+              <TextToolbar 
+                textareaRef={contentRef} 
+                value={content}
+                onChange={setContent}
+              />
+            </div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              <i className="fas fa-mouse-pointer"></i> ลากคลุมข้อความเพื่อตั้งค่า Bold, Italic, Underline, Strikethrough, Quote, Code, Spoiler
+            </p>
           </div>
 
           <button type="submit" className="form-submit"><i className="fas fa-paper-plane"></i> {t('modal.send')}</button>
