@@ -357,8 +357,16 @@ export default function ClientPage({
             onAddCategory={() => setCategoryModalOpen(true)}
             onUpdateSettings={(newSettings) => {
               setSettings(newSettings);
-              // บันทึกทั้ง settings และข้อมูลอื่นๆ ลง Vercel Blob
-              saveData({ games, categories, updates, tutorials, settings: newSettings });
+              // บันทึก settings ลง Vercel Blob
+              fetch('/api/settings', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newSettings)
+              }).then(() => {
+                showToast('success', 'บันทึกการตั้งค่าพื้นหลังสำเร็จ!');
+              }).catch(() => {
+                showToast('error', 'บันทึกไม่สำเร็จ');
+              });
             }}
           />
         )}
