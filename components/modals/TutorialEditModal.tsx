@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Tutorial } from '@/types';
 import { useLanguage } from '../LanguageContext';
+import TextToolbar from '../TextToolbar';
 
 interface TutorialEditModalProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ interface TutorialEditModalProps {
 export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }: TutorialEditModalProps) {
   const { t } = useLanguage();
   const [items, setItems] = useState<Tutorial[]>([]);
+  // เก็บ refs สำหรับ textarea แต่ละรายการ
+  const descRefs = useRef<Map<string, React.RefObject<HTMLTextAreaElement | null>>>(new Map());
 
   useEffect(() => {
     if (isOpen) {
@@ -22,6 +25,14 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
     }
   }, [isOpen, tutorials]);
 
+  // สร้าง ref สำหรับ textarea แต่ละรายการ
+  const getDescRef = (id: string): React.RefObject<HTMLTextAreaElement | null> => {
+    if (!descRefs.current.has(id)) {
+      descRefs.current.set(id, { current: null });
+    }
+    return descRefs.current.get(id)!;
+  };
+
   const updateItem = (index: number, field: keyof Tutorial, value: string) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
@@ -29,18 +40,24 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
   };
 
   const handleAddNew = () => {
+    const newId = `temp_${Date.now()}_${items.length}`;
     const newItem: Tutorial = {
-      id: `temp_${Date.now()}_${items.length}`,
+      id: newId,
       title: '',
       youtubeUrl: '',
       description: '',
       order: items.length
     };
+    // สร้าง ref สำหรับรายการใหม่
+    descRefs.current.set(newId, { current: null });
     setItems([...items, newItem]);
   };
 
   const handleRemove = (index: number) => {
+    const removedItem = items[index];
     const newItems = items.filter((_, i) => i !== index);
+    // ลบ ref ที่ไม่ใช้แล้ว
+    descRefs.current.delete(removedItem.id);
     setItems(newItems.map((item, idx) => ({ ...item, order: idx })));
   };
 
@@ -80,45 +97,56 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
             <i className="fas fa-info-circle"></i> {t('tutorial.addNew')}
           </p>
 
-          {items.map((item, index) => (
-            <div key={item.id} className={`tutorial-edit-item ${item.title.trim() && item.youtubeUrl.trim() ? 'filled' : ''}`}>
-              <div className="tutorial-edit-number">{index + 1}</div>
-              <div className="tutorial-edit-fields">
-                <input
-                  type="text"
-                  className="form-input form-input-large"
-                  placeholder={t('tutorial.placeholder.title')}
-                  value={item.title}
-                  onChange={e => updateItem(index, 'title', e.target.value)}
-                />
-                <input
-                  type="url"
-                  className="form-input form-input-large"
-                  placeholder={t('tutorial.placeholder.url')}
-                  value={item.youtubeUrl}
-                  onChange={e => updateItem(index, 'youtubeUrl', e.target.value)}
-                />
-                <textarea
-                  className="form-input form-textarea-large"
-                  placeholder={t('tutorial.placeholder.desc')}
-                  value={item.description}
-                  onChange={e => updateItem(index, 'description', e.target.value)}
-                  rows={4}
-                />
+          {items.map((item, index) => {
+            const descRef = getDescRef(item.id);
+            return (
+              <div key={item.id} className={`tutorial-edit-item ${item.title.trim() && item.youtubeUrl.trim() ? 'filled' : ''}`}>
+                <div className="tutorial-edit-number">{index + 1}</div>
+                <div className="tutorial-edit-fields">
+                  <input
+                    type="text"
+                    className="form-input form-input-large"
+                    placeholder={t('tutorial.placeholder.title')}
+                    value={item.title}
+                    onChange={e => updateItem(index, 'title', e.target.value)}
+                  />
+                  <input
+                    type="url"
+                    className="form-input form-input-large"
+                    placeholder={t('tutorial.placeholder.url')}
+                    value={item.youtubeUrl}
+                    onChange={e => updateItem(index, 'youtubeUrl', e.target.value)}
+                  />
+                  <div className="textarea-with-toolbar">
+                    <textarea
+                      ref={descRef as any}
+                      className="form-input form-textarea-large"
+                      placeholder={t('tutorial.placeholder.desc')}
+                      value={item.description}
+                      onChange={e => updateItem(index, 'description', e.target.value)}
+                      rows={4}
+                    />
+                    <TextToolbar
+                      textareaRef={descRef}
+                      value={item.description || ''}
+                      onChange={(newValue) => updateItem(index, 'description', newValue)}
+                    />
+                  </div>
+                </div>
+                <div className="tutorial-edit-actions">
+                  <button type="button" className="tutorial-move-btn" onClick={() => handleMove(index, -1)} disabled={index === 0}>
+                    <i className="fas fa-arrow-up"></i>
+                  </button>
+                  <button type="button" className="tutorial-move-btn" onClick={() => handleMove(index, 1)} disabled={index === items.length - 1}>
+                    <i className="fas fa-arrow-down"></i>
+                  </button>
+                  <button type="button" className="tutorial-move-btn delete" onClick={() => handleRemove(index)}>
+                    <i className="fas fa-trash"></i>
+                  </button>
+                </div>
               </div>
-              <div className="tutorial-edit-actions">
-                <button type="button" className="tutorial-move-btn" onClick={() => handleMove(index, -1)} disabled={index === 0}>
-                  <i className="fas fa-arrow-up"></i>
-                </button>
-                <button type="button" className="tutorial-move-btn" onClick={() => handleMove(index, 1)} disabled={index === items.length - 1}>
-                  <i className="fas fa-arrow-down"></i>
-                </button>
-                <button type="button" className="tutorial-move-btn delete" onClick={() => handleRemove(index)}>
-                  <i className="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           <button type="button" className="tutorial-add-btn" onClick={handleAddNew}>
             <i className="fas fa-plus-circle"></i>
