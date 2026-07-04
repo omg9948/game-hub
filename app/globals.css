@@ -242,6 +242,11 @@ body {
   gap: 0.5rem;
 }
 
+.admin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+}
+
 .admin-btn.logged-in {
   background: linear-gradient(135deg, var(--success), #16a34a);
 }
@@ -252,6 +257,7 @@ body {
   padding: 2rem;
 }
 
+/* Update Banner */
 .update-banner {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.1));
   border: 1px solid rgba(99, 102, 241, 0.3);
@@ -309,6 +315,7 @@ body {
 .update-banner-admin { display: none; gap: 0.5rem; }
 .admin-mode .update-banner-admin { display: flex; }
 
+/* Hero */
 .hero {
   text-align: center;
   padding: 4rem 1rem;
@@ -425,6 +432,7 @@ body {
   border-color: transparent;
 }
 
+/* Game Card */
 .games-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -594,6 +602,7 @@ body {
   border-color: var(--danger);
 }
 
+/* Modals */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -715,6 +724,7 @@ body {
 
 .error-msg.show { display: block; }
 
+/* Admin Panel */
 .admin-panel {
   display: none;
   background: var(--card-bg);
@@ -805,6 +815,7 @@ body {
 .stat-number { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
 .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem; }
 
+/* Update Log */
 .update-log-item {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--card-border);
@@ -813,6 +824,8 @@ body {
   margin-bottom: 1rem;
   position: relative;
 }
+
+.update-log-item:hover { border-color: rgba(99, 102, 241, 0.3); }
 
 .update-log-header {
   display: flex;
@@ -842,8 +855,11 @@ body {
   opacity: 0;
   transition: opacity 0.3s ease;
 }
+
+.update-log-item:hover .update-log-delete { opacity: 1; }
 .admin-mode .update-log-item { padding-right: 2.5rem; }
 
+/* Empty state */
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
@@ -853,6 +869,7 @@ body {
 .empty-state i { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
 .empty-state h3 { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text); }
 
+/* Toast */
 .toast {
   position: fixed;
   bottom: 2rem; right: 2rem;
@@ -890,6 +907,7 @@ body {
 .toast-title { font-weight: 600; font-size: 0.95rem; }
 .toast-message { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem; }
 
+/* Footer */
 .footer {
   text-align: center;
   padding: 3rem 2rem;
@@ -901,6 +919,7 @@ body {
 
 .footer a { color: var(--primary); text-decoration: none; }
 
+/* Responsive */
 @media (max-width: 768px) {
   .hero h1 { font-size: 2.2rem; }
   .games-grid { grid-template-columns: 1fr; }
@@ -915,6 +934,8 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
 
+
+/* Saving Overlay */
 .saving-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -953,6 +974,7 @@ body {
   to { opacity: 1; }
 }
 
+
 /* ============================================
    Game Detail Modal - Pop Up แสดงข้อมูลเต็ม
    ============================================ */
@@ -969,6 +991,7 @@ body {
   gap: 1.5rem;
 }
 
+/* Image Gallery */
 .image-gallery {
   display: flex;
   flex-direction: column;
@@ -1037,6 +1060,7 @@ body {
   object-fit: cover;
 }
 
+/* Game Info Section */
 .game-info-section {
   display: flex;
   flex-direction: column;
@@ -1059,6 +1083,7 @@ body {
   gap: 0.3rem;
 }
 
+/* Description - แสดงตามที่พิมพ์เป๊ะๆ */
 .game-description {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--card-border);
@@ -1171,6 +1196,12 @@ body {
   transition: all 0.2s ease;
 }
 
+.remove-image-btn:hover {
+  background: var(--danger);
+  transform: scale(1.1);
+}
+
+
 /* ============================================
    Update Log Modal - Scrollable
    ============================================ */
@@ -1187,6 +1218,19 @@ body {
   padding-right: 0.5rem;
 }
 
+.update-log-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.update-log-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.update-log-list::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
 .update-log-item {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--card-border);
@@ -1200,6 +1244,10 @@ body {
 .update-log-item.deleting {
   opacity: 0.5;
   pointer-events: none;
+}
+
+.update-log-item:hover {
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .update-log-header {
@@ -1253,6 +1301,20 @@ body {
   opacity: 0;
 }
 
+.update-log-item:hover .update-log-delete {
+  opacity: 1;
+}
+
+.update-log-delete:hover {
+  background: rgba(239, 68, 68, 0.4);
+  transform: scale(1.1);
+}
+
+.update-log-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ============================================
    Modal Scrollable - แก้ปัญหาเลยขอบจอ
    ============================================ */
@@ -1282,6 +1344,7 @@ body {
   background: var(--primary-dark);
 }
 
+/* Game Modal - ให้ form เลื่อนได้ */
 .modal.wide {
   max-width: 700px;
   width: 90%;
@@ -1306,6 +1369,7 @@ body {
   border-radius: 3px;
 }
 
+
 /* ============================================
    Icon Picker
    ============================================ */
@@ -1328,6 +1392,10 @@ body {
   align-items: center;
   gap: 0.75rem;
   transition: all 0.2s ease;
+}
+
+.icon-selected:hover {
+  border-color: var(--primary);
 }
 
 .icon-selected > i:first-child {
@@ -1494,6 +1562,7 @@ body {
   font-size: 0.9rem;
 }
 
+
 /* ============================================
    Welcome Modal - หน้าแจ้งเตือนอัปเดตตอนเปิดเว็บ
    ============================================ */
@@ -1646,6 +1715,7 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
 }
+
 
 /* ============================================
    Tutorial Modal - วิธีการใช้งาน
@@ -1882,6 +1952,7 @@ body {
   cursor: not-allowed;
 }
 
+
 /* ============================================
    Tutorial Top Button - ปุ่มวิธีการใช้งานข้างบน
    ============================================ */
@@ -1975,6 +2046,7 @@ body {
   transition: transform 0.3s ease;
 }
 
+/* Dropdown */
 .language-dropdown {
   position: absolute;
   top: calc(100% + 0.6rem);
@@ -2036,6 +2108,7 @@ body {
   color: #a78bfa;
 }
 
+/* Language switcher ในเมนู */
 .menu-language-switcher {
   padding: 0 0.5rem;
 }
@@ -2054,8 +2127,10 @@ body {
   animation: none;
 }
 
+
 /* ===== Tutorial Detail Modal - ลิงก์ในคำอธิบาย ===== */
 
+/* ลิงก์เต็มบรรทัด (ปุ่ม) */
 .tutorial-link-btn {
   display: inline-flex;
   align-items: center;
@@ -2075,11 +2150,19 @@ body {
   max-width: 100%;
 }
 
+.tutorial-link-btn:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateX(5px);
+  color: #e9d5ff;
+}
+
 .tutorial-link-btn i {
   font-size: 0.8rem;
   flex-shrink: 0;
 }
 
+/* ลิงก์ในข้อความ (inline) */
 .tutorial-inline-link {
   color: #a78bfa;
   text-decoration: underline;
@@ -2094,6 +2177,7 @@ body {
   text-decoration-color: rgba(167, 139, 250, 0.8);
 }
 
+/* ปรับ description-text ให้รองรับลิงก์ */
 .tutorial-detail-description .description-text {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
@@ -2136,6 +2220,7 @@ body {
   opacity: 0.6;
 }
 
+/* Input large */
 .form-input-large {
   padding: 0.9rem 1rem;
   font-size: 0.95rem;
@@ -2153,6 +2238,7 @@ body {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
+/* Tutorial edit item - ปรับให้ช่องใหญ่ขึ้น */
 .tutorial-edit-item {
   display: flex;
   gap: 1rem;
@@ -2185,6 +2271,7 @@ body {
   width: 100%;
 }
 
+/* Tutorial add button */
 .tutorial-add-btn {
   display: flex;
   align-items: center;
@@ -2213,6 +2300,7 @@ body {
   font-size: 1.3rem;
 }
 
+
 /* ===== AutoLinkText - ลิงก์อัตโนมัติในข้อความ ===== */
 
 .auto-link {
@@ -2229,6 +2317,7 @@ body {
   text-decoration-color: rgba(167, 139, 250, 0.9);
 }
 
+/* ปรับ description-text ให้รองรับ AutoLinkText */
 .description-text .auto-link {
   color: #a78bfa;
 }
@@ -2237,6 +2326,7 @@ body {
   color: #c4b5fd;
 }
 
+/* Update item content */
 .update-item-content {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
@@ -2255,6 +2345,7 @@ body {
   color: #a78bfa;
 }
 
+/* Welcome text */
 .welcome-text {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
@@ -2273,17 +2364,20 @@ body {
   color: #a78bfa;
 }
 
+/* About text */
 .about-text .description-text {
   background: transparent;
   border: none;
   padding: 0;
 }
 
+/* Game desc collapsed */
 .game-desc.collapsed .auto-link {
   color: #a78bfa;
   font-size: 0.9em;
 }
 
+/* Tutorial inline link (เก่า) */
 .tutorial-inline-link {
   color: #a78bfa;
   text-decoration: underline;
@@ -2296,4 +2390,269 @@ body {
 .tutorial-inline-link:hover {
   color: #c4b5fd;
   text-decoration-color: rgba(167, 139, 250, 0.8);
+}
+
+
+/* ============================================
+   Skeleton Loading
+   ============================================ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(99, 102, 241, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 12px;
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Skeleton Game Card */
+.skeleton-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+}
+
+.skeleton-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 24px;
+  border-radius: 20px;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 22px;
+  border-radius: 8px;
+}
+
+.skeleton-desc {
+  width: 100%;
+  height: 16px;
+  border-radius: 6px;
+}
+
+.skeleton-desc-short {
+  width: 60%;
+  height: 16px;
+  border-radius: 6px;
+}
+
+.skeleton-btn {
+  width: 120px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.skeleton-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Skeleton Hero */
+.skeleton-hero-title {
+  width: 60%;
+  height: 50px;
+  border-radius: 12px;
+  margin: 0 auto 1rem;
+}
+
+.skeleton-hero-desc {
+  width: 50%;
+  height: 20px;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+/* Skeleton Search */
+.skeleton-search {
+  width: 100%;
+  max-width: 600px;
+  height: 52px;
+  border-radius: 16px;
+  margin: 0 auto;
+}
+
+/* Skeleton Tabs */
+.skeleton-tabs {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.skeleton-tab {
+  width: 100px;
+  height: 38px;
+  border-radius: 12px;
+}
+
+/* Skeleton Admin Panel */
+.skeleton-admin-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.skeleton-admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-admin-title {
+  width: 200px;
+  height: 24px;
+  border-radius: 8px;
+}
+
+.skeleton-admin-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.skeleton-admin-btn {
+  width: 130px;
+  height: 36px;
+  border-radius: 12px;
+}
+
+.skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.skeleton-stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skeleton-stat-number {
+  width: 40px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.skeleton-stat-label {
+  width: 80px;
+  height: 16px;
+  border-radius: 6px;
+}
+
+/* Skeleton Update Banner */
+.skeleton-banner {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.skeleton-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.skeleton-banner-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.skeleton-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.skeleton-banner-title {
+  width: 40%;
+  height: 18px;
+  border-radius: 6px;
+}
+
+.skeleton-banner-desc {
+  width: 60%;
+  height: 14px;
+  border-radius: 6px;
+}
+
+.skeleton-banner-btn {
+  width: 100px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* Skeleton Grid */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Responsive Skeleton */
+@media (max-width: 768px) {
+  .skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .skeleton-banner-left {
+    flex-direction: column;
+  }
 }
