@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Game } from '@/types';
 import { useLanguage } from './LanguageContext';
-import AutoLinkText from './AutoLinkText';
+import FormattedText from './FormattedText';
 
 interface GameCardProps {
   game: Game;
@@ -39,17 +39,17 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
 
       <div className="game-content">
         <div className="game-header">
-          <div className="game-icon"><i className={game.icon}></i></div>
-          <span className="game-category-badge">{game.category}</span>
           {game.pinned && (
             <div className="game-pin-badge" title="ปักหมุด">
               <i className="fas fa-thumbtack"></i>
             </div>
           )}
+          <div className="game-icon"><i className={game.icon}></i></div>
+          <span className="game-category-badge">{game.category}</span>
         </div>
         <h3 className="game-title">{game.title}</h3>
         <p className="game-desc collapsed">
-          <AutoLinkText text={shortDesc} />
+          <FormattedText text={shortDesc} />
         </p>
 
         <button className="read-more-btn" onClick={onViewDetail}>
@@ -63,6 +63,20 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
 
         {isAdmin && (
           <div className="admin-controls">
+            {dragHandleProps && (
+              <button 
+                className="admin-btn-small drag-btn" 
+                {...dragHandleProps}
+                title="ลากเพื่อเรียงลำดับ"
+              >
+                <i className="fas fa-grip-vertical"></i>
+              </button>
+            )}
+            {game.pinned && (
+              <button className="admin-btn-small locked-btn" disabled title="ปักหมุด - ไม่สามารถลากได้">
+                <i className="fas fa-lock"></i>
+              </button>
+            )}
             <button className="admin-btn-small" onClick={onEdit}>
               <i className="fas fa-edit"></i> {t('game.edit')}
             </button>
