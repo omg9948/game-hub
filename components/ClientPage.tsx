@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Game, Category, Update, SiteSettings } from '@/types';
+import { Game, Category, Update, SiteSettings, Tutorial } from '@/types';
 import Menu from './Menu';
 import UpdateBanner from './UpdateBanner';
 import Hero from './Hero';
@@ -17,13 +17,17 @@ import CategoryModal from './modals/CategoryModal';
 import UpdateModal from './modals/UpdateModal';
 import UpdateLogModal from './modals/UpdateLogModal';
 import AboutModal from './modals/AboutModal';
+import TutorialModal from './modals/TutorialModal';
+import TutorialEditModal from './modals/TutorialEditModal';
 import ImportModal from './modals/ImportModal';
+import WelcomeModal from './WelcomeModal';
 import Particles from './Particles';
 
 interface ClientPageProps {
   initialGames: Game[];
   initialCategories: Category[];
   initialUpdates: Update[];
+  initialTutorials: Tutorial[];
   initialSettings: SiteSettings;
 }
 
@@ -31,11 +35,13 @@ export default function ClientPage({
   initialGames,
   initialCategories,
   initialUpdates,
+  initialTutorials,
   initialSettings
 }: ClientPageProps) {
   const [games, setGames] = useState<Game[]>(initialGames);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [updates, setUpdates] = useState<Update[]>(initialUpdates);
+  const [tutorials, setTutorials] = useState<Tutorial[]>(initialTutorials);
   const [settings, setSettings] = useState<SiteSettings>(initialSettings);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -54,6 +60,8 @@ export default function ClientPage({
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [updateLogOpen, setUpdateLogOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [tutorialOpen, setTutorialOpen] = useState(false);
+  const [tutorialEditOpen, setTutorialEditOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
 
@@ -66,10 +74,11 @@ export default function ClientPage({
 
   const refreshData = useCallback(async () => {
     try {
-      const [g, c, u, s] = await Promise.all([
+      const [g, c, u, t, s] = await Promise.all([
         fetch('/api/games').then(r => r.json()).catch(() => []),
         fetch('/api/categories').then(r => r.json()).catch(() => []),
         fetch('/api/updates').then(r => r.json()).catch(() => []),
+        fetch('/api/tutorials').then(r => r.json()).catch(() => []),
         fetch('/api/settings').then(r => r.json()).catch(() => ({
           heroTitle: 'ศูนย์รวมเกมของทีมเรา',
           heroDesc: 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น พร้อมคำอธิบายและการจัดหมวดหมู่'
@@ -78,9 +87,10 @@ export default function ClientPage({
       setGames(g);
       setCategories(c);
       setUpdates(u);
+      setTutorials(t);
       setSettings(s);
       setRefreshKey(prev => prev + 1);
-      console.log('Data refreshed:', { games: g.length, updates: u.length });
+      console.log('Data refreshed:', { games: g.length, updates: u.length, tutorials: t.length });
     } catch (error) {
       console.error('refreshData error:', error);
     }
@@ -158,6 +168,8 @@ export default function ClientPage({
       <div className="bg-animation" />
       <Particles />
 
+      <WelcomeModal updates={updates} onClose={() => {}} />
+
       {isSaving && (
         <div className="saving-overlay">
           <div className="saving-spinner">
@@ -181,7 +193,7 @@ export default function ClientPage({
         onShowUpdates={() => { setMenuOpen(false); setUpdateLogOpen(true); }}
         onShowAbout={() => { setMenuOpen(false); setAboutOpen(true); }}
         onExport={() => {
-          const data = { games, categories, updates, settings, exportDate: new Date().toISOString() };
+          const data = { games, categories, updates, tutorials, settings, exportDate: new Date().toISOString() };
           const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
@@ -201,6 +213,11 @@ export default function ClientPage({
           <span>Game Hub</span>
         </a>
         <div className="header-right">
+          {/* ปุ่มวิธีการใช้งาน - อยู่ข้างบนเลย! */}
+          <button className="tutorial-top-btn" onClick={() => setTutorialOpen(true)}>
+            <i className="fas fa-graduation-cap"></i>
+            <span>วิธีการใช้งาน</span>
+          </button>
           <button className="hamburger-btn" onClick={() => setMenuOpen(true)}>
             <i className="fas fa-bars"></i>
           </button>
@@ -283,8 +300,6 @@ export default function ClientPage({
           </div>
         )}
       </div>
-
-      {/* Footer ถูกลบออกแล้ว */}
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
@@ -380,6 +395,30 @@ export default function ClientPage({
         }}
       />
 
+      <TutorialModal
+        isOpen={tutorialOpen}
+        onClose={() => setTutorialOpen(false)}
+        tutorials={tutorials}
+        isAdmin={isAdmin}
+        onEdit={() => setTutorialEditOpen(true)}
+      />
+
+      <TutorialEditModal
+        isOpen={tutorialEditOpen}
+        onClose={() => setTutorialEditOpen(false)}
+        tutorials={tutorials}
+        onSave={async (newTutorials) => {
+          await handleSave(async () => {
+            await fetch('/api/tutorials', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(newTutorials)
+            });
+          }, 'วิดีโอสอนใช้งานบันทึกเรียบร้อย');
+          setTutorialEditOpen(false);
+        }}
+      />
+
       <ImportModal
         isOpen={importOpen}
         onClose={() => setImportOpen(false)}
@@ -402,6 +441,9 @@ export default function ClientPage({
               for (const u of imported.updates) {
                 await fetch('/api/updates', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(u) });
               }
+            }
+            if (imported.tutorials) {
+              await fetch('/api/tutorials', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imported.tutorials) });
             }
             if (imported.settings) {
               await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imported.settings) });
