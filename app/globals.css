@@ -65,8 +65,10 @@ body {
 }
 
 @keyframes float {
+  0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
   10% { opacity: 1; }
   90% { opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
 }
 
 .header {
@@ -95,6 +97,7 @@ body {
 .logo i { color: var(--primary); font-size: 2rem; animation: logoBounce 2s ease-in-out infinite; }
 
 @keyframes logoBounce {
+  0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
 
@@ -631,6 +634,8 @@ body {
 .modal.wide { max-width: 700px; }
 
 @keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .modal-header {
@@ -915,57 +920,13 @@ body {
 .footer a { color: var(--primary); text-decoration: none; }
 
 /* Responsive */
-
-/* ============================================
-   Pin Badge - มุมบนซ้ายของรูปภาพ
-   ============================================ */
-
-.game-pin-badge-image {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  z-index: 10;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
-  animation: pinPulse 2s ease-in-out infinite;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-@keyframes pinPulse {
-}
-
-/* ============================================
-   Move Buttons - ปุ่มเรียงลำดับ ↑ ↓
-   ============================================ */
-
-.admin-btn-small.move-btn {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  border: 1px solid rgba(99, 102, 241, 0.5);
-  min-width: 32px;
-}
-
-.admin-btn-small.move-btn:hover {
-  background: linear-gradient(135deg, #818cf8, #6366f1);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-}
-
-.admin-btn-small.move-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  transform: none;
-}
-
 @media (max-width: 768px) {
+  .hero h1 { font-size: 2.2rem; }
+  .games-grid { grid-template-columns: 1fr; }
+  .header { padding: 1rem; }
+  .container { padding: 1rem; }
+  .hamburger-menu { width: 280px; }
+  .update-banner { flex-direction: column; gap: 1rem; text-align: center; }
 }
 
 ::-webkit-scrollbar { width: 8px; }
@@ -1008,6 +969,8 @@ body {
 }
 
 @keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ============================================
@@ -1265,9 +1228,78 @@ body {
   border-radius: 3px;
 }
 
+.update-log-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
 .update-log-item.deleting {
   opacity: 0.5;
   pointer-events: none;
+}
+
+.update-log-item:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.update-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.update-log-version {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.update-log-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.update-log-content {
+  color: var(--text-muted);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  font-family: 'Kanit', sans-serif;
+  margin: 0;
+}
+
+.update-log-delete {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 0.9rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.update-log-item:hover .update-log-delete {
+  opacity: 1;
 }
 
 .update-log-delete:hover {
@@ -1283,6 +1315,13 @@ body {
 /* ============================================
    Modal Scrollable - แก้ปัญหาเลยขอบจอ
    ============================================ */
+
+.modal {
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
 
 .modal::-webkit-scrollbar {
   width: 8px;
@@ -1303,6 +1342,10 @@ body {
 }
 
 /* Game Modal - ให้ form เลื่อนได้ */
+.modal.wide {
+  max-width: 700px;
+  width: 90%;
+}
 
 .modal form {
   overflow-y: auto;
@@ -1986,6 +2029,9 @@ body {
   .tutorial-top-btn span {
     display: none;
   }
+  .tutorial-top-btn {
+    padding: 0.6rem;
+  }
 }
 
 /* ===== Language Switcher - UI สวยเข้ากับธีมเว็บ ===== */
@@ -2059,6 +2105,14 @@ body {
 }
 
 @keyframes langDropdownIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
 }
 
 .language-option {
@@ -2226,10 +2280,31 @@ body {
 }
 
 /* Tutorial edit item - ปรับให้ช่องใหญ่ขึ้น */
+.tutorial-edit-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 14px;
+  transition: all 0.3s ease;
+}
 
 .tutorial-edit-item:hover {
   border-color: rgba(139, 92, 246, 0.3);
   background: rgba(255, 255, 255, 0.05);
+}
+
+.tutorial-edit-item.filled {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.tutorial-edit-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .tutorial-edit-fields .form-input,
@@ -2311,6 +2386,19 @@ body {
 }
 
 /* Welcome text */
+.welcome-text {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  font-family: var(--font-kanit), sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0.5rem 0;
+}
 
 .welcome-text .auto-link {
   color: #a78bfa;
@@ -2330,6 +2418,19 @@ body {
 }
 
 /* Tutorial inline link (เก่า) */
+.tutorial-inline-link {
+  color: #a78bfa;
+  text-decoration: underline;
+  text-decoration-color: rgba(167, 139, 250, 0.4);
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+  word-break: break-all;
+}
+
+.tutorial-inline-link:hover {
+  color: #c4b5fd;
+  text-decoration-color: rgba(167, 139, 250, 0.8);
+}
 
 /* ============================================
    View Toggle - Grid / Compact Switcher
@@ -2503,13 +2604,103 @@ body {
 }
 
 /* Responsive Compact */
+
+
+/* ============================================
+   Pin Badge - มุมบนซ้ายของรูปภาพ
+   ============================================ */
+
+.game-card {
+  position: relative;
+}
+
+.game-pin-badge-image {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  z-index: 10;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+  animation: pinPulse 2s ease-in-out infinite;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes pinPulse {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-15deg) scale(1.15); }
+}
+
+/* ============================================
+   Move Buttons - ปุ่มเรียงลำดับ ↑ ↓
+   ============================================ */
+
+.admin-btn-small.move-btn {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  min-width: 32px;
+}
+
+.admin-btn-small.move-btn:hover {
+  background: linear-gradient(135deg, #818cf8, #6366f1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.admin-btn-small.move-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
 @media (max-width: 768px) {
+  .games-grid.compact {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .game-card.compact {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
 
   .game-card.compact .game-image,
+  .game-card.compact .game-image-placeholder {
+    width: 50px;
+    height: 50px;
+  }
 
+  .game-card.compact .game-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .game-card.compact .game-title {
+    font-size: 0.9rem;
+  }
+
+  .game-card.compact .game-link span {
+    display: inline;
+  }
+
+  .view-toggle-label {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
+  .games-grid.compact {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ============================================
@@ -2528,6 +2719,8 @@ body {
 }
 
 @keyframes toolbarPop {
+  from { opacity: 0; transform: translateY(5px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .text-toolbar-btn {
@@ -2643,6 +2836,7 @@ body {
    Pin Badge on Game Card
    ============================================ */
 
+  50% { transform: rotate(-10deg) scale(1.1); }
 }
 
 /* ============================================
@@ -2807,7 +3001,13 @@ body {
   text-decoration-color: rgba(167, 139, 250, 0.9);
 }
 
+/* ============================================
+   Drag & Drop - Sortable Game Cards
+   ============================================ */
+
 /* Drag Handle */
+
+.sortable-game-card-wrapper:hover 
 
 .drag-handle i {
   font-size: 0.9rem;
@@ -2816,7 +3016,6 @@ body {
 /* Pin Locked Badge */
 
 /* Dragging state */
-.sortable-game-card-wrapper 
 
 /* Admin mode hint */
 
@@ -2891,66 +3090,17 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.drag-handle {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  cursor: grab;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-  opacity: 1 !important; /* Force visible */
-  transition: all 0.2s ease;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
+/* ============================================
+   Drag Handle - Fix visibility
+   ============================================ */
 
-.drag-handle:active {
-  cursor: grabbing;
-  transform: translateX(-50%) scale(0.95);
-}
-
-.drag-hint {
-  font-size: 0.7rem;
-  font-weight: 500;
+.drag-handle i {
+  font-size: 0.85rem;
 }
 
 /* Pin Locked Badge */
-.pin-locked-badge {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, var(--warning), #d97706);
-  color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.pin-locked-badge i {
-  font-size: 0.8rem;
-}
 
 /* Dragging state */
-.sortable-game-card-wrapper[data-dragging="true"] {
-  opacity: 0.5;
-  transform: scale(1.02);
-  z-index: 1000;
-}
 
 /* Drag Handle - Disabled state (non-admin) */
 
@@ -2959,13 +3109,6 @@ body {
   box-shadow: 0 4px 20px rgba(107, 114, 128, 0.3);
 }
 
-.admin-btn-small.drag-btn:active {
-  cursor: grabbing;
-  transform: translateY(0);
-}
-
-.admin-btn-small.locked-btn:hover {
-  background: rgba(245, 158, 11, 0.2);
-  transform: none;
-  box-shadow: none;
-}
+/* ============================================
+   Drag Button in Admin Controls
+   ============================================ */
