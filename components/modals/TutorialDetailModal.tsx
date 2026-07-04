@@ -8,23 +8,8 @@ interface TutorialDetailModalProps {
   tutorial: Tutorial | null;
 }
 
-// ดึง YouTube Video ID จาก URL
-function getYoutubeId(url: string): string | null {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
-}
-
-// ดึง thumbnail คุณภาพสูงจาก YouTube
-function getYoutubeThumbnail(videoId: string): string {
-  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-}
-
 export default function TutorialDetailModal({ isOpen, onClose, tutorial }: TutorialDetailModalProps) {
   if (!isOpen || !tutorial) return null;
-
-  const videoId = getYoutubeId(tutorial.youtubeUrl);
-  const thumbnail = videoId ? getYoutubeThumbnail(videoId) : '';
 
   return (
     <div className="modal-overlay active" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -37,30 +22,13 @@ export default function TutorialDetailModal({ isOpen, onClose, tutorial }: Tutor
         </div>
 
         <div className="tutorial-detail-content">
-          {/* Thumbnail ใหญ่แบบเต็มความกว้าง + ไอคอน Play ตรงกลาง */}
-          {thumbnail && (
-            <a 
-              href={tutorial.youtubeUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="tutorial-detail-thumbnail-link"
-            >
-              <div className="tutorial-detail-thumbnail">
-                <img src={thumbnail} alt={tutorial.title} />
-                <div className="tutorial-play-overlay">
-                  <i className="fas fa-play-circle"></i>
-                  <span className="play-text">ดูวิดีโอใน YouTube</span>
-                </div>
-              </div>
-            </a>
-          )}
-
-          {/* ข้อมูลวิดีโอ */}
+          {/* ข้อมูลเพิ่มเติม - แสดงคำอธิบายเท่านั้น */}
           <div className="tutorial-detail-info">
             <h4 className="tutorial-detail-title">{tutorial.title}</h4>
 
             {tutorial.description && (
               <div className="tutorial-detail-description">
+                <h5><i className="fas fa-align-left"></i> คำอธิบาย</h5>
                 <pre className="description-text">{tutorial.description}</pre>
               </div>
             )}
