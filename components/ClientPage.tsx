@@ -74,11 +74,16 @@ export default function ClientPage({
   const [importOpen, setImportOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
 
+  // โหลดค่า viewMode จาก localStorage
   useEffect(() => {
     const savedAdmin = localStorage.getItem('gamehub_admin');
-    if (savedAdmin === 'true') setIsAdmin(true);
+    if (savedAdmin === 'true') {
+      setIsAdmin(true);
+    }
     const savedView = localStorage.getItem('gamehub_view_mode') as 'grid' | 'compact';
-    if (savedView === 'grid' || savedView === 'compact') setViewMode(savedView);
+    if (savedView === 'grid' || savedView === 'compact') {
+      setViewMode(savedView);
+    }
   }, []);
 
   const refreshData = useCallback(async () => {
@@ -150,27 +155,6 @@ export default function ClientPage({
     setViewMode(mode);
     localStorage.setItem('gamehub_view_mode', mode);
   }, []);
-
-  const handleMoveGame = useCallback(async (index: number, direction: -1 | 1) => {
-    const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= filteredGames.length) return;
-
-    const currentFiltered = [...filteredGames];
-    const [movedGame] = currentFiltered.splice(index, 1);
-    currentFiltered.splice(newIndex, 0, movedGame);
-
-    // สร้าง array ใหม่ของ games ทั้งหมด โดยอัปเดตตำแหน่งของเกมที่ย้าย
-    const otherGames = games.filter(g => !currentFiltered.find(cg => cg.id === g.id));
-    const newGames = [...otherGames, ...currentFiltered];
-
-    await handleSave(async () => {
-      await fetch('/api/games', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reorder: true, games: newGames })
-      });
-    }, t('toast.reorderSuccess'));
-  }, [games, filteredGames, handleSave, t]);
 
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
@@ -257,6 +241,7 @@ export default function ClientPage({
         </a>
         <div className="header-right">
           <LanguageSwitcher />
+
           <button className="tutorial-top-btn" onClick={() => setTutorialOpen(true)}>
             <i className="fas fa-graduation-cap"></i>
             <span>{t('tutorial.button')}</span>
@@ -349,15 +334,11 @@ export default function ClientPage({
         </div>
 
         <div className={`games-grid ${viewMode === 'compact' ? 'compact' : ''}`}>
-          {filteredGames.map((game, index) => (
+          {filteredGames.map(game => (
             <GameCard 
               key={game.id} 
               game={game} 
-              isAdmin={isAdmin}
-              index={index}
-              totalGames={filteredGames.length}
-              onMoveUp={() => handleMoveGame(index, -1)}
-              onMoveDown={() => handleMoveGame(index, 1)}
+              isAdmin={isAdmin} 
               onEdit={() => { setEditingGame(game); setGameModalOpen(true); }}
               onDelete={async () => {
                 if (confirm(`${t('game.delete')} "${game.title}"?`)) {

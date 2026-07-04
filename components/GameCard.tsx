@@ -8,19 +8,13 @@ import FormattedText from './FormattedText';
 interface GameCardProps {
   game: Game;
   isAdmin: boolean;
-  index?: number;
-  totalGames?: number;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
   onEdit: () => void;
   onDelete: () => void;
   onViewDetail: () => void;
+  dragHandleProps?: any;
 }
 
-export default function GameCard({ 
-  game, isAdmin, index, totalGames, onMoveUp, onMoveDown, 
-  onEdit, onDelete, onViewDetail 
-}: GameCardProps) {
+export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail, dragHandleProps }: GameCardProps) {
   const { t } = useLanguage();
   const [imgError, setImgError] = useState(false);
 
@@ -29,13 +23,6 @@ export default function GameCard({
 
   return (
     <div className="game-card">
-      {/* Pin Badge มุมบนซ้ายของรูปภาพ */}
-      {game.pinned && (
-        <div className="game-pin-badge-image" title="ปักหมุด">
-          <i className="fas fa-thumbtack"></i>
-        </div>
-      )}
-
       {game.image && !imgError ? (
         <img 
           src={game.image} 
@@ -52,12 +39,15 @@ export default function GameCard({
 
       <div className="game-content">
         <div className="game-header">
+          {game.pinned && (
+            <div className="game-pin-badge" title="ปักหมุด">
+              <i className="fas fa-thumbtack"></i>
+            </div>
+          )}
           <div className="game-icon"><i className={game.icon}></i></div>
           <span className="game-category-badge">{game.category}</span>
         </div>
-
         <h3 className="game-title">{game.title}</h3>
-
         <p className="game-desc collapsed">
           <FormattedText text={shortDesc} />
         </p>
@@ -73,16 +63,18 @@ export default function GameCard({
 
         {isAdmin && (
           <div className="admin-controls">
-            {/* ปุ่มเรียงลำดับ ↑ */}
-            {onMoveUp && index !== undefined && index > 0 && (
-              <button className="admin-btn-small move-btn" onClick={onMoveUp} title="ขยับขึ้น">
-                <i className="fas fa-arrow-up"></i>
+            {dragHandleProps && (
+              <button 
+                className="admin-btn-small drag-btn" 
+                {...dragHandleProps}
+                title="ลากเพื่อเรียงลำดับ"
+              >
+                <i className="fas fa-grip-vertical"></i>
               </button>
             )}
-            {/* ปุ่มเรียงลำดับ ↓ */}
-            {onMoveDown && index !== undefined && totalGames !== undefined && index < totalGames - 1 && (
-              <button className="admin-btn-small move-btn" onClick={onMoveDown} title="ขยับลง">
-                <i className="fas fa-arrow-down"></i>
+            {game.pinned && (
+              <button className="admin-btn-small locked-btn" disabled title="ปักหมุด - ไม่สามารถลากได้">
+                <i className="fas fa-lock"></i>
               </button>
             )}
             <button className="admin-btn-small" onClick={onEdit}>
