@@ -160,7 +160,6 @@ export default function ClientPage({
   const handleMoveUp = useCallback(async (index: number) => {
     if (index <= 0) return;
 
-    // ใช้ functional update เพื่อให้ได้ state ล่าสุด
     let newGames: Game[] = [];
     setGames(prevGames => {
       newGames = [...prevGames];
@@ -168,7 +167,6 @@ export default function ClientPage({
       return newGames;
     });
 
-    // บันทึกลง Blob ทันที
     setIsSaving(true);
     try {
       await fetch('/api/games', {
@@ -180,7 +178,6 @@ export default function ClientPage({
     } catch (error) {
       console.error('Move up error:', error);
       showToast(t('toast.error'), 'เรียงลำดับไม่สำเร็จ', 'error');
-      // โหลดข้อมูลใหม่ถ้าล้มเหลว
       await refreshData();
     } finally {
       setIsSaving(false);
@@ -188,7 +185,7 @@ export default function ClientPage({
   }, [showToast, t, refreshData]);
 
   const handleMoveDown = useCallback(async (index: number) => {
-    const currentGames = games; // ใช้ games จาก closure แต่ตรวจสอบ length
+    const currentGames = games;
     if (index >= currentGames.length - 1) return;
 
     let newGames: Game[] = [];

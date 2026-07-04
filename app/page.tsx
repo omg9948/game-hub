@@ -27,44 +27,7 @@ export default async function HomePage() {
     { name: 'Other', icon: '🎲' }
   ];
 
-  const defaultGames = [
-    {
-      id: '1', title: 'Kingdom Quest', category: 'RPG',
-      link: 'https://example.com/games/kingdom-quest.zip', image: '',
-      description: 'เกม RPG ผจญภัยในอาณาจักรแฟนตาซี พบกับมอนสเตอร์และภารกิจมากมาย สำรวจดันเจี้ยนลึกลับ เก็บเลเวล อัพสกิล และต่อสู้กับบอสสุดโหด!',
-      icon: 'fas fa-crown', date: new Date().toISOString()
-    },
-    {
-      id: '2', title: 'Space Shooter X', category: 'Action',
-      link: 'https://example.com/games/space-shooter.zip', image: '',
-      description: 'ยิงอวกาศสุดมันส์ พร้อมเอฟเฟกต์สวยงามและบอสหลากหลาย',
-      icon: 'fas fa-rocket', date: new Date().toISOString()
-    },
-    {
-      id: '3', title: 'Mind Maze', category: 'Puzzle',
-      link: 'https://example.com/games/mind-maze.zip', image: '',
-      description: 'เกมปริศนาทดสอบสมอง มีด่านให้เล่นมากกว่า 100 ด่าน',
-      icon: 'fas fa-brain', date: new Date().toISOString()
-    },
-    {
-      id: '4', title: 'Empire Builder', category: 'Strategy',
-      link: 'https://example.com/games/empire-builder.zip', image: '',
-      description: 'สร้างอาณาจักรของคุณ บริหารทรัพยากรและต่อสู้กับศัตรู',
-      icon: 'fas fa-chess-king', date: new Date().toISOString()
-    },
-    {
-      id: '5', title: 'Speed Racer Pro', category: 'Racing',
-      link: 'https://example.com/games/speed-racer.zip', image: '',
-      description: 'แข่งรถความเร็วสูง มีสนามแข่งและรถให้เลือกมากมาย',
-      icon: 'fas fa-car', date: new Date().toISOString()
-    },
-    {
-      id: '6', title: 'City Simulator', category: 'Simulation',
-      link: 'https://example.com/games/city-sim.zip', image: '',
-      description: 'สร้างและบริหารเมืองในฝันของคุณ',
-      icon: 'fas fa-city', date: new Date().toISOString()
-    }
-  ];
+  
 
   const defaultUpdates = [
     {
@@ -81,7 +44,7 @@ export default async function HomePage() {
 
   return (
     <ClientPage
-      initialGames={(games && games.length > 0) ? games : defaultGames}
+      initialGames={games || []}
       initialCategories={(categories && categories.length > 0) ? categories : defaultCategories}
       initialUpdates={(updates && updates.length > 0) ? updates : defaultUpdates}
       initialTutorials={tutorials || []}
