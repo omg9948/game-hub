@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Game } from '@/types';
+import { useLanguage } from './LanguageContext';
 
 interface GameCardProps {
   game: Game;
@@ -12,9 +13,10 @@ interface GameCardProps {
 }
 
 export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: GameCardProps) {
+  const { t } = useLanguage();
   const [imgError, setImgError] = useState(false);
 
-  const desc = game.description || 'ไม่มีคำอธิบาย';
+  const desc = game.description || t('game.noDescription');
   const shortDesc = desc.length > 80 ? desc.substring(0, 80) + '...' : desc;
 
   return (
@@ -43,21 +45,21 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
 
         {/* ปุ่มดูเพิ่มเติม → เปิด Pop Up */}
         <button className="read-more-btn" onClick={onViewDetail}>
-          <i className="fas fa-expand-alt"></i> ดูข้อมูลเพิ่มเติม
+          <i className="fas fa-expand-alt"></i> {t('game.viewMore')}
         </button>
 
         <a href={game.link} className="game-link" target="_blank" rel="noopener noreferrer">
           <i className="fas fa-download"></i>
-          <span>ดาวน์โหลดเกม</span>
+          <span>{t('game.download')}</span>
         </a>
 
         {isAdmin && (
           <div className="admin-controls">
             <button className="admin-btn-small" onClick={onEdit}>
-              <i className="fas fa-edit"></i> แก้ไข
+              <i className="fas fa-edit"></i> {t('game.edit')}
             </button>
             <button className="admin-btn-small delete" onClick={onDelete}>
-              <i className="fas fa-trash"></i> ลบ
+              <i className="fas fa-trash"></i> {t('game.delete')}
             </button>
           </div>
         )}

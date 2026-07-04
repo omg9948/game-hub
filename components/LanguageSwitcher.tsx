@@ -20,8 +20,8 @@ export default function LanguageSwitcher() {
   }, []);
 
   const languages: { code: Language; label: string; flag: string }[] = [
-    { code: 'th', label: t('language.th'), flag: '🇹🇭' },
-    { code: 'en', label: t('language.en'), flag: '🇬🇧' },
+    { code: 'th', label: 'TH', flag: '🇹🇭' },
+    { code: 'en', label: 'EN', flag: '🇬🇧' },
   ];
 
   const current = languages.find(l => l.code === lang);
@@ -34,7 +34,7 @@ export default function LanguageSwitcher() {
         title={t('language.title')}
       >
         <span className="language-flag">{current?.flag}</span>
-        <span className="language-code">{current?.label}</span>
+        <span className="language-label">{current?.label}</span>
         <i className={`fas fa-chevron-${open ? 'up' : 'down'}`}></i>
       </button>
 
