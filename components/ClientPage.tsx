@@ -273,8 +273,13 @@ export default function ClientPage({
             games={games} 
             categories={categories} 
             updates={updates}
+            settings={settings}
             onAddGame={() => { setEditingGame(null); setGameModalOpen(true); }}
             onAddCategory={() => setCategoryModalOpen(true)}
+            onUpdateSettings={(newSettings) => {
+              setSettings(newSettings);
+              handleSave();
+            }}
           />
         )}
 
