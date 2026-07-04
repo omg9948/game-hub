@@ -11,10 +11,9 @@ interface GameCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onViewDetail: () => void;
-  dragHandleProps?: any;
 }
 
-export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail, dragHandleProps }: GameCardProps) {
+export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: GameCardProps) {
   const { t } = useLanguage();
   const [imgError, setImgError] = useState(false);
 
@@ -41,6 +40,11 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
         <div className="game-header">
           <div className="game-icon"><i className={game.icon}></i></div>
           <span className="game-category-badge">{game.category}</span>
+          {game.pinned && (
+            <div className="game-pin-badge" title="ปักหมุด">
+              <i className="fas fa-thumbtack"></i>
+            </div>
+          )}
         </div>
         <h3 className="game-title">{game.title}</h3>
         <p className="game-desc collapsed">
@@ -58,21 +62,6 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
 
         {isAdmin && (
           <div className="admin-controls">
-            {/* ปุ่มลากเรียงลำดับ - แสดงเฉพาะเกมที่ไม่ได้ปักหมุด */}
-            {dragHandleProps && (
-              <button 
-                className="admin-btn-small drag-btn" 
-                {...dragHandleProps}
-                title="ลากเพื่อเรียงลำดับ"
-              >
-                <i className="fas fa-grip-vertical"></i>
-              </button>
-            )}
-            {game.pinned && (
-              <button className="admin-btn-small locked-btn" disabled title="ปักหมุด - ไม่สามารถลากได้">
-                <i className="fas fa-lock"></i>
-              </button>
-            )}
             <button className="admin-btn-small" onClick={onEdit}>
               <i className="fas fa-edit"></i> {t('game.edit')}
             </button>

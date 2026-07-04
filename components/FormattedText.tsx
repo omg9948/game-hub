@@ -7,7 +7,6 @@ interface FormattedTextProps {
   className?: string;
 }
 
-// แปลง markdown-style syntax เป็น React elements ที่ render จริง
 export default function FormattedText({ text, className = '' }: FormattedTextProps) {
   if (!text) return null;
 
@@ -16,7 +15,6 @@ export default function FormattedText({ text, className = '' }: FormattedTextPro
   return (
     <span className={className}>
       {lines.map((line, lineIndex) => {
-        // แยกส่วนต่างๆ ในบรรทัด
         const elements = parseLine(line);
         return (
           <React.Fragment key={lineIndex}>
@@ -29,81 +27,6 @@ export default function FormattedText({ text, className = '' }: FormattedTextPro
   );
 }
 
-function parseLine(line: string): React.ReactNode[] {
-  const result: React.ReactNode[] = [];
-  let remaining = line;
-  let keyIndex = 0;
-
-  // ตรวจสอบ quote ที่ต้นแถว
-  if (remaining.startsWith('> ')) {
-    return [
-      <span key="quote" className="formatted-quote">
-        {parseInlineFormatting(remaining.substring(2), keyIndex)}
-      </span>
-    ];
-  }
-
-  // แยก inline formatting
-  const parts = splitByPatterns(remaining);
-
-  for (const part of parts) {
-    if (part.type === 'spoiler') {
-      result.push(
-        <span key={keyIndex++} className="formatted-spoiler">
-          <span className="spoiler-content">{parseInlineFormatting(part.content, keyIndex++)}</span>
-        </span>
-      );
-    } else if (part.type === 'bold') {
-      result.push(
-        <strong key={keyIndex++} className="formatted-bold">
-          {parseInlineFormatting(part.content, keyIndex++)}
-        </strong>
-      );
-    } else if (part.type === 'italic') {
-      result.push(
-        <em key={keyIndex++} className="formatted-italic">
-          {parseInlineFormatting(part.content, keyIndex++)}
-        </em>
-      );
-    } else if (part.type === 'underline') {
-      result.push(
-        <u key={keyIndex++} className="formatted-underline">
-          {parseInlineFormatting(part.content, keyIndex++)}
-        </u>
-      );
-    } else if (part.type === 'strikethrough') {
-      result.push(
-        <s key={keyIndex++} className="formatted-strikethrough">
-          {parseInlineFormatting(part.content, keyIndex++)}
-        </s>
-      );
-    } else if (part.type === 'code') {
-      result.push(
-        <code key={keyIndex++} className="formatted-code-inline">
-          {part.content}
-        </code>
-      );
-    } else if (part.type === 'url') {
-      result.push(
-        <a 
-          key={keyIndex++} 
-          href={part.content} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="formatted-link"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {part.content}
-        </a>
-      );
-    } else {
-      result.push(<span key={keyIndex++}>{part.content}</span>);
-    }
-  }
-
-  return result;
-}
-
 interface TextPart {
   type: 'text' | 'bold' | 'italic' | 'underline' | 'strikethrough' | 'code' | 'spoiler' | 'url';
   content: string;
@@ -113,7 +36,6 @@ function splitByPatterns(text: string): TextPart[] {
   const parts: TextPart[] = [];
   let remaining = text;
 
-  // ลำดับความสำคัญ: spoiler > bold > italic > underline > strikethrough > code > url
   const patterns = [
     { type: 'spoiler' as const, regex: /\|\|(.+?)\|\|/ },
     { type: 'bold' as const, regex: /\*\*(.+?)\*\*/ },
@@ -142,14 +64,12 @@ function splitByPatterns(text: string): TextPart[] {
     }
 
     if (earliestMatch) {
-      // เพิ่ม text ก่อน match
       if (earliestMatch.index > 0) {
         parts.push({ type: 'text', content: remaining.substring(0, earliestMatch.index) });
       }
       parts.push({ type: earliestMatch.type, content: earliestMatch.content });
       remaining = remaining.substring(earliestMatch.index + earliestMatch.length);
     } else {
-      // ไม่มี match เหลือ
       parts.push({ type: 'text', content: remaining });
       break;
     }
@@ -158,45 +78,47 @@ function splitByPatterns(text: string): TextPart[] {
   return parts;
 }
 
-function parseInlineFormatting(text: string, startKey: number): React.ReactNode[] {
-  const parts = splitByPatterns(text);
-  const result: React.ReactNode[] = [];
-  let keyIndex = startKey;
+function renderPart(part: TextPart, key: number): React.ReactNode {
+  if (part.type === 'spoiler') {
+    return (
+      <span key={key} className="formatted-spoiler">
+        <span className="spoiler-content">{part.content}</span>
+      </span>
+    );
+  } else if (part.type === 'bold') {
+    return <strong key={key} className="formatted-bold">{part.content}</strong>;
+  } else if (part.type === 'italic') {
+    return <em key={key} className="formatted-italic">{part.content}</em>;
+  } else if (part.type === 'underline') {
+    return <u key={key} className="formatted-underline">{part.content}</u>;
+  } else if (part.type === 'strikethrough') {
+    return <s key={key} className="formatted-strikethrough">{part.content}</s>;
+  } else if (part.type === 'code') {
+    return <code key={key} className="formatted-code-inline">{part.content}</code>;
+  } else if (part.type === 'url') {
+    return (
+      <a 
+        key={key} 
+        href={part.content} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="formatted-link"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {part.content}
+      </a>
+    );
+  }
+  return <span key={key}>{part.content}</span>;
+}
 
-  for (const part of parts) {
-    if (part.type === 'spoiler') {
-      result.push(
-        <span key={keyIndex++} className="formatted-spoiler">
-          <span className="spoiler-content">{part.content}</span>
-        </span>
-      );
-    } else if (part.type === 'bold') {
-      result.push(<strong key={keyIndex++} className="formatted-bold">{part.content}</strong>);
-    } else if (part.type === 'italic') {
-      result.push(<em key={keyIndex++} className="formatted-italic">{part.content}</em>);
-    } else if (part.type === 'underline') {
-      result.push(<u key={keyIndex++} className="formatted-underline">{part.content}</u>);
-    } else if (part.type === 'strikethrough') {
-      result.push(<s key={keyIndex++} className="formatted-strikethrough">{part.content}</s>);
-    } else if (part.type === 'code') {
-      result.push(<code key={keyIndex++} className="formatted-code-inline">{part.content}</code>);
-    } else if (part.type === 'url') {
-      result.push(
-        <a 
-          key={keyIndex++} 
-          href={part.content} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="formatted-link"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {part.content}
-        </a>
-      );
-    } else {
-      result.push(<span key={keyIndex++}>{part.content}</span>);
-    }
+function parseLine(line: string): React.ReactNode[] {
+  // ตรวจสอบ quote ที่ต้นแถว
+  if (line.startsWith('> ')) {
+    const inner = parseLine(line.substring(2));
+    return [<span key="quote" className="formatted-quote">{inner}</span>];
   }
 
-  return result;
+  const parts = splitByPatterns(line);
+  return parts.map((part, idx) => renderPart(part, idx));
 }

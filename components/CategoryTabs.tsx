@@ -1,6 +1,7 @@
 'use client';
 
 import { Category, Game } from '@/types';
+import { useLanguage } from './LanguageContext';
 
 interface CategoryTabsProps {
   categories: Category[];
@@ -10,6 +11,7 @@ interface CategoryTabsProps {
 }
 
 export default function CategoryTabs({ categories, games, current, onChange }: CategoryTabsProps) {
+  const { t } = useLanguage();
   const uniqueCategories = [...new Set(games.map(g => g.category))].sort();
 
   return (
@@ -18,7 +20,7 @@ export default function CategoryTabs({ categories, games, current, onChange }: C
         className={`tab-btn ${current === 'all' ? 'active' : ''}`}
         onClick={() => onChange('all')}
       >
-        ทั้งหมด ({games.length})
+        {t('menu.allGames')} ({games.length})
       </button>
       {uniqueCategories.map(cat => {
         const catObj = categories.find(c => c.name === cat);

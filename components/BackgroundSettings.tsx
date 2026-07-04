@@ -12,35 +12,18 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
   const [previewError, setPreviewError] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Sync with parent when backgroundImage changes
   useEffect(() => {
     setUrl(backgroundImage || '');
   }, [backgroundImage]);
 
   const handleSave = () => {
-    const trimmedUrl = url.trim();
-
-    // ถ้าใส่รูปใหม่ ให้ลบรูปเก่าออก (ส่งค่าว่างก่อน แล้วค่อยใส่ค่าใหม่)
-    if (trimmedUrl && trimmedUrl !== backgroundImage) {
-      // ลบรูปเก่าก่อน
-      if (backgroundImage) {
-        onChange(''); // ลบออกก่อน
-        setTimeout(() => {
-          onChange(trimmedUrl); // แล้วค่อยใส่รูปใหม่
-        }, 100);
-      } else {
-        onChange(trimmedUrl);
-      }
-    } else if (!trimmedUrl) {
-      onChange(''); // ลบรูปออก
-    }
-
+    onChange(url.trim());
     setShowPreview(false);
   };
 
   const handleClear = () => {
     setUrl('');
-    onChange(''); // ลบรูปออกจริงๆ
+    onChange('');
     setPreviewError(false);
     setShowPreview(false);
   };
@@ -48,9 +31,7 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
   const isValidUrl = url.trim().length > 0 && (url.startsWith('http://') || url.startsWith('https://'));
 
   const togglePreview = () => {
-    if (!showPreview) {
-      setPreviewError(false);
-    }
+    if (!showPreview) setPreviewError(false);
     setShowPreview(!showPreview);
   };
 
@@ -75,7 +56,6 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
         </div>
       </div>
 
-      {/* แสดงสถานะรูปที่ใช้งานอยู่ */}
       {backgroundImage ? (
         <div className="background-current-active">
           <div className="background-current-header">
@@ -142,7 +122,6 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
         </div>
       </div>
 
-      {/* Preview - แสดงเฉพาะเมื่อกดปุ่ม */}
       {showPreview && isValidUrl && !previewError && (
         <div className="background-preview">
           <p className="background-preview-label">

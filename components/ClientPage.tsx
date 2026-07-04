@@ -9,7 +9,6 @@ import Hero from './Hero';
 import SearchBar from './SearchBar';
 import AdminPanel from './AdminPanel';
 import CategoryTabs from './CategoryTabs';
-import SortableGameCard from './SortableGameCard';
 import GameCard from './GameCard';
 import GameDetailModal from './GameDetailModal';
 import Toast from './Toast';
@@ -26,21 +25,6 @@ import TutorialDetailModal from './modals/TutorialDetailModal';
 import ImportModal from './modals/ImportModal';
 import WelcomeModal from './WelcomeModal';
 import Particles from './Particles';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import type { DragEndEvent } from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable';
 
 interface ClientPageProps {
   initialGames: Game[];
@@ -65,19 +49,6 @@ export default function ClientPage({
   const [tutorials, setTutorials] = useState<Tutorial[]>(initialTutorials);
   const [settings, setSettings] = useState<SiteSettings>(initialSettings);
   const [isAdmin, setIsAdmin] = useState(false);
-  // Sensors สำหรับ Drag & Drop
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  // Handle drag end - เรียงลำดับเกมใหม่
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
   const [isSaving, setIsSaving] = useState(false);
   const [currentCategory, setCurrentCategory] = useState('all');
@@ -103,14 +74,18 @@ export default function ClientPage({
   const [importOpen, setImportOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
 
+  // โหลดค่า viewMode จาก localStorage
   useEffect(() => {
     const savedAdmin = localStorage.getItem('gamehub_admin');
     if (savedAdmin === 'true') {
       setIsAdmin(true);
     }
+    const savedView = localStorage.getItem('gamehub_view_mode') as 'grid' | 'compact';
+    if (savedView === 'grid' || savedView === 'compact') {
+      setViewMode(savedView);
+    }
   }, []);
 
-  // แก้ไข: ใช้ _t แทน t เพื่อไม่ให้ชนกับ t จาก useLanguage
   const refreshData = useCallback(async () => {
     try {
       const [g, c, u, tut, s] = await Promise.all([
@@ -119,8 +94,8 @@ export default function ClientPage({
         fetch('/api/updates').then(r => r.json()).catch(() => []),
         fetch('/api/tutorials').then(r => r.json()).catch(() => []),
         fetch('/api/settings').then(r => r.json()).catch(() => ({
-          heroTitle: 'ศูนย์รวมเกมของทีมเรา',
-          heroDesc: 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น พร้อมคำอธิบายและการจัดหมวดหมู่'
+          heroTitle: t('hero.defaultTitle'),
+          heroDesc: t('hero.defaultDesc')
         }))
       ]);
       setGames(g);
@@ -129,18 +104,17 @@ export default function ClientPage({
       setTutorials(tut);
       setSettings(s);
       setRefreshKey(prev => prev + 1);
-      console.log('Data refreshed:', { games: g.length, updates: u.length, tutorials: tut.length });
     } catch (error) {
       console.error('refreshData error:', error);
     }
-  }, []);
+  }, [t]);
 
-  const showToast = (title: string, message: string, type: 'success'|'error' = 'success') => {
+  const showToast = useCallback((title: string, message: string, type: 'success'|'error' = 'success') => {
     setToast({ title, message, type });
     setTimeout(() => setToast(null), 3000);
-  };
+  }, []);
 
-  const handleLogin = async (password: string) => {
+  const handleLogin = useCallback(async (password: string) => {
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -154,15 +128,15 @@ export default function ClientPage({
     } else {
       showToast(t('toast.wrongPassword'), t('toast.tryAgain'), 'error');
     }
-  };
+  }, [t, showToast]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     setIsAdmin(false);
     localStorage.removeItem('gamehub_admin');
     showToast(t('toast.logout'), t('toast.logoutSuccess'));
-  };
+  }, [t, showToast]);
 
-  const handleSave = async (saveFn: () => Promise<void>, successMsg: string) => {
+  const handleSave = useCallback(async (saveFn: () => Promise<void>, successMsg: string) => {
     setIsSaving(true);
     showToast(t('toast.saving'), t('toast.wait'), 'success');
     try {
@@ -175,16 +149,18 @@ export default function ClientPage({
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [t, showToast, refreshData]);
 
-  const handleToggleView = (mode: 'grid' | 'compact') => {
+  const handleToggleView = useCallback((mode: 'grid' | 'compact') => {
     setViewMode(mode);
     localStorage.setItem('gamehub_view_mode', mode);
-  };
+  }, []);
 
-  const handleDeleteLatestUpdate = async () => {
+  const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
+
+  const handleDeleteLatestUpdate = useCallback(async () => {
     if (!latestUpdate) return;
-    if (!confirm(`\u0e04\u0e38\u0e13\u0e41\u0e19\u0e48\u0e43\u0e08\u0e2b\u0e23\u0e37\u0e2d\u0e44\u0e21\u0e48\u0e17\u0e35\u0e48\u0e08\u0e30\u0e25\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e32\u0e28 "${latestUpdate.title}"?`)) return;
+    if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบประกาศ "${latestUpdate.title}"?`)) return;
 
     await handleSave(async () => {
       await fetch('/api/updates', {
@@ -193,7 +169,7 @@ export default function ClientPage({
         body: JSON.stringify({ id: latestUpdate.id })
       });
     }, t('toast.success'));
-  };
+  }, [latestUpdate, handleSave, t]);
 
   const filteredGames = games.filter(g => {
     const matchCategory = currentCategory === 'all' || g.category === currentCategory;
@@ -204,49 +180,6 @@ export default function ClientPage({
       g.category.toLowerCase().includes(q);
     return matchCategory && matchSearch;
   });
-
-  const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
-
-  // Handle drag end - เรียงลำดับเกมใหม่
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) return;
-
-    setGames((prevGames) => {
-      const oldIndex = prevGames.findIndex((g) => g.id === active.id);
-      const newIndex = prevGames.findIndex((g) => g.id === over.id);
-
-      if (oldIndex === -1 || newIndex === -1) return prevGames;
-
-      // ตรวจสอบว่าไม่ให้ย้ายเกมที่ปักหมุด
-      const movedGame = prevGames[oldIndex];
-      if (movedGame.pinned) return prevGames;
-
-      // ตรวจสอบว่าไม่ให้ย้ายไปทับเกมที่ปักหมุด
-      const targetGame = prevGames[newIndex];
-      if (targetGame.pinned && newIndex < oldIndex) return prevGames;
-
-      const newGames = arrayMove(prevGames, oldIndex, newIndex);
-
-      // อัปเดต order สำหรับเกมที่ไม่ได้ปักหมุด
-      const updatedGames = newGames.map((g, index) => ({
-        ...g,
-        order: g.pinned ? g.order : index,
-      }));
-
-      // บันทึกลง Vercel Blob ทันที
-      handleSave(async () => {
-        await fetch('/api/games', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedGames),
-        });
-      }, 'เรียงลำดับเกมสำเร็จ!');
-
-      return updatedGames;
-    });
-  }, [handleSave]);
 
   return (
     <div className={isAdmin ? 'admin-mode' : ''} key={refreshKey}>
@@ -357,15 +290,14 @@ export default function ClientPage({
             onAddCategory={() => setCategoryModalOpen(true)}
             onUpdateSettings={(newSettings) => {
               setSettings(newSettings);
-              // บันทึก settings ลง Vercel Blob
               fetch('/api/settings', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newSettings)
               }).then(() => {
-                showToast('success', 'บันทึกการตั้งค่าพื้นหลังสำเร็จ!');
+                showToast('บันทึกสำเร็จ!', 'บันทึกการตั้งค่าพื้นหลังสำเร็จ!');
               }).catch(() => {
-                showToast('error', 'บันทึกไม่สำเร็จ');
+                showToast('บันทึกไม่สำเร็จ', 'เกิดข้อผิดพลาด', 'error');
               });
             }}
           />
@@ -379,29 +311,29 @@ export default function ClientPage({
         />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                {filteredGames.length} {t('menu.allGames')}
-              </div>
-              <div className="view-toggle">
-                <span className="view-toggle-label">View</span>
-                <button 
-                  className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                  onClick={() => handleToggleView('grid')}
-                  title="Grid View"
-                >
-                  <i className="fas fa-th-large"></i>
-                </button>
-                <button 
-                  className={`view-toggle-btn ${viewMode === 'compact' ? 'active' : ''}`}
-                  onClick={() => handleToggleView('compact')}
-                  title="Compact View"
-                >
-                  <i className="fas fa-list"></i>
-                </button>
-              </div>
-            </div>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+            {filteredGames.length} {t('menu.allGames')}
+          </div>
+          <div className="view-toggle">
+            <span className="view-toggle-label">View</span>
+            <button 
+              className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => handleToggleView('grid')}
+              title="Grid View"
+            >
+              <i className="fas fa-th-large"></i>
+            </button>
+            <button 
+              className={`view-toggle-btn ${viewMode === 'compact' ? 'active' : ''}`}
+              onClick={() => handleToggleView('compact')}
+              title="Compact View"
+            >
+              <i className="fas fa-list"></i>
+            </button>
+          </div>
+        </div>
 
-            <div className={`games-grid ${viewMode === 'compact' ? 'compact' : ''}`}>
+        <div className={`games-grid ${viewMode === 'compact' ? 'compact' : ''}`}>
           {filteredGames.map(game => (
             <GameCard 
               key={game.id} 

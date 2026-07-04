@@ -18,7 +18,7 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
   useEffect(() => {
     if (isOpen) {
       const sorted = [...tutorials].sort((a, b) => (a.order || 0) - (b.order || 0));
-      setItems(sorted.length > 0 ? sorted : []);
+      setItems(sorted);
     }
   }, [isOpen, tutorials]);
 
@@ -41,8 +41,15 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
 
   const handleRemove = (index: number) => {
     const newItems = items.filter((_, i) => i !== index);
-    const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
-    setItems(reordered);
+    setItems(newItems.map((item, idx) => ({ ...item, order: idx })));
+  };
+
+  const handleMove = (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= items.length) return;
+    const newItems = [...items];
+    [newItems[index], newItems[newIndex]] = [newItems[newIndex], newItems[index]];
+    setItems(newItems.map((item, idx) => ({ ...item, order: idx })));
   };
 
   const handleSave = () => {
@@ -54,22 +61,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
         order: idx
       }));
     onSave(validItems);
-  };
-
-  const handleMoveUp = (index: number) => {
-    if (index === 0) return;
-    const newItems = [...items];
-    [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
-    const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
-    setItems(reordered);
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index === items.length - 1) return;
-    const newItems = [...items];
-    [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
-    const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
-    setItems(reordered);
   };
 
   if (!isOpen) return null;
@@ -93,7 +84,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
             <div key={item.id} className={`tutorial-edit-item ${item.title.trim() && item.youtubeUrl.trim() ? 'filled' : ''}`}>
               <div className="tutorial-edit-number">{index + 1}</div>
               <div className="tutorial-edit-fields">
-                {/* ช่องชื่อวิดีโอใหญ่ขึ้น */}
                 <input
                   type="text"
                   className="form-input form-input-large"
@@ -101,7 +91,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
                   value={item.title}
                   onChange={e => updateItem(index, 'title', e.target.value)}
                 />
-                {/* ช่องลิงก์ YouTube ใหญ่ขึ้น */}
                 <input
                   type="url"
                   className="form-input form-input-large"
@@ -109,7 +98,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
                   value={item.youtubeUrl}
                   onChange={e => updateItem(index, 'youtubeUrl', e.target.value)}
                 />
-                {/* ช่องคำอธิบายใหญ่ขึ้น */}
                 <textarea
                   className="form-input form-textarea-large"
                   placeholder={t('tutorial.placeholder.desc')}
@@ -119,10 +107,10 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
                 />
               </div>
               <div className="tutorial-edit-actions">
-                <button type="button" className="tutorial-move-btn" onClick={() => handleMoveUp(index)} disabled={index === 0}>
+                <button type="button" className="tutorial-move-btn" onClick={() => handleMove(index, -1)} disabled={index === 0}>
                   <i className="fas fa-arrow-up"></i>
                 </button>
-                <button type="button" className="tutorial-move-btn" onClick={() => handleMoveDown(index)} disabled={index === items.length - 1}>
+                <button type="button" className="tutorial-move-btn" onClick={() => handleMove(index, 1)} disabled={index === items.length - 1}>
                   <i className="fas fa-arrow-down"></i>
                 </button>
                 <button type="button" className="tutorial-move-btn delete" onClick={() => handleRemove(index)}>
