@@ -2977,3 +2977,97 @@ body {
   color: #c4b5fd;
   text-decoration-color: rgba(167, 139, 250, 0.9);
 }
+
+
+/* ============================================
+   Drag & Drop - Sortable Game Cards
+   ============================================ */
+
+.sortable-game-card-wrapper {
+  position: relative;
+}
+
+/* Drag Handle */
+.drag-handle {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: grab;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  opacity: 0;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.sortable-game-card-wrapper:hover .drag-handle {
+  opacity: 1;
+  top: -8px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle i {
+  font-size: 0.9rem;
+}
+
+.drag-hint {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Pin Locked Badge */
+.pin-locked-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--warning), #d97706);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.pin-locked-badge i {
+  font-size: 0.8rem;
+}
+
+/* Dragging state */
+.sortable-game-card-wrapper [data-dragging="true"] {
+  opacity: 0.5;
+  transform: scale(1.05);
+  z-index: 100;
+}
+
+/* Admin mode hint */
+.admin-mode .games-grid::before {
+  content: '💡 แอดมิน: ลากที่จับ (☰) เพื่อเรียงลำดับเกม | เกมที่ปักหมุด (🔒) ล็อคไว้บนสุด';
+  display: block;
+  width: 100%;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px dashed var(--primary);
+  border-radius: 12px;
+  color: var(--primary);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}

@@ -10,7 +10,8 @@ export interface Game {
   date?: string;
   downloadSource?: string;  // ชื่อแหล่งที่มา เช่น "MEGA", "Google Drive", "MediaFire"
   showSource?: boolean;     // แสดงชื่อแหล่งที่มาหรือไม่ (default: true)
-  pinned?: boolean;         // ปักหมุดเกม (แสดงแรกสุด)
+  pinned?: boolean;         // ปักหมุดเกม (แสดงแรกสุด, ล็อคไม่ให้ลาก)
+  order?: number;           // ลำดับการแสดงผล (สำหรับเรียงลำดับลากได้)
 }
 
 export interface Category {

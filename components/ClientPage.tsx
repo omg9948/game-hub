@@ -9,7 +9,7 @@ import Hero from './Hero';
 import SearchBar from './SearchBar';
 import AdminPanel from './AdminPanel';
 import CategoryTabs from './CategoryTabs';
-import GameCard from './GameCard';
+import SortableGameCard from './SortableGameCard';
 import GameDetailModal from './GameDetailModal';
 import Toast from './Toast';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -49,6 +49,19 @@ export default function ClientPage({
   const [tutorials, setTutorials] = useState<Tutorial[]>(initialTutorials);
   const [settings, setSettings] = useState<SiteSettings>(initialSettings);
   const [isAdmin, setIsAdmin] = useState(false);
+  // Sensors สำหรับ Drag & Drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag end - เรียงลำดับเกมใหม่
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
   const [isSaving, setIsSaving] = useState(false);
   const [currentCategory, setCurrentCategory] = useState('all');
@@ -178,18 +191,50 @@ export default function ClientPage({
 
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
+  // Handle drag end - เรียงลำดับเกมใหม่
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    setGames((prevGames) => {
+      const oldIndex = prevGames.findIndex((g) => g.id === active.id);
+      const newIndex = prevGames.findIndex((g) => g.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) return prevGames;
+
+      // ตรวจสอบว่าไม่ให้ย้ายเกมที่ปักหมุด
+      const movedGame = prevGames[oldIndex];
+      if (movedGame.pinned) return prevGames;
+
+      // ตรวจสอบว่าไม่ให้ย้ายไปทับเกมที่ปักหมุด
+      const targetGame = prevGames[newIndex];
+      if (targetGame.pinned && newIndex < oldIndex) return prevGames;
+
+      const newGames = arrayMove(prevGames, oldIndex, newIndex);
+
+      // อัปเดต order สำหรับเกมที่ไม่ได้ปักหมุด
+      const updatedGames = newGames.map((g, index) => ({
+        ...g,
+        order: g.pinned ? g.order : index,
+      }));
+
+      // บันทึกลง Vercel Blob ทันที
+      handleSave(async () => {
+        await fetch('/api/games', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedGames),
+        });
+      }, 'เรียงลำดับเกมสำเร็จ!');
+
+      return updatedGames;
+    });
+  }, [handleSave]);
+
   return (
     <div className={isAdmin ? 'admin-mode' : ''} key={refreshKey}>
-      <div 
-        className="bg-animation" 
-        style={settings.backgroundImage ? {
-          backgroundImage: `url(${settings.backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed'
-        } : {}}
-      />
+      <div className="bg-animation" />
       <Particles />
 
       <WelcomeModal updates={updates} onClose={() => {}} />
@@ -282,19 +327,8 @@ export default function ClientPage({
             games={games} 
             categories={categories} 
             updates={updates}
-            settings={settings}
             onAddGame={() => { setEditingGame(null); setGameModalOpen(true); }}
             onAddCategory={() => setCategoryModalOpen(true)}
-            onUpdateSettings={(newSettings) => {
-              setSettings(newSettings);
-              handleSave(async () => {
-                await fetch('/api/settings', {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(newSettings)
-                });
-              }, 'บันทึกการตั้งค่าพื้นหลังสำเร็จ!');
-            }}
           />
         )}
 

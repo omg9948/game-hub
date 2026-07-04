@@ -1,0 +1,68 @@
+'use client';
+
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Game } from '@/types';
+import GameCard from './GameCard';
+
+interface SortableGameCardProps {
+  game: Game;
+  isAdmin: boolean;
+  onEdit: (game: Game) => void;
+  onDelete: (id: string) => void;
+  onViewDetail: (game: Game) => void;
+}
+
+export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: SortableGameCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: game.id,
+    disabled: game.pinned || !isAdmin, // ปักหมุดหรือไม่ใช่แอดมิน = ลากไม่ได้
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    position: 'relative' as const,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="sortable-game-card-wrapper">
+      {/* Drag Handle - แสดงเฉพาะแอดมินและเกมที่ไม่ได้ปักหมุด */}
+      {isAdmin && !game.pinned && (
+        <div 
+          className="drag-handle"
+          {...attributes}
+          {...listeners}
+          title="ลากเพื่อเรียงลำดับ"
+        >
+          <i className="fas fa-grip-vertical"></i>
+          <span className="drag-hint">ลากเพื่อเรียงลำดับ</span>
+        </div>
+      )}
+
+      {/* เกมปักหมุดแสดงล็อค */}
+      {game.pinned && isAdmin && (
+        <div className="pin-locked-badge" title="ปักหมุด - ไม่สามารถลากได้">
+          <i className="fas fa-lock"></i>
+          <span>ล็อค</span>
+        </div>
+      )}
+
+      <GameCard 
+        game={game} 
+        isAdmin={isAdmin}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onViewDetail={onViewDetail}
+      />
+    </div>
+  );
+}
