@@ -279,7 +279,11 @@ export default function ClientPage({
             onUpdateSettings={(newSettings) => {
               setSettings(newSettings);
               handleSave(async () => {
-                await saveData({ games, categories, updates, tutorials, settings: newSettings });
+                await fetch('/api/settings', {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(newSettings)
+                });
               }, 'บันทึกการตั้งค่าพื้นหลังสำเร็จ!');
             }}
           />
