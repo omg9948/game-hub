@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Game } from '@/types';
 import { useLanguage } from './LanguageContext';
-import AutoLinkText from './AutoLinkText';
+import FormattedText from './FormattedText';
 
 interface GameCardProps {
   game: Game;
@@ -39,18 +39,11 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
       <div className="game-content">
         <div className="game-header">
           <div className="game-icon"><i className={game.icon}></i></div>
-          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-            {game.pinned && (
-              <span className="game-pin-badge" title="ปักหมุด">
-                <i className="fas fa-thumbtack"></i>
-              </span>
-            )}
-            <span className="game-category-badge">{game.category}</span>
-          </div>
+          <span className="game-category-badge">{game.category}</span>
         </div>
         <h3 className="game-title">{game.title}</h3>
         <p className="game-desc collapsed">
-          <AutoLinkText text={shortDesc} />
+          <FormattedText text={shortDesc} />
         </p>
 
         <button className="read-more-btn" onClick={onViewDetail}>
