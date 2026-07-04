@@ -80,7 +80,7 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
                       {tutorial.description && (
                         <p className="tutorial-desc">{tutorial.description}</p>
                       )}
-                      
+
                       {/* ปุ่มดูข้อมูลเพิ่มเติม → เปิด Pop Up รายละเอียด */}
                       <button 
                         className="read-more-btn" 
