@@ -39,6 +39,7 @@ export interface SiteSettings {
   heroTitle?: string;
   heroDesc?: string;
   aboutContent?: string;
+  backgroundImage?: string;  // URL รูปพื้นหลัง (แนะนำ 1920x1080 หรือ 2560x1440)
 }
 
 export interface AppData {

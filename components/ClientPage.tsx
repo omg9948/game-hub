@@ -166,22 +166,15 @@ export default function ClientPage({
     }, t('toast.success'));
   };
 
-  const filteredGames = games
-    .filter(g => {
-      const matchCategory = currentCategory === 'all' || g.category === currentCategory;
-      const q = searchQuery.toLowerCase();
-      const matchSearch = !searchQuery || 
-        g.title.toLowerCase().includes(q) ||
-        (g.description?.toLowerCase().includes(q)) ||
-        g.category.toLowerCase().includes(q);
-      return matchCategory && matchSearch;
-    })
-    .sort((a, b) => {
-      // ปักหมุดอยู่แรกสุด
-      if (a.pinned && !b.pinned) return -1;
-      if (!a.pinned && b.pinned) return 1;
-      return 0;
-    });
+  const filteredGames = games.filter(g => {
+    const matchCategory = currentCategory === 'all' || g.category === currentCategory;
+    const q = searchQuery.toLowerCase();
+    const matchSearch = !searchQuery || 
+      g.title.toLowerCase().includes(q) ||
+      (g.description?.toLowerCase().includes(q)) ||
+      g.category.toLowerCase().includes(q);
+    return matchCategory && matchSearch;
+  });
 
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
