@@ -2,11 +2,8 @@ export type Language = 'th' | 'en';
 
 export const translations = {
   th: {
-    // Header
     'app.title': 'Game Hub',
     'app.logo': 'Game Hub',
-
-    // Menu
     'menu.title': 'เมนู',
     'menu.nav': 'นำทาง',
     'menu.home': 'หน้าแรก',
@@ -25,13 +22,9 @@ export const translations = {
     'menu.others': 'อื่นๆ',
     'menu.updateHistory': 'ประวัติการอัปเดต',
     'menu.about': 'เกี่ยวกับเรา',
-
-    // Language
     'language.title': 'ภาษา',
     'language.th': 'ไทย',
     'language.en': 'English',
-
-    // Tutorial
     'tutorial.button': 'วิธีการใช้งาน',
     'tutorial.title': 'วิธีการใช้งาน',
     'tutorial.noVideos': 'ยังไม่มีวิดีโอสอนใช้งาน',
@@ -46,39 +39,25 @@ export const translations = {
     'tutorial.placeholder.title': 'ชื่อวิดีโอ...',
     'tutorial.placeholder.url': 'ลิงก์ YouTube...',
     'tutorial.placeholder.desc': 'คำอธิบายสั้นๆ (ไม่บังคับ)...',
-
-    // Search
     'search.placeholder': 'ค้นหาเกม...',
-
-    // Admin Panel
     'admin.panel': 'แผงควบคุมแอดมิน',
     'admin.totalGames': 'เกมทั้งหมด',
     'admin.totalCategories': 'หมวดหมู่',
     'admin.totalUpdates': 'อัปเดต',
     'admin.addGame': 'เพิ่มเกมใหม่',
     'admin.addCategory': 'เพิ่มหมวดหมู่',
-
-    // Update Banner
     'update.viewAll': 'ดูทั้งหมด',
     'update.write': 'เขียนอัปเดต',
     'update.delete': 'ลบ',
-
-    // Game Card
     'game.noDescription': 'ไม่มีคำอธิบาย',
     'game.viewMore': 'ดูข้อมูลเพิ่มเติม',
     'game.download': 'ดาวน์โหลดเกม',
     'game.edit': 'แก้ไข',
     'game.delete': 'ลบ',
-
-    // Game Detail
     'game.description': 'คำอธิบาย',
     'game.downloadBtn': 'ดาวน์โหลดเกม',
-
-    // Empty State
     'empty.noResults': 'ไม่พบเกมที่ค้นหา',
     'empty.tryAgain': 'ลองค้นหาด้วยคำอื่น หรือตรวจสอบการสะกดอีกครั้ง',
-
-    // Modals
     'modal.login': 'เข้าสู่ระบบแอดมิน',
     'modal.password': 'รหัสผ่านแอดมิน',
     'modal.loginBtn': 'เข้าสู่ระบบ',
@@ -115,8 +94,6 @@ export const translations = {
     'modal.import': 'นำเข้าข้อมูล',
     'modal.pasteJSON': 'วางข้อมูล JSON ที่สำรองไว้',
     'modal.importBtn': 'นำเข้าข้อมูล',
-
-    // Toast
     'toast.saving': 'กำลังบันทึก...',
     'toast.wait': 'รอสักครู่ กำลังบันทึกข้อมูล',
     'toast.success': 'บันทึกสำเร็จ!',
@@ -136,24 +113,17 @@ export const translations = {
     'toast.imported': 'ข้อมูลถูกนำเข้าเรียบร้อย',
     'toast.jsonError': 'ข้อผิดพลาด',
     'toast.invalidJSON': 'ข้อมูล JSON ไม่ถูกต้อง',
-
-    // Welcome Modal
     'welcome.newUpdate': 'มีอัปเดตใหม่!',
     'welcome.latest': 'ล่าสุด',
     'welcome.prevUpdates': 'อัปเดตก่อนหน้านี้',
     'welcome.understood': 'เข้าใจแล้ว',
-
-    // Hero
     'hero.defaultTitle': 'ศูนย์รวมเกมของทีมเรา',
     'hero.defaultDesc': 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น พร้อมคำอธิบายและการจัดหมวดหมู่',
     'hero.editHint': 'แอดมินสามารถคลิกที่ข้อความเพื่อแก้ไขได้',
   },
   en: {
-    // Header
     'app.title': 'Game Hub',
     'app.logo': 'Game Hub',
-
-    // Menu
     'menu.title': 'Menu',
     'menu.nav': 'Navigation',
     'menu.home': 'Home',
@@ -172,13 +142,9 @@ export const translations = {
     'menu.others': 'Others',
     'menu.updateHistory': 'Update History',
     'menu.about': 'About Us',
-
-    // Language
     'language.title': 'Language',
     'language.th': 'ไทย',
     'language.en': 'English',
-
-    // Tutorial
     'tutorial.button': 'How to Use',
     'tutorial.title': 'How to Use',
     'tutorial.noVideos': 'No tutorial videos yet',
@@ -193,39 +159,25 @@ export const translations = {
     'tutorial.placeholder.title': 'Video title...',
     'tutorial.placeholder.url': 'YouTube link...',
     'tutorial.placeholder.desc': 'Short description (optional)...',
-
-    // Search
     'search.placeholder': 'Search games...',
-
-    // Admin Panel
     'admin.panel': 'Admin Panel',
     'admin.totalGames': 'Total Games',
     'admin.totalCategories': 'Categories',
     'admin.totalUpdates': 'Updates',
     'admin.addGame': 'Add New Game',
     'admin.addCategory': 'Add Category',
-
-    // Update Banner
     'update.viewAll': 'View All',
     'update.write': 'Write Update',
     'update.delete': 'Delete',
-
-    // Game Card
     'game.noDescription': 'No description',
     'game.viewMore': 'View More',
     'game.download': 'Download Game',
     'game.edit': 'Edit',
     'game.delete': 'Delete',
-
-    // Game Detail
     'game.description': 'Description',
     'game.downloadBtn': 'Download Game',
-
-    // Empty State
     'empty.noResults': 'No games found',
     'empty.tryAgain': 'Try searching with different keywords',
-
-    // Modals
     'modal.login': 'Admin Login',
     'modal.password': 'Admin Password',
     'modal.loginBtn': 'Login',
@@ -262,8 +214,6 @@ export const translations = {
     'modal.import': 'Import Data',
     'modal.pasteJSON': 'Paste your backup JSON data here',
     'modal.importBtn': 'Import Data',
-
-    // Toast
     'toast.saving': 'Saving...',
     'toast.wait': 'Please wait, saving data',
     'toast.success': 'Saved successfully!',
@@ -283,14 +233,10 @@ export const translations = {
     'toast.imported': 'Data imported successfully',
     'toast.jsonError': 'Error',
     'toast.invalidJSON': 'Invalid JSON data',
-
-    // Welcome Modal
     'welcome.newUpdate': 'New Update!',
     'welcome.latest': 'Latest',
     'welcome.prevUpdates': 'Previous Updates',
     'welcome.understood': 'Got it',
-
-    // Hero
     'hero.defaultTitle': 'Our Game Center',
     'hero.defaultDesc': 'Collection of games created by our team with descriptions and categories',
     'hero.editHint': 'Admin can click text to edit',
