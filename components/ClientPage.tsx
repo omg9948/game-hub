@@ -10,6 +10,7 @@ import SearchBar from './SearchBar';
 import AdminPanel from './AdminPanel';
 import CategoryTabs from './CategoryTabs';
 import SortableGameCard from './SortableGameCard';
+import GameCard from './GameCard';
 import GameDetailModal from './GameDetailModal';
 import Toast from './Toast';
 import LanguageSwitcher from './LanguageSwitcher';
