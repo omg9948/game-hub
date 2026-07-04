@@ -157,33 +157,63 @@ export default function ClientPage({
     localStorage.setItem('gamehub_view_mode', mode);
   }, []);
 
-  const handleMoveUp = useCallback((index: number) => {
+  const handleMoveUp = useCallback(async (index: number) => {
     if (index <= 0) return;
-    const newGames = [...games];
-    [newGames[index], newGames[index - 1]] = [newGames[index - 1], newGames[index]];
-    setGames(newGames);
-    handleSave(async () => {
-      await fetch('/api/games', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reorder: true, games: newGames })
-      });
-    }, t('toast.success'));
-  }, [games, handleSave, t]);
 
-  const handleMoveDown = useCallback((index: number) => {
-    if (index >= games.length - 1) return;
-    const newGames = [...games];
-    [newGames[index], newGames[index + 1]] = [newGames[index + 1], newGames[index]];
-    setGames(newGames);
-    handleSave(async () => {
+    // ใช้ functional update เพื่อให้ได้ state ล่าสุด
+    let newGames: Game[] = [];
+    setGames(prevGames => {
+      newGames = [...prevGames];
+      [newGames[index], newGames[index - 1]] = [newGames[index - 1], newGames[index]];
+      return newGames;
+    });
+
+    // บันทึกลง Blob ทันที
+    setIsSaving(true);
+    try {
       await fetch('/api/games', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reorder: true, games: newGames })
       });
-    }, t('toast.success'));
-  }, [games, handleSave, t]);
+      showToast(t('toast.success'), 'เรียงลำดับสำเร็จ');
+    } catch (error) {
+      console.error('Move up error:', error);
+      showToast(t('toast.error'), 'เรียงลำดับไม่สำเร็จ', 'error');
+      // โหลดข้อมูลใหม่ถ้าล้มเหลว
+      await refreshData();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [showToast, t, refreshData]);
+
+  const handleMoveDown = useCallback(async (index: number) => {
+    const currentGames = games; // ใช้ games จาก closure แต่ตรวจสอบ length
+    if (index >= currentGames.length - 1) return;
+
+    let newGames: Game[] = [];
+    setGames(prevGames => {
+      newGames = [...prevGames];
+      [newGames[index], newGames[index + 1]] = [newGames[index + 1], newGames[index]];
+      return newGames;
+    });
+
+    setIsSaving(true);
+    try {
+      await fetch('/api/games', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reorder: true, games: newGames })
+      });
+      showToast(t('toast.success'), 'เรียงลำดับสำเร็จ');
+    } catch (error) {
+      console.error('Move down error:', error);
+      showToast(t('toast.error'), 'เรียงลำดับไม่สำเร็จ', 'error');
+      await refreshData();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [games.length, showToast, t, refreshData]);
 
 
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;

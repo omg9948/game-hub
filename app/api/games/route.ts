@@ -13,6 +13,13 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+
+    // กรณีเรียงลำดับใหม่ (reorder)
+    if (data.reorder && Array.isArray(data.games)) {
+      await setBlobData('games.json', data.games);
+      return NextResponse.json({ success: true });
+    }
+
     const games = await getBlobData('games.json') || [];
 
     if (data.id) {
