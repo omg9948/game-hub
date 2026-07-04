@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Game } from '@/types';
 import { useLanguage } from './LanguageContext';
-import AutoLinkText from './AutoLinkText';
+import FormattedText from './FormattedText';
 
 interface GameDetailModalProps {
   isOpen: boolean;
@@ -79,8 +79,8 @@ export default function GameDetailModal({ isOpen, onClose, game }: GameDetailMod
 
             <div className="game-description">
               <h4><i className="fas fa-align-left"></i> {t('game.description')}</h4>
-              <pre className="description-text">
-                <AutoLinkText text={game.description || t('game.noDescription')} />
+              <pre className="description-text formatted-description">
+                <FormattedText text={game.description || t('game.noDescription')} />
               </pre>
             </div>
 
