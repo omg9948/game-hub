@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useId } from 'react';
 
 interface TextToolbarProps {
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
@@ -18,6 +18,7 @@ export default function TextToolbar({ textareaRef, onChange, value }: TextToolba
   const [toolbar, setToolbar] = useState<ToolbarState>({ visible: false, x: 0, y: 0 });
   const toolbarRef = useRef<HTMLDivElement>(null);
   const lastSelectionRef = useRef<{ start: number; end: number; text: string } | null>(null);
+  const instanceId = useId();
 
   const getSelectionInfo = useCallback(() => {
     const textarea = textareaRef.current;
@@ -81,10 +82,17 @@ export default function TextToolbar({ textareaRef, onChange, value }: TextToolba
     const textarea = textareaRef.current;
     if (!textarea) return;
 
+    // ใช้ instanceId ใน data attribute เพื่อแยกแต่ละ instance
+    textarea.setAttribute('data-texttoolbar-id', instanceId);
+
     const handleMouseUp = (e: MouseEvent) => {
+      // ตรวจสอบว่า event มาจาก textarea ของ instance นี้หรือไม่
+      const target = e.target as HTMLElement;
+      if (!target.closest(`[data-texttoolbar-id="${instanceId}"]`)) return;
+
       setTimeout(() => {
         const info = getSelectionInfo();
-        if (info && info.text.length > 0 && textarea.contains(e.target as Node)) {
+        if (info && info.text.length > 0) {
           lastSelectionRef.current = info;
 
           const toolbarWidth = 280;
@@ -129,7 +137,7 @@ export default function TextToolbar({ textareaRef, onChange, value }: TextToolba
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [textareaRef, getSelectionInfo]);
+  }, [textareaRef, getSelectionInfo, instanceId]);
 
   if (!toolbar.visible) return null;
 
