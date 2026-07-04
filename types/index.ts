@@ -4,15 +4,16 @@ export interface Game {
   category: string;
   link: string;
   image?: string;
-  images?: string[];
   description?: string;
-  icon: string;
-  date: string;
+  icon?: string;
+  date?: string;
+  downloadSource?: string;  // ชื่อแหล่งที่มา เช่น "MEGA", "Google Drive", "MediaFire"
+  showSource?: boolean;     // แสดงชื่อแหล่งที่มาหรือไม่ (default: true)
 }
 
 export interface Category {
   name: string;
-  icon: string;
+  icon?: string;
 }
 
 export interface Update {
@@ -26,17 +27,15 @@ export interface Update {
 export interface Tutorial {
   id: string;
   title: string;
-  youtubeUrl: string;
   description?: string;
-  order: number;
+  youtubeUrl: string;
+  thumbnail?: string;
+  order?: number;
 }
 
 export interface SiteSettings {
-  heroTitle: string;
-  heroDesc: string;
-  footerText?: string;
-  footerSubtext?: string;
-  showFooter?: boolean;
+  heroTitle?: string;
+  heroDesc?: string;
   aboutContent?: string;
 }
 

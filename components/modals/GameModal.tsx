@@ -30,6 +30,8 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
   const [images, setImages] = useState<string[]>([]);
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
+  const [downloadSource, setDownloadSource] = useState(game?.downloadSource || '');
+  const [showSource, setShowSource] = useState(game?.showSource !== false);
 
   useEffect(() => {
     if (game) {
@@ -61,7 +63,9 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
       image,
       images: images.filter(Boolean),
       link,
-      description
+      description,
+      downloadSource: downloadSource.trim() || undefined,
+      showSource
     });
   };
 
@@ -102,21 +106,11 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
           <div className="form-group">
             <label className="form-label">{t('modal.icon')}</label>
             <div className="icon-grid">
-              {icons.map(ic => {
-                const iconName = ic.replace('fas fa-', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                return (
-                  <button 
-                    type="button" 
-                    key={ic} 
-                    className={`icon-item ${icon === ic ? 'active' : ''}`} 
-                    onClick={() => setIcon(ic)}
-                    data-icon-name={iconName}
-                    title={iconName}
-                  >
-                    <i className={ic}></i>
-                  </button>
-                );
-              })}
+              {icons.map(ic => (
+                <button type="button" key={ic} className={`icon-btn ${icon === ic ? 'active' : ''}`} onClick={() => setIcon(ic)}>
+                  <i className={ic}></i>
+                </button>
+              ))}
             </div>
           </div>
 
@@ -151,6 +145,30 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
               placeholder={t('modal.description')}
               rows={6}
             />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">{t('modal.downloadSource')}</label>
+            <input
+              type="text"
+              className="form-input"
+              value={downloadSource}
+              onChange={e => setDownloadSource(e.target.value)}
+              placeholder="MEGA, Google Drive, MediaFire..."
+            />
+          </div>
+
+          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <input
+              type="checkbox"
+              id="showSource"
+              checked={showSource}
+              onChange={e => setShowSource(e.target.checked)}
+              style={{ width: '18px', height: '18px', accentColor: 'var(--primary)', cursor: 'pointer' }}
+            />
+            <label htmlFor="showSource" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>
+              {t('modal.showSource')}
+            </label>
           </div>
 
           <button type="submit" className="form-submit"><i className="fas fa-save"></i> {t('modal.save')}</button>
