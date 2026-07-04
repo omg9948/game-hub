@@ -52,11 +52,7 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
 
         <a href={game.link} className="game-link" target="_blank" rel="noopener noreferrer">
           <i className="fas fa-download"></i>
-          <span>
-            {game.showSource !== false && game.downloadSource 
-              ? `${t('game.download')} (${game.downloadSource})` 
-              : t('game.download')}
-          </span>
+          <span>{t('game.download')}</span>
         </a>
 
         {isAdmin && (

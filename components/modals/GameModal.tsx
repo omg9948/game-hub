@@ -30,14 +30,12 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
   const [images, setImages] = useState<string[]>([]);
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
-  const [downloadSource, setDownloadSource] = useState(game?.downloadSource || '');
-  const [showSource, setShowSource] = useState(game?.showSource !== false);
 
   useEffect(() => {
     if (game) {
       setTitle(game.title);
       setCategory(game.category);
-      setIcon(game.icon || '');
+      setIcon(game.icon);
       setImage(game.image || '');
       setImages(game.images || []);
       setLink(game.link);
@@ -63,9 +61,7 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
       image,
       images: images.filter(Boolean),
       link,
-      description,
-      downloadSource: downloadSource.trim() || undefined,
-      showSource
+      description
     });
   };
 
@@ -145,30 +141,6 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
               placeholder={t('modal.description')}
               rows={6}
             />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">{t('modal.downloadSource')}</label>
-            <input
-              type="text"
-              className="form-input"
-              value={downloadSource}
-              onChange={e => setDownloadSource(e.target.value)}
-              placeholder="MEGA, Google Drive, MediaFire..."
-            />
-          </div>
-
-          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <input
-              type="checkbox"
-              id="showSource"
-              checked={showSource}
-              onChange={e => setShowSource(e.target.checked)}
-              style={{ width: '18px', height: '18px', accentColor: 'var(--primary)', cursor: 'pointer' }}
-            />
-            <label htmlFor="showSource" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>
-              {t('modal.showSource')}
-            </label>
           </div>
 
           <button type="submit" className="form-submit"><i className="fas fa-save"></i> {t('modal.save')}</button>
