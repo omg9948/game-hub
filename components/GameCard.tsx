@@ -11,9 +11,10 @@ interface GameCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onViewDetail: () => void;
+  compact?: boolean;
 }
 
-export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: GameCardProps) {
+export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail, compact = false }: GameCardProps) {
   const { t } = useLanguage();
   const [imgError, setImgError] = useState(false);
 
@@ -21,19 +22,23 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
   const shortDesc = desc.length > 80 ? desc.substring(0, 80) + '...' : desc;
 
   return (
-    <div className="game-card">
-      {game.image && !imgError ? (
-        <img 
-          src={game.image} 
-          className="game-image" 
-          alt={game.title}
-          onError={() => setImgError(true)}
-          loading="lazy"
-        />
-      ) : (
-        <div className="game-image-placeholder">
-          <i className={game.icon}></i>
-        </div>
+    <div className={`game-card ${compact ? 'compact' : ''}`}>
+      {!compact && (
+        <>
+          {game.image && !imgError ? (
+            <img 
+              src={game.image} 
+              className="game-image" 
+              alt={game.title}
+              onError={() => setImgError(true)}
+              loading="lazy"
+            />
+          ) : (
+            <div className="game-image-placeholder">
+              <i className={game.icon}></i>
+            </div>
+          )}
+        </>
       )}
 
       <div className="game-content">
@@ -42,13 +47,17 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
           <span className="game-category-badge">{game.category}</span>
         </div>
         <h3 className="game-title">{game.title}</h3>
-        <p className="game-desc collapsed">
-          <AutoLinkText text={shortDesc} />
-        </p>
 
-        <button className="read-more-btn" onClick={onViewDetail}>
-          <i className="fas fa-expand-alt"></i> {t('game.viewMore')}
-        </button>
+        {!compact && (
+          <>
+            <p className="game-desc collapsed">
+              <AutoLinkText text={shortDesc} />
+            </p>
+            <button className="read-more-btn" onClick={onViewDetail}>
+              <i className="fas fa-expand-alt"></i> {t('game.viewMore')}
+            </button>
+          </>
+        )}
 
         <a href={game.link} className="game-link" target="_blank" rel="noopener noreferrer">
           <i className="fas fa-download"></i>

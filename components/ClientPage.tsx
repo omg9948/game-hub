@@ -50,7 +50,6 @@ export default function ClientPage({
   const [settings, setSettings] = useState<SiteSettings>(initialSettings);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [currentCategory, setCurrentCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -79,11 +78,9 @@ export default function ClientPage({
     if (savedAdmin === 'true') {
       setIsAdmin(true);
     }
-    // จำลอง loading สักครู่เพื่อแสดง skeleton
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
   }, []);
 
+  // แก้ไข: ใช้ _t แทน t เพื่อไม่ให้ชนกับ t จาก useLanguage
   const refreshData = useCallback(async () => {
     try {
       const [g, c, u, tut, s] = await Promise.all([
@@ -150,9 +147,14 @@ export default function ClientPage({
     }
   };
 
+  const handleToggleView = (mode: 'grid' | 'compact') => {
+    setViewMode(mode);
+    localStorage.setItem('gamehub_view_mode', mode);
+  };
+
   const handleDeleteLatestUpdate = async () => {
     if (!latestUpdate) return;
-    if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบประกาศ "${latestUpdate.title}"?`)) return;
+    if (!confirm(`\u0e04\u0e38\u0e13\u0e41\u0e19\u0e48\u0e43\u0e08\u0e2b\u0e23\u0e37\u0e2d\u0e44\u0e21\u0e48\u0e17\u0e35\u0e48\u0e08\u0e30\u0e25\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e32\u0e28 "${latestUpdate.title}"?`)) return;
 
     await handleSave(async () => {
       await fetch('/api/updates', {
@@ -174,85 +176,6 @@ export default function ClientPage({
   });
 
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
-
-  // ===== SKELETON COMPONENTS =====
-  const SkeletonGameCard = () => (
-    <div className="skeleton-card">
-      <div className="skeleton skeleton-image" />
-      <div className="skeleton-header">
-        <div className="skeleton skeleton-icon" />
-        <div className="skeleton skeleton-badge" />
-      </div>
-      <div className="skeleton skeleton-title" />
-      <div className="skeleton skeleton-desc" />
-      <div className="skeleton skeleton-desc-short" />
-      <div className="skeleton-row">
-        <div className="skeleton skeleton-btn" />
-      </div>
-    </div>
-  );
-
-  const SkeletonHero = () => (
-    <section className="hero">
-      <div className="skeleton skeleton-hero-title" />
-      <div className="skeleton skeleton-hero-desc" />
-    </section>
-  );
-
-  const SkeletonSearch = () => (
-    <div className="search-container">
-      <div className="skeleton skeleton-search" />
-    </div>
-  );
-
-  const SkeletonTabs = () => (
-    <div className="skeleton-tabs">
-      {[1,2,3,4,5].map(i => (
-        <div key={i} className="skeleton skeleton-tab" />
-      ))}
-    </div>
-  );
-
-  const SkeletonAdminPanel = () => (
-    <div className="skeleton-admin-panel">
-      <div className="skeleton-admin-header">
-        <div className="skeleton skeleton-admin-title" />
-        <div className="skeleton-admin-btns">
-          <div className="skeleton skeleton-admin-btn" />
-          <div className="skeleton skeleton-admin-btn" />
-        </div>
-      </div>
-      <div className="skeleton-stats">
-        {[1,2,3].map(i => (
-          <div key={i} className="skeleton-stat-card">
-            <div className="skeleton skeleton-stat-number" />
-            <div className="skeleton skeleton-stat-label" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const SkeletonBanner = () => (
-    <div className="skeleton-banner">
-      <div className="skeleton-banner-left">
-        <div className="skeleton skeleton-banner-icon" />
-        <div className="skeleton-banner-text">
-          <div className="skeleton skeleton-banner-title" />
-          <div className="skeleton skeleton-banner-desc" />
-        </div>
-      </div>
-      <div className="skeleton skeleton-banner-btn" />
-    </div>
-  );
-
-  const SkeletonGrid = () => (
-    <div className="skeleton-grid">
-      {[1,2,3,4,5,6].map(i => (
-        <SkeletonGameCard key={i} />
-      ))}
-    </div>
-  );
 
   return (
     <div className={isAdmin ? 'admin-mode' : ''} key={refreshKey}>
@@ -317,92 +240,79 @@ export default function ClientPage({
       </header>
 
       <div className="container">
-        {isLoading ? (
-          <>
-            <SkeletonBanner />
-            <SkeletonHero />
-            <SkeletonSearch />
-            {isAdmin && <SkeletonAdminPanel />}
-            <SkeletonTabs />
-            <SkeletonGrid />
-          </>
-        ) : (
-          <>
-            {latestUpdate && (
-              <UpdateBanner 
-                key={`update-${latestUpdate.id}-${refreshKey}`}
-                latestUpdate={latestUpdate} 
-                isAdmin={isAdmin} 
-                onShowAll={() => setUpdateLogOpen(true)}
-                onAddUpdate={() => setUpdateModalOpen(true)}
-                onDelete={handleDeleteLatestUpdate}
-              />
-            )}
+        {latestUpdate && (
+          <UpdateBanner 
+            key={`update-${latestUpdate.id}-${refreshKey}`}
+            latestUpdate={latestUpdate} 
+            isAdmin={isAdmin} 
+            onShowAll={() => setUpdateLogOpen(true)}
+            onAddUpdate={() => setUpdateModalOpen(true)}
+            onDelete={handleDeleteLatestUpdate}
+          />
+        )}
 
-            <Hero 
-              settings={settings} 
-              isAdmin={isAdmin}
-              onUpdate={async (newSettings) => {
-                await handleSave(async () => {
-                  await fetch('/api/settings', { 
-                    method: 'PUT', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newSettings) 
-                  });
-                }, t('toast.success'));
+        <Hero 
+          settings={settings} 
+          isAdmin={isAdmin}
+          onUpdate={async (newSettings) => {
+            await handleSave(async () => {
+              await fetch('/api/settings', { 
+                method: 'PUT', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newSettings) 
+              });
+            }, t('toast.success'));
+          }}
+        />
+
+        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
+        {isAdmin && (
+          <AdminPanel 
+            games={games} 
+            categories={categories} 
+            updates={updates}
+            onAddGame={() => { setEditingGame(null); setGameModalOpen(true); }}
+            onAddCategory={() => setCategoryModalOpen(true)}
+          />
+        )}
+
+        <CategoryTabs 
+          categories={categories} 
+          games={games}
+          current={currentCategory} 
+          onChange={setCurrentCategory} 
+        />
+
+        <div className="games-grid">
+          {filteredGames.map(game => (
+            <GameCard 
+              key={game.id} 
+              game={game} 
+              isAdmin={isAdmin} 
+              onEdit={() => { setEditingGame(game); setGameModalOpen(true); }}
+              onDelete={async () => {
+                if (confirm(`${t('game.delete')} "${game.title}"?`)) {
+                  await handleSave(async () => {
+                    await fetch('/api/games', { 
+                      method: 'DELETE', 
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ id: game.id }) 
+                    });
+                  }, `${t('game.delete')} "${game.title}"`);
+                }
               }}
+              onViewDetail={() => { setDetailGame(game); setDetailOpen(true); }}
             />
+          ))}
+        </div>
 
-            <SearchBar value={searchQuery} onChange={setSearchQuery} />
-
-            {isAdmin && (
-              <AdminPanel 
-                games={games} 
-                categories={categories} 
-                updates={updates}
-                onAddGame={() => { setEditingGame(null); setGameModalOpen(true); }}
-                onAddCategory={() => setCategoryModalOpen(true)}
-              />
-            )}
-
-            <CategoryTabs 
-              categories={categories} 
-              games={games}
-              current={currentCategory} 
-              onChange={setCurrentCategory} 
-            />
-
-            <div className="games-grid">
-              {filteredGames.map(game => (
-                <GameCard 
-                  key={game.id} 
-                  game={game} 
-                  isAdmin={isAdmin} 
-                  onEdit={() => { setEditingGame(game); setGameModalOpen(true); }}
-                  onDelete={async () => {
-                    if (confirm(`${t('game.delete')} "${game.title}"?`)) {
-                      await handleSave(async () => {
-                        await fetch('/api/games', { 
-                          method: 'DELETE', 
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ id: game.id }) 
-                        });
-                      }, `${t('game.delete')} "${game.title}"`);
-                    }
-                  }}
-                  onViewDetail={() => { setDetailGame(game); setDetailOpen(true); }}
-                />
-              ))}
-            </div>
-
-            {filteredGames.length === 0 && (
-              <div className="empty-state">
-                <i className="fas fa-search"></i>
-                <h3>{t('empty.noResults')}</h3>
-                <p>{t('empty.tryAgain')}</p>
-              </div>
-            )}
-          </>
+        {filteredGames.length === 0 && (
+          <div className="empty-state">
+            <i className="fas fa-search"></i>
+            <h3>{t('empty.noResults')}</h3>
+            <p>{t('empty.tryAgain')}</p>
+          </div>
         )}
       </div>
 
