@@ -19,6 +19,7 @@ import UpdateLogModal from './modals/UpdateLogModal';
 import AboutModal from './modals/AboutModal';
 import TutorialModal from './modals/TutorialModal';
 import TutorialEditModal from './modals/TutorialEditModal';
+import TutorialDetailModal from './modals/TutorialDetailModal';
 import ImportModal from './modals/ImportModal';
 import WelcomeModal from './WelcomeModal';
 import Particles from './Particles';
@@ -53,6 +54,10 @@ export default function ClientPage({
 
   const [detailGame, setDetailGame] = useState<Game | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+
+  // State สำหรับ TutorialDetailModal
+  const [tutorialDetailOpen, setTutorialDetailOpen] = useState(false);
+  const [selectedTutorial, setSelectedTutorial] = useState<Tutorial | null>(null);
 
   const [loginOpen, setLoginOpen] = useState(false);
   const [gameModalOpen, setGameModalOpen] = useState(false);
@@ -213,7 +218,6 @@ export default function ClientPage({
           <span>Game Hub</span>
         </a>
         <div className="header-right">
-          {/* ปุ่มวิธีการใช้งาน - อยู่ข้างบนเลย! */}
           <button className="tutorial-top-btn" onClick={() => setTutorialOpen(true)}>
             <i className="fas fa-graduation-cap"></i>
             <span>วิธีการใช้งาน</span>
@@ -401,6 +405,16 @@ export default function ClientPage({
         tutorials={tutorials}
         isAdmin={isAdmin}
         onEdit={() => setTutorialEditOpen(true)}
+        onViewDetail={(tutorial) => {
+          setSelectedTutorial(tutorial);
+          setTutorialDetailOpen(true);
+        }}
+      />
+
+      <TutorialDetailModal
+        isOpen={tutorialDetailOpen}
+        onClose={() => setTutorialDetailOpen(false)}
+        tutorial={selectedTutorial}
       />
 
       <TutorialEditModal

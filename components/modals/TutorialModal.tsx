@@ -8,6 +8,7 @@ interface TutorialModalProps {
   tutorials: Tutorial[];
   isAdmin: boolean;
   onEdit: () => void;
+  onViewDetail: (tutorial: Tutorial) => void;
 }
 
 // ดึง YouTube Video ID จาก URL
@@ -22,7 +23,7 @@ function getYoutubeThumbnail(videoId: string): string {
   return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
 }
 
-export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onEdit }: TutorialModalProps) {
+export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onEdit, onViewDetail }: TutorialModalProps) {
   if (!isOpen) return null;
 
   const sortedTutorials = [...tutorials].sort((a, b) => a.order - b.order);
@@ -58,13 +59,7 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
                 const thumbnail = videoId ? getYoutubeThumbnail(videoId) : '';
 
                 return (
-                  <a
-                    key={tutorial.id}
-                    href={tutorial.youtubeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="tutorial-card"
-                  >
+                  <div key={tutorial.id} className="tutorial-card">
                     <div className="tutorial-thumbnail">
                       {thumbnail ? (
                         <>
@@ -85,13 +80,26 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
                       {tutorial.description && (
                         <p className="tutorial-desc">{tutorial.description}</p>
                       )}
-                      <div className="tutorial-link">
+                      
+                      {/* ปุ่มดูข้อมูลเพิ่มเติม → เปิด Pop Up รายละเอียด */}
+                      <button 
+                        className="read-more-btn" 
+                        onClick={() => onViewDetail(tutorial)}
+                      >
+                        <i className="fas fa-expand-alt"></i> ดูข้อมูลเพิ่มเติม
+                      </button>
+
+                      <a 
+                        href={tutorial.youtubeUrl} 
+                        className="game-link" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
                         <i className="fab fa-youtube"></i>
                         <span>ดูวิดีโอใน YouTube</span>
-                        <i className="fas fa-external-link-alt"></i>
-                      </div>
+                      </a>
                     </div>
-                  </a>
+                  </div>
                 );
               })}
             </div>
