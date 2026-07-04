@@ -11,6 +11,7 @@ interface SortableGameCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onViewDetail: () => void;
+  onDragStart?: () => void;
 }
 
 export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: SortableGameCardProps) {
@@ -35,21 +36,8 @@ export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onVi
 
   return (
     <div ref={setNodeRef} style={style} className="sortable-game-card-wrapper">
-      {/* Drag Handle - แสดงเสมอ แต่ disabled ถ้าไม่ใช่แอดมิน */}
-      {!game.pinned && (
-        <div 
-          className={`drag-handle ${!isAdmin ? 'disabled' : ''}`}
-          {...(isAdmin ? attributes : {})}
-          {...(isAdmin ? listeners : {})}
-          title={isAdmin ? "ลากเพื่อเรียงลำดับ" : "เข้าสู่โหมดแอดมินเพื่อลาก"}
-        >
-          <i className="fas fa-grip-vertical"></i>
-          <span className="drag-hint">{isAdmin ? "ลากเพื่อเรียงลำดับ" : "🔒 แอดมินเท่านั้น"}</span>
-        </div>
-      )}
-
-      {/* เกมปักหมุดแสดงล็อค */}
-      {game.pinned && (
+      {/* แสดง badge ล็อคสำหรับเกมปักหมุด */}
+      {game.pinned && isAdmin && (
         <div className="pin-locked-badge" title="ปักหมุด - ไม่สามารถลากได้">
           <i className="fas fa-lock"></i>
           <span>ล็อค</span>
@@ -62,6 +50,7 @@ export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onVi
         onEdit={onEdit}
         onDelete={onDelete}
         onViewDetail={onViewDetail}
+        dragHandleProps={isAdmin && !game.pinned ? { ...attributes, ...listeners } : undefined}
       />
     </div>
   );

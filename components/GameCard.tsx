@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Game } from '@/types';
 import { useLanguage } from './LanguageContext';
-import FormattedText from './FormattedText';
+import AutoLinkText from './AutoLinkText';
 
 interface GameCardProps {
   game: Game;
@@ -11,9 +11,10 @@ interface GameCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onViewDetail: () => void;
+  dragHandleProps?: any;
 }
 
-export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: GameCardProps) {
+export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail, dragHandleProps }: GameCardProps) {
   const { t } = useLanguage();
   const [imgError, setImgError] = useState(false);
 
@@ -39,18 +40,11 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
       <div className="game-content">
         <div className="game-header">
           <div className="game-icon"><i className={game.icon}></i></div>
-          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-            {game.pinned && (
-              <span className="game-pin-badge" title="ปักหมุด">
-                <i className="fas fa-thumbtack"></i>
-              </span>
-            )}
           <span className="game-category-badge">{game.category}</span>
-          </div>
         </div>
         <h3 className="game-title">{game.title}</h3>
         <p className="game-desc collapsed">
-          <FormattedText text={shortDesc} />
+          <AutoLinkText text={shortDesc} />
         </p>
 
         <button className="read-more-btn" onClick={onViewDetail}>
@@ -64,6 +58,21 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
 
         {isAdmin && (
           <div className="admin-controls">
+            {/* ปุ่มลากเรียงลำดับ - แสดงเฉพาะเกมที่ไม่ได้ปักหมุด */}
+            {dragHandleProps && (
+              <button 
+                className="admin-btn-small drag-btn" 
+                {...dragHandleProps}
+                title="ลากเพื่อเรียงลำดับ"
+              >
+                <i className="fas fa-grip-vertical"></i>
+              </button>
+            )}
+            {game.pinned && (
+              <button className="admin-btn-small locked-btn" disabled title="ปักหมุด - ไม่สามารถลากได้">
+                <i className="fas fa-lock"></i>
+              </button>
+            )}
             <button className="admin-btn-small" onClick={onEdit}>
               <i className="fas fa-edit"></i> {t('game.edit')}
             </button>
