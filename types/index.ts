@@ -23,6 +23,14 @@ export interface Update {
   timestamp: number;
 }
 
+export interface Tutorial {
+  id: string;
+  title: string;
+  youtubeUrl: string;
+  description?: string;
+  order: number;
+}
+
 export interface SiteSettings {
   heroTitle: string;
   heroDesc: string;
@@ -36,5 +44,6 @@ export interface AppData {
   games: Game[];
   categories: Category[];
   updates: Update[];
+  tutorials: Tutorial[];
   settings: SiteSettings;
 }
