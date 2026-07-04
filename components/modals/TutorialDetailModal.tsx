@@ -9,42 +9,22 @@ interface TutorialDetailModalProps {
   tutorial: Tutorial | null;
 }
 
-// ฟังก์ชันแปลงข้อความให้มีลิงก์กดได้
-function LinkifyText({ text }: { text: string }) {
-  // แยกบรรทัดโดยใช้ regex
+// ฟังก์ชันแปลงข้อความให้มีลิงก์อัตโนมัติ
+function AutoLinkText({ text }: { text: string }) {
+  // แยกบรรทัด
   const lines = text.split(/\r?\n/);
 
   return (
     <pre className="description-text">
       {lines.map((line, lineIndex) => {
-        // ตรวจสอบว่าบรรทัดนี้เป็นลิงก์ URL เต็มหรือไม่
-        const urlRegex = /^(https?:\/\/[^\s]+)$/;
-        const match = line.match(urlRegex);
-
-        if (match) {
-          // ถ้าเป็นลิงก์เต็มบรรทัด → แสดงเป็นปุ่มลิงก์
-          return (
-            <span key={lineIndex}>
-              <a 
-                href={match[1]} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="tutorial-link-btn"
-              >
-                <i className="fas fa-external-link-alt"></i>
-                {match[1]}
-              </a>
-              {lineIndex < lines.length - 1 ? '\n' : null}
-            </span>
-          );
-        }
-
-        // ถ้าไม่ใช่ลิงก์เต็มบรรทัด → ตรวจหาลิงก์ในข้อความ
-        const parts = line.split(/(https?:\/\/[^\s]+)/g);
+        // ตรวจหาลิงก์ในข้อความแต่ละบรรทัด
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const parts = line.split(urlRegex);
 
         return (
           <span key={lineIndex}>
             {parts.map((part, partIndex) => {
+              // ตรวจสอบว่าส่วนนี้เป็น URL หรือไม่
               if (part.match(/^https?:\/\/[^\s]+$/)) {
                 return (
                   <a 
@@ -58,6 +38,7 @@ function LinkifyText({ text }: { text: string }) {
                   </a>
                 );
               }
+              // ถ้าไม่ใช่ URL → แสดงเป็นข้อความธรรมดา
               return <span key={partIndex}>{part}</span>;
             })}
             {lineIndex < lines.length - 1 ? '\n' : null}
@@ -84,16 +65,14 @@ export default function TutorialDetailModal({ isOpen, onClose, tutorial }: Tutor
         </div>
 
         <div className="tutorial-detail-content">
-          {/* ข้อมูลเพิ่มเติม - แสดงคำอธิบายเท่านั้น (ไม่มีชื่อคลิปซ้ำ) */}
           <div className="tutorial-detail-info">
             {tutorial.description && (
               <div className="tutorial-detail-description">
                 <h5><i className="fas fa-align-left"></i> {t('game.description')}</h5>
-                <LinkifyText text={tutorial.description} />
+                <AutoLinkText text={tutorial.description} />
               </div>
             )}
 
-            {/* ปุ่มดูวิดีโอใน YouTube แบบใหญ่ */}
             <a 
               href={tutorial.youtubeUrl} 
               className="tutorial-youtube-btn" 
