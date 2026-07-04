@@ -80,29 +80,30 @@ export default function ClientPage({
     }
   }, []);
 
+  // แก้ไข: ใช้ _t แทน t เพื่อไม่ให้ชนกับ t จาก useLanguage
   const refreshData = useCallback(async () => {
     try {
-      const [g, c, u, t, s] = await Promise.all([
+      const [g, c, u, tut, s] = await Promise.all([
         fetch('/api/games').then(r => r.json()).catch(() => []),
         fetch('/api/categories').then(r => r.json()).catch(() => []),
         fetch('/api/updates').then(r => r.json()).catch(() => []),
         fetch('/api/tutorials').then(r => r.json()).catch(() => []),
         fetch('/api/settings').then(r => r.json()).catch(() => ({
-          heroTitle: t('hero.defaultTitle'),
-          heroDesc: t('hero.defaultDesc')
+          heroTitle: 'ศูนย์รวมเกมของทีมเรา',
+          heroDesc: 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น พร้อมคำอธิบายและการจัดหมวดหมู่'
         }))
       ]);
       setGames(g);
       setCategories(c);
       setUpdates(u);
-      setTutorials(t);
+      setTutorials(tut);
       setSettings(s);
       setRefreshKey(prev => prev + 1);
-      console.log('Data refreshed:', { games: g.length, updates: u.length, tutorials: t.length });
+      console.log('Data refreshed:', { games: g.length, updates: u.length, tutorials: tut.length });
     } catch (error) {
       console.error('refreshData error:', error);
     }
-  }, [t]);
+  }, []);
 
   const showToast = (title: string, message: string, type: 'success'|'error' = 'success') => {
     setToast({ title, message, type });
@@ -148,7 +149,7 @@ export default function ClientPage({
 
   const handleDeleteLatestUpdate = async () => {
     if (!latestUpdate) return;
-    if (!confirm(`${t('toast.saving')} "${latestUpdate.title}"?`)) return;
+    if (!confirm(`\u0e04\u0e38\u0e13\u0e41\u0e19\u0e48\u0e43\u0e08\u0e2b\u0e23\u0e37\u0e2d\u0e44\u0e21\u0e48\u0e17\u0e35\u0e48\u0e08\u0e30\u0e25\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e32\u0e28 "${latestUpdate.title}"?`)) return;
 
     await handleSave(async () => {
       await fetch('/api/updates', {
@@ -221,7 +222,6 @@ export default function ClientPage({
           <span>{t('app.logo')}</span>
         </a>
         <div className="header-right">
-          {/* ปุ่มเลือกภาษา - อยู่ใกล้ปุ่ม 3 ขีด */}
           <LanguageSwitcher />
 
           <button className="tutorial-top-btn" onClick={() => setTutorialOpen(true)}>
