@@ -29,7 +29,7 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
 
   if (!isOpen) return null;
 
-  const sortedTutorials = [...tutorials].sort((a, b) => a.order - b.order);
+  const sortedTutorials = [...tutorials].sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
     <div className="modal-overlay active" onClick={(e) => e.target === e.currentTarget && onClose()}>
