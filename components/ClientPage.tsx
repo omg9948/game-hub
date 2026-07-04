@@ -148,6 +148,11 @@ export default function ClientPage({
     }
   };
 
+  const handleToggleView = (mode: 'grid' | 'compact') => {
+    setViewMode(mode);
+    localStorage.setItem('gamehub_view_mode', mode);
+  };
+
   const handleDeleteLatestUpdate = async () => {
     if (!latestUpdate) return;
     if (!confirm(`\u0e04\u0e38\u0e13\u0e41\u0e19\u0e48\u0e43\u0e08\u0e2b\u0e23\u0e37\u0e2d\u0e44\u0e21\u0e48\u0e17\u0e35\u0e48\u0e08\u0e30\u0e25\u0e1a\u0e1b\u0e23\u0e30\u0e01\u0e32\u0e28 "${latestUpdate.title}"?`)) return;
@@ -280,7 +285,30 @@ export default function ClientPage({
           onChange={setCurrentCategory} 
         />
 
-        <div className="games-grid">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                {filteredGames.length} {t('menu.allGames')}
+              </div>
+              <div className="view-toggle">
+                <span className="view-toggle-label">View</span>
+                <button 
+                  className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                  onClick={() => handleToggleView('grid')}
+                  title="Grid View"
+                >
+                  <i className="fas fa-th-large"></i>
+                </button>
+                <button 
+                  className={`view-toggle-btn ${viewMode === 'compact' ? 'active' : ''}`}
+                  onClick={() => handleToggleView('compact')}
+                  title="Compact View"
+                >
+                  <i className="fas fa-list"></i>
+                </button>
+              </div>
+            </div>
+
+            <div className={`games-grid ${viewMode === 'compact' ? 'compact' : ''}`}>
           {filteredGames.map(game => (
             <GameCard 
               key={game.id} 
