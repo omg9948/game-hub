@@ -8,9 +8,9 @@ import GameCard from './GameCard';
 interface SortableGameCardProps {
   game: Game;
   isAdmin: boolean;
-  onEdit: (game: Game) => void;
-  onDelete: (id: string) => void;
-  onViewDetail: (game: Game) => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onViewDetail: () => void;
 }
 
 export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: SortableGameCardProps) {
@@ -23,7 +23,7 @@ export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onVi
     isDragging,
   } = useSortable({ 
     id: game.id,
-    disabled: game.pinned || !isAdmin, // ปักหมุดหรือไม่ใช่แอดมิน = ลากไม่ได้
+    disabled: game.pinned || !isAdmin,
   });
 
   const style = {
@@ -35,7 +35,6 @@ export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onVi
 
   return (
     <div ref={setNodeRef} style={style} className="sortable-game-card-wrapper">
-      {/* Drag Handle - แสดงเฉพาะแอดมินและเกมที่ไม่ได้ปักหมุด */}
       {isAdmin && !game.pinned && (
         <div 
           className="drag-handle"
@@ -48,7 +47,6 @@ export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onVi
         </div>
       )}
 
-      {/* เกมปักหมุดแสดงล็อค */}
       {game.pinned && isAdmin && (
         <div className="pin-locked-badge" title="ปักหมุด - ไม่สามารถลากได้">
           <i className="fas fa-lock"></i>
