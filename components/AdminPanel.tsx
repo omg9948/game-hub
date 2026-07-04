@@ -1,16 +1,19 @@
 'use client';
 
-import { Game, Category, Update } from '@/types';
+import { Game, Category, Update, SiteSettings } from '@/types';
+import BackgroundSettings from './BackgroundSettings';
 
 interface AdminPanelProps {
   games: Game[];
   categories: Category[];
   updates: Update[];
+  settings: SiteSettings;
   onAddGame: () => void;
   onAddCategory: () => void;
+  onUpdateSettings: (settings: SiteSettings) => void;
 }
 
-export default function AdminPanel({ games, categories, updates, onAddGame, onAddCategory }: AdminPanelProps) {
+export default function AdminPanel({ games, categories, updates, settings, onAddGame, onAddCategory, onUpdateSettings }: AdminPanelProps) {
   const uniqueCats = [...new Set(games.map(g => g.category))];
 
   return (
@@ -31,6 +34,7 @@ export default function AdminPanel({ games, categories, updates, onAddGame, onAd
           </button>
         </div>
       </div>
+
       <div className="admin-stats">
         <div className="stat-card">
           <div className="stat-number">{games.length}</div>
@@ -44,6 +48,14 @@ export default function AdminPanel({ games, categories, updates, onAddGame, onAd
           <div className="stat-number">{updates.length}</div>
           <div className="stat-label">อัปเดต</div>
         </div>
+      </div>
+
+      {/* Background Settings - ตั้งค่าภาพพื้นหลัง */}
+      <div className="admin-section">
+        <BackgroundSettings
+          backgroundImage={settings.backgroundImage || ''}
+          onChange={(url) => onUpdateSettings({ ...settings, backgroundImage: url })}
+        />
       </div>
     </div>
   );
