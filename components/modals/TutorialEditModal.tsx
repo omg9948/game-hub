@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Tutorial } from '@/types';
+import { useLanguage } from '../LanguageContext';
 
 interface TutorialEditModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface TutorialEditModalProps {
 }
 
 export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }: TutorialEditModalProps) {
+  const { t } = useLanguage();
   const [items, setItems] = useState<Tutorial[]>([]);
 
   useEffect(() => {
@@ -39,7 +41,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
 
   const handleRemove = (index: number) => {
     const newItems = items.filter((_, i) => i !== index);
-    // รีเซ็ต order ใหม่
     const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
     setItems(reordered);
   };
@@ -59,7 +60,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
     if (index === 0) return;
     const newItems = [...items];
     [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
-    // อัปเดต order
     const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
     setItems(reordered);
   };
@@ -68,7 +68,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
     if (index === items.length - 1) return;
     const newItems = [...items];
     [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
-    // อัปเดต order
     const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
     setItems(reordered);
   };
@@ -80,40 +79,43 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
       <div className="modal wide tutorial-edit-modal">
         <div className="modal-header">
           <h3 className="modal-title">
-            <i className="fas fa-cog"></i> จัดการวิดีโอสอนใช้งาน
+            <i className="fas fa-cog"></i> {t('tutorial.editTitle')}
           </h3>
           <button className="modal-close" onClick={onClose}>&times;</button>
         </div>
 
         <div className="tutorial-edit-content">
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-            <i className="fas fa-info-circle"></i> ใส่ลิงก์ YouTube และชื่อวิดีโอ (กดปุ่ม + เพื่อเพิ่มได้ไม่จำกัด)
+            <i className="fas fa-info-circle"></i> {t('tutorial.addNew')}
           </p>
 
           {items.map((item, index) => (
             <div key={item.id} className={`tutorial-edit-item ${item.title.trim() && item.youtubeUrl.trim() ? 'filled' : ''}`}>
               <div className="tutorial-edit-number">{index + 1}</div>
               <div className="tutorial-edit-fields">
+                {/* ช่องชื่อวิดีโอใหญ่ขึ้น */}
                 <input
                   type="text"
-                  className="form-input"
-                  placeholder="ชื่อวิดีโอ..."
+                  className="form-input form-input-large"
+                  placeholder={t('tutorial.placeholder.title')}
                   value={item.title}
                   onChange={e => updateItem(index, 'title', e.target.value)}
                 />
+                {/* ช่องลิงก์ YouTube ใหญ่ขึ้น */}
                 <input
                   type="url"
-                  className="form-input"
-                  placeholder="ลิงก์ YouTube..."
+                  className="form-input form-input-large"
+                  placeholder={t('tutorial.placeholder.url')}
                   value={item.youtubeUrl}
                   onChange={e => updateItem(index, 'youtubeUrl', e.target.value)}
                 />
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="คำอธิบายสั้นๆ (ไม่บังคับ)..."
+                {/* ช่องคำอธิบายใหญ่ขึ้น */}
+                <textarea
+                  className="form-input form-textarea-large"
+                  placeholder={t('tutorial.placeholder.desc')}
                   value={item.description}
                   onChange={e => updateItem(index, 'description', e.target.value)}
+                  rows={4}
                 />
               </div>
               <div className="tutorial-edit-actions">
@@ -130,19 +132,18 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
             </div>
           ))}
 
-          {/* ปุ่มเพิ่มวิดีโอใหม่ */}
           <button type="button" className="tutorial-add-btn" onClick={handleAddNew}>
             <i className="fas fa-plus-circle"></i>
-            <span>เพิ่มวิดีโอใหม่</span>
+            <span>{t('tutorial.addNew')}</span>
           </button>
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
           <button className="form-submit" onClick={handleSave}>
-            <i className="fas fa-save"></i> บันทึก
+            <i className="fas fa-save"></i> {t('tutorial.save')}
           </button>
           <button className="form-submit danger" onClick={onClose}>
-            <i className="fas fa-times"></i> ยกเลิก
+            <i className="fas fa-times"></i> {t('tutorial.cancel')}
           </button>
         </div>
       </div>

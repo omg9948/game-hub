@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Game, Category } from '@/types';
+import { useLanguage } from '../LanguageContext';
 
 interface GameModalProps {
   isOpen: boolean;
@@ -11,93 +12,66 @@ interface GameModalProps {
   onSubmit: (data: any) => void;
 }
 
-// ไอคอนให้เลือก
-const GAME_ICONS = [
-  { class: 'fas fa-gamepad', name: 'Gamepad' },
-  { class: 'fas fa-crown', name: 'Crown' },
-  { class: 'fas fa-rocket', name: 'Rocket' },
-  { class: 'fas fa-brain', name: 'Brain' },
-  { class: 'fas fa-chess-king', name: 'Chess' },
-  { class: 'fas fa-car', name: 'Car' },
-  { class: 'fas fa-city', name: 'City' },
-  { class: 'fas fa-dragon', name: 'Dragon' },
-  { class: 'fas fa-ghost', name: 'Ghost' },
-  { class: 'fas fa-map', name: 'Map' },
-  { class: 'fas fa-users', name: 'Users' },
-  { class: 'fas fa-dice', name: 'Dice' },
-  { class: 'fas fa-sword', name: 'Sword' },
-  { class: 'fas fa-shield-alt', name: 'Shield' },
-  { class: 'fas fa-star', name: 'Star' },
-  { class: 'fas fa-gem', name: 'Gem' },
-  { class: 'fas fa-magic', name: 'Magic' },
-  { class: 'fas fa-skull', name: 'Skull' },
-  { class: 'fas fa-robot', name: 'Robot' },
-  { class: 'fas fa-puzzle-piece', name: 'Puzzle' },
-  { class: 'fas fa-trophy', name: 'Trophy' },
-  { class: 'fas fa-flag', name: 'Flag' },
-  { class: 'fas fa-bomb', name: 'Bomb' },
-  { class: 'fas fa-fire', name: 'Fire' },
+const icons = [
+  'fas fa-gamepad', 'fas fa-ghost', 'fas fa-dragon', 'fas fa-dungeon',
+  'fas fa-chess-knight', 'fas fa-puzzle-piece', 'fas fa-brain', 'fas fa-car',
+  'fas fa-plane', 'fas fa-ship', 'fas fa-rocket', 'fas fa-user-ninja',
+  'fas fa-skull', 'fas fa-crown', 'fas fa-gem', 'fas fa-star',
+  'fas fa-fire', 'fas fa-bolt', 'fas fa-heart', 'fas fa-shield-alt',
+  'fas fa-sword', 'fas fa-hat-wizard', 'fas fa-scroll', 'fas fa-dice-d20'
 ];
 
 export default function GameModal({ isOpen, onClose, game, categories, onSubmit }: GameModalProps) {
+  const { t } = useLanguage();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
+  const [icon, setIcon] = useState('fas fa-gamepad');
   const [image, setImage] = useState('');
   const [images, setImages] = useState<string[]>([]);
-  const [newImageUrl, setNewImageUrl] = useState('');
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
-  const [icon, setIcon] = useState('fas fa-gamepad');
-  const [showIconPicker, setShowIconPicker] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      if (game) {
-        setTitle(game.title);
-        setCategory(game.category || '');
-        setImage(game.image || '');
-        setImages(game.images || []);
-        setLink(game.link);
-        setDescription(game.description || '');
-        setIcon(game.icon || 'fas fa-gamepad');
-      } else {
-        setTitle('');
-        setCategory('');
-        setImage('');
-        setImages([]);
-        setLink('');
-        setDescription('');
-        setIcon('fas fa-gamepad');
-      }
-      setNewImageUrl('');
-      setShowIconPicker(false);
+    if (game) {
+      setTitle(game.title);
+      setCategory(game.category);
+      setIcon(game.icon);
+      setImage(game.image || '');
+      setImages(game.images || []);
+      setLink(game.link);
+      setDescription(game.description || '');
+    } else {
+      setTitle('');
+      setCategory('');
+      setIcon('fas fa-gamepad');
+      setImage('');
+      setImages([]);
+      setLink('');
+      setDescription('');
     }
-  }, [isOpen, game]);
-
-  const handleAddImage = () => {
-    if (newImageUrl.trim() && !images.includes(newImageUrl.trim())) {
-      setImages([...images, newImageUrl.trim()]);
-      setNewImageUrl('');
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
+  }, [game, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
       id: game?.id,
-      title: title.trim(),
-      category: category || 'Other', // ถ้าไม่เลือกให้เป็น Other
-      image: image.trim(),
+      title,
+      category: category || 'Other',
+      icon,
+      image,
       images: images.filter(Boolean),
-      link: link.trim(),
-      description: description,
-      icon: icon.trim() || 'fas fa-gamepad'
+      link,
+      description
     });
   };
+
+  const addImage = () => setImages([...images, '']);
+  const updateImage = (i: number, val: string) => {
+    const newImages = [...images];
+    newImages[i] = val;
+    setImages(newImages);
+  };
+  const removeImage = (i: number) => setImages(images.filter((_, idx) => idx !== i));
 
   if (!isOpen) return null;
 
@@ -105,108 +79,71 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
     <div className="modal-overlay active" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal wide">
         <div className="modal-header">
-          <h3 className="modal-title">{game ? 'แก้ไขเกม' : 'เพิ่มเกมใหม่'}</h3>
+          <h3 className="modal-title">
+            <i className="fas fa-gamepad"></i> {game ? t('modal.editGame') : t('modal.addGame')}
+          </h3>
           <button className="modal-close" onClick={onClose}>&times;</button>
         </div>
-        <form onSubmit={handleSubmit}>
+
+        <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
-            <label className="form-label">ชื่อเกม *</label>
-            <input type="text" className="form-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="ชื่อเกม..." required />
+            <label className="form-label">{t('modal.gameName')}</label>
+            <input className="form-input" value={title} onChange={e => setTitle(e.target.value)} required />
           </div>
 
           <div className="form-group">
-            <label className="form-label">หมวดหมู่ (ไม่บังคับ)</label>
-            <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
-              <option value="">ไม่มีหมวดหมู่ (Other)</option>
-              {categories.map(c => (
-                <option key={c.name} value={c.name}>{c.icon} {c.name}</option>
-              ))}
+            <label className="form-label">{t('modal.category')}</label>
+            <select className="form-input" value={category} onChange={e => setCategory(e.target.value)}>
+              <option value="">{t('modal.noCategory')}</option>
+              {categories.map(c => <option key={c.name} value={c.name}>{c.icon} {c.name}</option>)}
             </select>
           </div>
 
-          {/* ไอคอน - เลือกได้ */}
           <div className="form-group">
-            <label className="form-label">ไอคอน</label>
-            <div className="icon-picker">
-              <button type="button" className="icon-selected" onClick={() => setShowIconPicker(!showIconPicker)}>
-                <i className={icon}></i>
-                <span>เลือกไอคอน</span>
-                <i className={`fas fa-chevron-${showIconPicker ? 'up' : 'down'}`}></i>
-              </button>
-              {showIconPicker && (
-                <div className="icon-grid">
-                  {GAME_ICONS.map((ic) => (
-                    <button
-                      key={ic.class}
-                      type="button"
-                      className={`icon-item ${icon === ic.class ? 'active' : ''}`}
-                      onClick={() => { setIcon(ic.class); setShowIconPicker(false); }}
-                      title={ic.name}
-                    >
-                      <i className={ic.class}></i>
-                    </button>
-                  ))}
-                </div>
-              )}
+            <label className="form-label">{t('modal.icon')}</label>
+            <div className="icon-grid">
+              {icons.map(ic => (
+                <button type="button" key={ic} className={`icon-btn ${icon === ic ? 'active' : ''}`} onClick={() => setIcon(ic)}>
+                  <i className={ic}></i>
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* รูปภาพหลัก */}
           <div className="form-group">
-            <label className="form-label">ลิงก์รูปภาพหลัก (URL)</label>
-            <input type="url" className="form-input" value={image} onChange={e => setImage(e.target.value)} placeholder="https://example.com/image.jpg" />
+            <label className="form-label">{t('modal.imageUrl')}</label>
+            <input className="form-input" value={image} onChange={e => setImage(e.target.value)} placeholder="https://..." />
           </div>
 
-          {/* รูปภาพเพิ่มเติม */}
           <div className="form-group">
-            <label className="form-label">รูปภาพเพิ่มเติม (หลายรูป)</label>
-            <div className="image-input-group">
-              <input 
-                type="url" 
-                className="form-input" 
-                value={newImageUrl} 
-                onChange={e => setNewImageUrl(e.target.value)} 
-                placeholder="https://example.com/screenshot1.jpg"
-                onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddImage())}
-              />
-              <button type="button" className="add-image-btn" onClick={handleAddImage}>
-                <i className="fas fa-plus"></i> เพิ่มรูป
-              </button>
-            </div>
-
-            {images.length > 0 && (
-              <div className="image-preview-list">
-                {images.map((img, idx) => (
-                  <div key={idx} className="image-preview-item">
-                    <img src={img} alt={`รูป ${idx + 1}`} />
-                    <button type="button" className="remove-image-btn" onClick={() => handleRemoveImage(idx)}>
-                      <i className="fas fa-times"></i>
-                    </button>
-                  </div>
-                ))}
+            <label className="form-label">{t('modal.moreImages')}</label>
+            {images.map((img, i) => (
+              <div key={i} className="image-input-row">
+                <input className="form-input" value={img} onChange={e => updateImage(i, e.target.value)} placeholder="https://..." />
+                <button type="button" className="admin-btn-small delete" onClick={() => removeImage(i)}><i className="fas fa-trash"></i></button>
               </div>
-            )}
+            ))}
+            <button type="button" className="add-image-btn" onClick={addImage}><i className="fas fa-plus"></i> {t('modal.addImage')}</button>
           </div>
 
           <div className="form-group">
-            <label className="form-label">ลิงก์ไฟล์เกม *</label>
-            <input type="url" className="form-input" value={link} onChange={e => setLink(e.target.value)} placeholder="https://..." required />
+            <label className="form-label">{t('modal.gameLink')}</label>
+            <input className="form-input" value={link} onChange={e => setLink(e.target.value)} required placeholder="https://..." />
           </div>
 
+          {/* ช่องคำอธิบายใหญ่ขึ้น */}
           <div className="form-group">
-            <label className="form-label">คำอธิบาย</label>
+            <label className="form-label">{t('modal.description')}</label>
             <textarea 
-              className="form-textarea" 
+              className="form-input form-textarea-large" 
               value={description} 
               onChange={e => setDescription(e.target.value)} 
-              placeholder="คำอธิบายเกม... (กด Enter เพื่อขึ้นบรรทัดใหม่)"
+              placeholder={t('modal.description')}
               rows={6}
             />
           </div>
 
-          <button type="submit" className="form-submit">
-            <i className={game ? 'fas fa-save' : 'fas fa-plus'}></i> {game ? 'บันทึกการแก้ไข' : 'เพิ่มเกม'}
-          </button>
+          <button type="submit" className="form-submit"><i className="fas fa-save"></i> {t('modal.save')}</button>
         </form>
       </div>
     </div>
