@@ -157,6 +157,35 @@ export default function ClientPage({
     localStorage.setItem('gamehub_view_mode', mode);
   }, []);
 
+  const handleMoveUp = useCallback((index: number) => {
+    if (index <= 0) return;
+    const newGames = [...games];
+    [newGames[index], newGames[index - 1]] = [newGames[index - 1], newGames[index]];
+    setGames(newGames);
+    handleSave(async () => {
+      await fetch('/api/games', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reorder: true, games: newGames })
+      });
+    }, t('toast.success'));
+  }, [games, handleSave, t]);
+
+  const handleMoveDown = useCallback((index: number) => {
+    if (index >= games.length - 1) return;
+    const newGames = [...games];
+    [newGames[index], newGames[index + 1]] = [newGames[index + 1], newGames[index]];
+    setGames(newGames);
+    handleSave(async () => {
+      await fetch('/api/games', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reorder: true, games: newGames })
+      });
+    }, t('toast.success'));
+  }, [games, handleSave, t]);
+
+
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
   const handleDeleteLatestUpdate = useCallback(async () => {
