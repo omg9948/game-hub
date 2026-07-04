@@ -1,49 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getBlobData, setBlobData } from '@/lib/db';
-
-const UPDATES_FILE = 'updates.json';
 
 export async function GET() {
   try {
-    const updates = await getBlobData(UPDATES_FILE);
+    const updates = await getBlobData('updates.json');
     return NextResponse.json(updates || []);
   } catch (error) {
-    console.error('GET /api/updates error:', error);
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json({ error: 'Failed to fetch updates' }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
-    console.log('POST /api/updates body:', body);
+    const data = await request.json();
+    const updates = await getBlobData('updates.json') || [];
 
-    const updates = (await getBlobData(UPDATES_FILE)) || [];
-
-    updates.push({
-      ...body,
-      id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+    const newUpdate = {
+      ...data,
+      id: `update_${Date.now()}`,
       timestamp: Date.now()
-    });
+    };
 
-    await setBlobData(UPDATES_FILE, updates);
-    console.log('POST /api/updates success, total updates:', updates.length);
-    return NextResponse.json({ success: true, updates });
-  } catch (error) {
-    console.error('POST /api/updates error:', error);
-    return NextResponse.json({ error: 'Failed to save update', detail: String(error) }, { status: 500 });
-  }
-}
-
-export async function DELETE(req: NextRequest) {
-  try {
-    const { id } = await req.json();
-    let updates = (await getBlobData(UPDATES_FILE)) || [];
-    updates = updates.filter((u: any) => u.id !== id);
-    await setBlobData(UPDATES_FILE, updates);
+    updates.push(newUpdate);
+    await setBlobData('updates.json', updates);
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('DELETE /api/updates error:', error);
+    return NextResponse.json({ error: 'Failed to save update' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json();
+    const updates = await getBlobData('updates.json') || [];
+    const filtered = updates.filter((u: any) => u.id !== id);
+    await setBlobData('updates.json', filtered);
+    return NextResponse.json({ success: true });
+  } catch (error) {
     return NextResponse.json({ error: 'Failed to delete update' }, { status: 500 });
   }
 }

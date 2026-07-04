@@ -102,11 +102,21 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
           <div className="form-group">
             <label className="form-label">{t('modal.icon')}</label>
             <div className="icon-grid">
-              {icons.map(ic => (
-                <button type="button" key={ic} className={`icon-btn ${icon === ic ? 'active' : ''}`} onClick={() => setIcon(ic)}>
-                  <i className={ic}></i>
-                </button>
-              ))}
+              {icons.map(ic => {
+                const iconName = ic.replace('fas fa-', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                return (
+                  <button 
+                    type="button" 
+                    key={ic} 
+                    className={`icon-item ${icon === ic ? 'active' : ''}`} 
+                    onClick={() => setIcon(ic)}
+                    data-icon-name={iconName}
+                    title={iconName}
+                  >
+                    <i className={ic}></i>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

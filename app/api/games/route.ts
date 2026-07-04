@@ -1,60 +1,49 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getBlobData, setBlobData } from '@/lib/db';
-
-const GAMES_FILE = 'games.json';
 
 export async function GET() {
   try {
-    const games = await getBlobData(GAMES_FILE);
+    const games = await getBlobData('games.json');
     return NextResponse.json(games || []);
   } catch (error) {
-    console.error('GET /api/games error:', error);
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json({ error: 'Failed to fetch games' }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
-    console.log('POST /api/games body:', body);
+    const data = await request.json();
+    const games = await getBlobData('games.json') || [];
 
-    const games = (await getBlobData(GAMES_FILE)) || [];
-
-    if (body.id) {
-      // แก้ไขเกมที่มีอยู่
-      const index = games.findIndex((g: any) => g.id === body.id);
+    if (data.id) {
+      // Edit existing game
+      const index = games.findIndex((g: any) => g.id === data.id);
       if (index !== -1) {
-        games[index] = { ...games[index], ...body };
+        games[index] = { ...games[index], ...data };
       } else {
-        return NextResponse.json({ error: 'Game not found' }, { status: 404 });
+        games.push(data);
       }
     } else {
-      // เพิ่มเกมใหม่
-      games.push({
-        ...body,
-        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-        date: new Date().toISOString()
-      });
+      // Add new game
+      const newGame = { ...data, id: `game_${Date.now()}`, date: new Date().toISOString() };
+      games.push(newGame);
     }
 
-    await setBlobData(GAMES_FILE, games);
-    console.log('POST /api/games success, total games:', games.length);
-    return NextResponse.json({ success: true, games });
+    await setBlobData('games.json', games);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('POST /api/games error:', error);
-    return NextResponse.json({ error: 'Failed to save game', detail: String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to save game' }, { status: 500 });
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE(request: Request) {
   try {
-    const { id } = await req.json();
-    let games = (await getBlobData(GAMES_FILE)) || [];
-    games = games.filter((g: any) => g.id !== id);
-    await setBlobData(GAMES_FILE, games);
+    const { id } = await request.json();
+    const games = await getBlobData('games.json') || [];
+    const filtered = games.filter((g: any) => g.id !== id);
+    await setBlobData('games.json', filtered);
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('DELETE /api/games error:', error);
     return NextResponse.json({ error: 'Failed to delete game' }, { status: 500 });
   }
 }

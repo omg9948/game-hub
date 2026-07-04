@@ -1,28 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getBlobData, setBlobData } from '@/lib/db';
-
-const TUTORIALS_FILE = 'tutorials.json';
 
 export async function GET() {
   try {
-    const tutorials = await getBlobData(TUTORIALS_FILE);
+    const tutorials = await getBlobData('tutorials.json');
     return NextResponse.json(tutorials || []);
   } catch (error) {
-    console.error('GET /api/tutorials error:', error);
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json({ error: 'Failed to fetch tutorials' }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const tutorials = await req.json();
-    console.log('POST /api/tutorials:', tutorials.length, 'items');
-
-    await setBlobData(TUTORIALS_FILE, tutorials);
-    console.log('POST /api/tutorials success');
-    return NextResponse.json({ success: true, tutorials });
+    const data = await request.json();
+    await setBlobData('tutorials.json', data);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('POST /api/tutorials error:', error);
-    return NextResponse.json({ error: 'Failed to save tutorials', detail: String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to save tutorials' }, { status: 500 });
   }
 }

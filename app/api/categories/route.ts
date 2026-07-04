@@ -1,36 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getBlobData, setBlobData } from '@/lib/db';
-
-const CATEGORIES_FILE = 'categories.json';
 
 export async function GET() {
   try {
-    const categories = await getBlobData(CATEGORIES_FILE);
+    const categories = await getBlobData('categories.json');
     return NextResponse.json(categories || []);
   } catch (error) {
-    console.error('GET /api/categories error:', error);
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
-    console.log('POST /api/categories body:', body);
+    const data = await request.json();
+    const categories = await getBlobData('categories.json') || [];
 
-    const categories = (await getBlobData(CATEGORIES_FILE)) || [];
-
-    const exists = categories.find((c: any) => c.name.toLowerCase() === body.name.toLowerCase());
+    const exists = categories.find((c: any) => c.name === data.name);
     if (exists) {
-      return NextResponse.json({ error: 'Category already exists' }, { status: 400 });
+      return NextResponse.json({ error: 'Category already exists' }, { status: 409 });
     }
 
-    categories.push(body);
-    await setBlobData(CATEGORIES_FILE, categories);
-    console.log('POST /api/categories success, total categories:', categories.length);
-    return NextResponse.json({ success: true, categories });
+    categories.push(data);
+    await setBlobData('categories.json', categories);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('POST /api/categories error:', error);
-    return NextResponse.json({ error: 'Failed to save category', detail: String(error) }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to save category' }, { status: 500 });
   }
 }

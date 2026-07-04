@@ -1,13 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 
-export async function POST(req: NextRequest) {
-  const { password } = await req.json();
-  const hash = crypto.createHash('sha256').update(password).digest('hex');
+export async function POST(request: Request) {
+  try {
+    const { password } = await request.json();
+    const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
 
-  if (hash === process.env.ADMIN_PASSWORD_HASH) {
-    return NextResponse.json({ success: true });
+    if (!ADMIN_PASSWORD_HASH) {
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
+    const hash = crypto.createHash('sha256').update(password).digest('hex');
+
+    if (hash === ADMIN_PASSWORD_HASH) {
+      return NextResponse.json({ success: true });
+    } else {
+      return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
+    }
+  } catch (error) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
-
-  return NextResponse.json({ success: false }, { status: 401 });
 }
