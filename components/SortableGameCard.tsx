@@ -11,7 +11,6 @@ interface SortableGameCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onViewDetail: () => void;
-  onDragStart?: () => void;
 }
 
 export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: SortableGameCardProps) {
@@ -22,35 +21,47 @@ export default function SortableGameCard({ game, isAdmin, onEdit, onDelete, onVi
     transform,
     transition,
     isDragging,
-  } = useSortable({ 
-    id: game.id,
-    disabled: game.pinned || !isAdmin,
-  });
+  } = useSortable({ id: game.id, disabled: !isAdmin || game.pinned });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    position: 'relative' as const,
+    zIndex: isDragging ? 100 : 'auto',
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="sortable-game-card-wrapper">
-      {/* แสดง badge ล็อคสำหรับเกมปักหมุด */}
-      {game.pinned && isAdmin && (
-        <div className="pin-locked-badge" title="ปักหมุด - ไม่สามารถลากได้">
-          <i className="fas fa-lock"></i>
-          <span>ล็อค</span>
+    <div
+      ref={setNodeRef}
+      style={style}
+      data-dragging={isDragging}
+      className="sortable-game-card-wrapper"
+    >
+      {isAdmin && !game.pinned && (
+        <div
+          className="drag-handle"
+          {...attributes}
+          {...listeners}
+          role="button"
+          tabIndex={0}
+          aria-label="ลากเพื่อเรียงลำดับ"
+        >
+          <i className="fas fa-grip-lines"></i>
+          <span className="drag-hint">ลากเรียง</span>
         </div>
       )}
-
-      <GameCard 
-        game={game} 
+      {isAdmin && game.pinned && (
+        <div className="pin-locked-badge">
+          <i className="fas fa-lock"></i>
+          <span>ปักหมุด</span>
+        </div>
+      )}
+      <GameCard
+        game={game}
         isAdmin={isAdmin}
         onEdit={onEdit}
         onDelete={onDelete}
         onViewDetail={onViewDetail}
-        dragHandleProps={isAdmin && !game.pinned ? { ...attributes, ...listeners } : undefined}
       />
     </div>
   );

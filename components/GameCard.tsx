@@ -11,9 +11,10 @@ interface GameCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onViewDetail: () => void;
+  dragHandleProps?: any;
 }
 
-export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail }: GameCardProps) {
+export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail, dragHandleProps }: GameCardProps) {
   const { t } = useLanguage();
   const [imgError, setImgError] = useState(false);
 
