@@ -17,7 +17,7 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
 
   useEffect(() => {
     if (isOpen) {
-      const sorted = [...tutorials].sort((a, b) => a.order - b.order);
+      const sorted = [...tutorials].sort((a, b) => (a.order || 0) - (b.order || 0));
       setItems(sorted.length > 0 ? sorted : []);
     }
   }, [isOpen, tutorials]);
