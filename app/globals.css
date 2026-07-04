@@ -3221,3 +3221,16 @@ body {
   transform: scale(1.02);
   z-index: 1000;
 }
+
+
+/* Drag Handle - Disabled state (non-admin) */
+.drag-handle.disabled {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  cursor: not-allowed;
+  opacity: 0.6 !important;
+}
+
+.drag-handle.disabled:hover {
+  transform: translateX(-50%) scale(1);
+  box-shadow: 0 4px 20px rgba(107, 114, 128, 0.3);
+}
