@@ -16,18 +16,7 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
   useEffect(() => {
     if (isOpen) {
       const sorted = [...tutorials].sort((a, b) => a.order - b.order);
-      // ถ้ามีน้อยกว่า 8 อัน เติมช่องว่าง
-      const filled = [...sorted];
-      while (filled.length < 8) {
-        filled.push({
-          id: `temp_${filled.length}`,
-          title: '',
-          youtubeUrl: '',
-          description: '',
-          order: filled.length
-        });
-      }
-      setItems(filled.slice(0, 8));
+      setItems(sorted.length > 0 ? sorted : []);
     }
   }, [isOpen, tutorials]);
 
@@ -35,6 +24,24 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
     setItems(newItems);
+  };
+
+  const handleAddNew = () => {
+    const newItem: Tutorial = {
+      id: `temp_${Date.now()}_${items.length}`,
+      title: '',
+      youtubeUrl: '',
+      description: '',
+      order: items.length
+    };
+    setItems([...items, newItem]);
+  };
+
+  const handleRemove = (index: number) => {
+    const newItems = items.filter((_, i) => i !== index);
+    // รีเซ็ต order ใหม่
+    const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
+    setItems(reordered);
   };
 
   const handleSave = () => {
@@ -52,14 +59,18 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
     if (index === 0) return;
     const newItems = [...items];
     [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
-    setItems(newItems);
+    // อัปเดต order
+    const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
+    setItems(reordered);
   };
 
   const handleMoveDown = (index: number) => {
     if (index === items.length - 1) return;
     const newItems = [...items];
     [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
-    setItems(newItems);
+    // อัปเดต order
+    const reordered = newItems.map((item, idx) => ({ ...item, order: idx }));
+    setItems(reordered);
   };
 
   if (!isOpen) return null;
@@ -76,11 +87,11 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
 
         <div className="tutorial-edit-content">
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-            <i className="fas fa-info-circle"></i> ใส่ลิงก์ YouTube และชื่อวิดีโอ (สูงสุด 8 คลิป)
+            <i className="fas fa-info-circle"></i> ใส่ลิงก์ YouTube และชื่อวิดีโอ (กดปุ่ม + เพื่อเพิ่มได้ไม่จำกัด)
           </p>
 
           {items.map((item, index) => (
-            <div key={index} className={`tutorial-edit-item ${item.title.trim() && item.youtubeUrl.trim() ? 'filled' : ''}`}>
+            <div key={item.id} className={`tutorial-edit-item ${item.title.trim() && item.youtubeUrl.trim() ? 'filled' : ''}`}>
               <div className="tutorial-edit-number">{index + 1}</div>
               <div className="tutorial-edit-fields">
                 <input
@@ -112,9 +123,18 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
                 <button type="button" className="tutorial-move-btn" onClick={() => handleMoveDown(index)} disabled={index === items.length - 1}>
                   <i className="fas fa-arrow-down"></i>
                 </button>
+                <button type="button" className="tutorial-move-btn delete" onClick={() => handleRemove(index)}>
+                  <i className="fas fa-trash"></i>
+                </button>
               </div>
             </div>
           ))}
+
+          {/* ปุ่มเพิ่มวิดีโอใหม่ */}
+          <button type="button" className="tutorial-add-btn" onClick={handleAddNew}>
+            <i className="fas fa-plus-circle"></i>
+            <span>เพิ่มวิดีโอใหม่</span>
+          </button>
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
