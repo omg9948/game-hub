@@ -6,11 +6,12 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [games, categories, updates, settings] = await Promise.all([
+  const [games, categories, updates, settings, tutorials] = await Promise.all([
     getBlobData('games.json'),
     getBlobData('categories.json'),
     getBlobData('updates.json'),
-    getBlobData('settings.json')
+    getBlobData('settings.json'),
+    getBlobData('tutorials.json')
   ]);
 
   const defaultCategories = [
@@ -83,6 +84,7 @@ export default async function HomePage() {
       initialGames={(games && games.length > 0) ? games : defaultGames}
       initialCategories={(categories && categories.length > 0) ? categories : defaultCategories}
       initialUpdates={(updates && updates.length > 0) ? updates : defaultUpdates}
+      initialTutorials={tutorials || []}
       initialSettings={settings || defaultSettings}
     />
   );
