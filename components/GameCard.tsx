@@ -23,27 +23,30 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
 
   return (
     <div className="game-card">
-      {game.image && !imgError ? (
-        <img 
-          src={game.image} 
-          className="game-image" 
-          alt={game.title}
-          onError={() => setImgError(true)}
-          loading="lazy"
-        />
-      ) : (
-        <div className="game-image-placeholder">
-          <i className={game.icon}></i>
-        </div>
-      )}
+      {/* Wrapper รูปภาพ + badge ปักหมุด */}
+      <div className="game-image-wrapper">
+        {game.image && !imgError ? (
+          <img 
+            src={game.image} 
+            className="game-image" 
+            alt={game.title}
+            onError={() => setImgError(true)}
+            loading="lazy"
+          />
+        ) : (
+          <div className="game-image-placeholder">
+            <i className={game.icon}></i>
+          </div>
+        )}
+        {game.pinned && (
+          <div className="game-pin-badge" title="ปักหมุด">
+            <i className="fas fa-thumbtack"></i>
+          </div>
+        )}
+      </div>
 
       <div className="game-content">
         <div className="game-header">
-          {game.pinned && (
-            <div className="game-pin-badge" title="ปักหมุด">
-              <i className="fas fa-thumbtack"></i>
-            </div>
-          )}
           <div className="game-icon"><i className={game.icon}></i></div>
           <span className="game-category-badge">{game.category}</span>
         </div>

@@ -2795,19 +2795,29 @@ body {
    Pin Badge on Game Card
    ============================================ */
 
-.game-pin-badge {
+/* Game Image Wrapper - สำหรับ badge ปักหมุดบนรูปภาพ */
+.game-image-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.game-image-wrapper .game-pin-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   animation: pinPulse 2s ease-in-out infinite;
-  flex-shrink: 0;
-  order: -1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .game-category-badge {
