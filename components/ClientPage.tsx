@@ -278,7 +278,9 @@ export default function ClientPage({
             onAddCategory={() => setCategoryModalOpen(true)}
             onUpdateSettings={(newSettings) => {
               setSettings(newSettings);
-              handleSave();
+              handleSave(async () => {
+                await saveData({ games, categories, updates, tutorials, settings: newSettings });
+              }, 'บันทึกการตั้งค่าพื้นหลังสำเร็จ!');
             }}
           />
         )}
