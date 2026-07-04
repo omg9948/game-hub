@@ -87,6 +87,23 @@ export default function ClientPage({
     }
   }, []);
 
+  // โหลด games จาก API (client-side) เพื่อให้ข้อมูลสดเสมอ
+  useEffect(() => {
+    const loadGames = async () => {
+      try {
+        const res = await fetch('/api/games', { cache: 'no-store' });
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setGames(data);
+        }
+      } catch (error) {
+        console.error('Failed to load games:', error);
+      }
+    };
+    loadGames();
+  }, []);
+
+
   const refreshData = useCallback(async () => {
     try {
       const [g, c, u, tut, s] = await Promise.all([
