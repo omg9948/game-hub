@@ -10,6 +10,7 @@ import SearchBar from './SearchBar';
 import AdminPanel from './AdminPanel';
 import CategoryTabs from './CategoryTabs';
 import GameCard from './GameCard';
+import SortableGameCard from './SortableGameCard';
 import GameDetailModal from './GameDetailModal';
 import Toast from './Toast';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -155,36 +156,6 @@ export default function ClientPage({
     setViewMode(mode);
     localStorage.setItem('gamehub_view_mode', mode);
   }, []);
-
-  const handleMoveUp = useCallback((index: number) => {
-    if (index <= 0) return;
-    const newGames = [...games];
-    [newGames[index], newGames[index - 1]] = [newGames[index - 1], newGames[index]];
-    setGames(newGames);
-    // บันทึกลำดับใหม่ลง Vercel Blob
-    handleSave(async () => {
-      await fetch('/api/games', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reorder: true, games: newGames })
-      });
-    }, t('toast.success'));
-  }, [games, handleSave, t]);
-
-  const handleMoveDown = useCallback((index: number) => {
-    if (index >= games.length - 1) return;
-    const newGames = [...games];
-    [newGames[index], newGames[index + 1]] = [newGames[index + 1], newGames[index]];
-    setGames(newGames);
-    // บันทึกลำดับใหม่ลง Vercel Blob
-    handleSave(async () => {
-      await fetch('/api/games', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reorder: true, games: newGames })
-      });
-    }, t('toast.success'));
-  }, [games, handleSave, t]);
 
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 

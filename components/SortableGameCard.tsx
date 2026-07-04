@@ -23,33 +23,11 @@ export default function SortableGameCard({
   onViewDetail,
   onMoveUp,
   onMoveDown,
-  canMoveUp = true,
-  canMoveDown = true
+  canMoveUp,
+  canMoveDown
 }: SortableGameCardProps) {
   return (
     <div className="sortable-game-card-wrapper">
-      {/* ปุ่มลูกศรเลื่อนขึ้น/ลง สำหรับ Admin */}
-      {isAdmin && !game.pinned && (
-        <div className="move-controls">
-          <button 
-            className="move-btn move-up" 
-            onClick={onMoveUp}
-            disabled={!canMoveUp}
-            title="เลื่อนขึ้น"
-          >
-            <i className="fas fa-arrow-up"></i>
-          </button>
-          <button 
-            className="move-btn move-down" 
-            onClick={onMoveDown}
-            disabled={!canMoveDown}
-            title="เลื่อนลง"
-          >
-            <i className="fas fa-arrow-down"></i>
-          </button>
-        </div>
-      )}
-
       {/* Badge ปักหมุดสำหรับ Admin */}
       {isAdmin && game.pinned && (
         <div className="pin-locked-badge">
@@ -64,6 +42,10 @@ export default function SortableGameCard({
         onEdit={onEdit}
         onDelete={onDelete}
         onViewDetail={onViewDetail}
+        onMoveUp={onMoveUp}
+        onMoveDown={onMoveDown}
+        canMoveUp={canMoveUp}
+        canMoveDown={canMoveDown}
       />
     </div>
   );

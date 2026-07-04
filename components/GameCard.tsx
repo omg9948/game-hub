@@ -11,10 +11,23 @@ interface GameCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onViewDetail: () => void;
-  dragHandleProps?: any;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
 }
 
-export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail, dragHandleProps }: GameCardProps) {
+export default function GameCard({ 
+  game, 
+  isAdmin, 
+  onEdit, 
+  onDelete, 
+  onViewDetail,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown
+}: GameCardProps) {
   const { t } = useLanguage();
   const [imgError, setImgError] = useState(false);
 
@@ -66,18 +79,24 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
 
         {isAdmin && (
           <div className="admin-controls">
-            {dragHandleProps && (
+            {onMoveUp && (
               <button 
-                className="admin-btn-small drag-btn" 
-                {...dragHandleProps}
-                title="ลากเพื่อเรียงลำดับ"
+                className="admin-btn-small move-up" 
+                onClick={onMoveUp}
+                disabled={!canMoveUp}
+                title="เลื่อนขึ้น"
               >
-                <i className="fas fa-grip-vertical"></i>
+                <i className="fas fa-arrow-up"></i>
               </button>
             )}
-            {game.pinned && (
-              <button className="admin-btn-small locked-btn" disabled title="ปักหมุด - ไม่สามารถลากได้">
-                <i className="fas fa-lock"></i>
+            {onMoveDown && (
+              <button 
+                className="admin-btn-small move-down" 
+                onClick={onMoveDown}
+                disabled={!canMoveDown}
+                title="เลื่อนลง"
+              >
+                <i className="fas fa-arrow-down"></i>
               </button>
             )}
             <button className="admin-btn-small" onClick={onEdit}>
