@@ -25,6 +25,21 @@ import TutorialDetailModal from './modals/TutorialDetailModal';
 import ImportModal from './modals/ImportModal';
 import WelcomeModal from './WelcomeModal';
 import Particles from './Particles';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
 
 interface ClientPageProps {
   initialGames: Game[];
