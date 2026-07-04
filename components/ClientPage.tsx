@@ -156,6 +156,36 @@ export default function ClientPage({
     localStorage.setItem('gamehub_view_mode', mode);
   }, []);
 
+  const handleMoveUp = useCallback((index: number) => {
+    if (index <= 0) return;
+    const newGames = [...games];
+    [newGames[index], newGames[index - 1]] = [newGames[index - 1], newGames[index]];
+    setGames(newGames);
+    // บันทึกลำดับใหม่ลง Vercel Blob
+    handleSave(async () => {
+      await fetch('/api/games', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reorder: true, games: newGames })
+      });
+    }, t('toast.success'));
+  }, [games, handleSave, t]);
+
+  const handleMoveDown = useCallback((index: number) => {
+    if (index >= games.length - 1) return;
+    const newGames = [...games];
+    [newGames[index], newGames[index + 1]] = [newGames[index + 1], newGames[index]];
+    setGames(newGames);
+    // บันทึกลำดับใหม่ลง Vercel Blob
+    handleSave(async () => {
+      await fetch('/api/games', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reorder: true, games: newGames })
+      });
+    }, t('toast.success'));
+  }, [games, handleSave, t]);
+
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
   const handleDeleteLatestUpdate = useCallback(async () => {
@@ -334,11 +364,11 @@ export default function ClientPage({
         </div>
 
         <div className={`games-grid ${viewMode === 'compact' ? 'compact' : ''}`}>
-          {filteredGames.map(game => (
-            <GameCard 
+          {filteredGames.map((game, index) => (
+            <SortableGameCard 
               key={game.id} 
               game={game} 
-              isAdmin={isAdmin} 
+              isAdmin={isAdmin}
               onEdit={() => { setEditingGame(game); setGameModalOpen(true); }}
               onDelete={async () => {
                 if (confirm(`${t('game.delete')} "${game.title}"?`)) {
@@ -352,6 +382,10 @@ export default function ClientPage({
                 }
               }}
               onViewDetail={() => { setDetailGame(game); setDetailOpen(true); }}
+              onMoveUp={() => handleMoveUp(index)}
+              onMoveDown={() => handleMoveDown(index)}
+              canMoveUp={index > 0}
+              canMoveDown={index < filteredGames.length - 1}
             />
           ))}
         </div>
