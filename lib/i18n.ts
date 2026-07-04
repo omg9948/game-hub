@@ -296,7 +296,7 @@ const translations: Record<Language, Translations> = {
       latestUpdate: 'Latest Update',
       viewDetails: 'View Details',
       close: 'Close',
-      dontShow: 'Don't show again',
+      dontShow: "Don't show again",
     },
   },
 };
