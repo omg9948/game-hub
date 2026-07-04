@@ -301,7 +301,9 @@ const translations: Record<Language, Translations> = {
   },
 };
 
-export function t(key: string, lang: Language = 'th'): string {
+export type TranslationKey = string;
+
+export function t(key: TranslationKey, lang: Language = 'th'): string {
   const keys = key.split('.');
   let value: any = translations[lang];
 
