@@ -2126,3 +2126,68 @@ body {
   width: 100%;
   animation: none;
 }
+
+
+/* ===== Tutorial Detail Modal - ลิงก์ในคำอธิบาย ===== */
+
+/* ลิงก์เต็มบรรทัด (ปุ่ม) */
+.tutorial-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  margin: 0.3rem 0;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 10px;
+  color: #c4b5fd;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  word-break: break-all;
+  max-width: 100%;
+}
+
+.tutorial-link-btn:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateX(5px);
+  color: #e9d5ff;
+}
+
+.tutorial-link-btn i {
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* ลิงก์ในข้อความ (inline) */
+.tutorial-inline-link {
+  color: #a78bfa;
+  text-decoration: underline;
+  text-decoration-color: rgba(167, 139, 250, 0.4);
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+  word-break: break-all;
+}
+
+.tutorial-inline-link:hover {
+  color: #c4b5fd;
+  text-decoration-color: rgba(167, 139, 250, 0.8);
+}
+
+/* ปรับ description-text ให้รองรับลิงก์ */
+.tutorial-detail-description .description-text {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  font-family: var(--font-kanit), sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+}
