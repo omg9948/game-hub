@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useLanguage } from '../LanguageContext';
-import AutoLinkText from '../AutoLinkText';
+import { useLanguage } from '@/components/LanguageContext';
+import AutoLinkText from '@/components/AutoLinkText';
 
 interface AboutModalProps {
   isOpen: boolean;

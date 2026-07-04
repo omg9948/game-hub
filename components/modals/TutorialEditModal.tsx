@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Tutorial } from '@/types';
-import { useLanguage } from '../LanguageContext';
-import TextToolbar from '../TextToolbar';
+import { useLanguage } from '@/components/LanguageContext';
+import TextToolbar from '@/components/TextToolbar';
 
 interface TutorialEditModalProps {
   isOpen: boolean;

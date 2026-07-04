@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Game, Category } from '@/types';
-import { useLanguage } from '../LanguageContext';
-import TextToolbar from '../TextToolbar';
+import { useLanguage } from '@/components/LanguageContext';
+import TextToolbar from '@/components/TextToolbar';
 
 interface GameModalProps {
   isOpen: boolean;
@@ -85,7 +85,8 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
       images: images.filter(Boolean),
       link,
       description,
-      pinned
+      pinned,
+      date: game?.date || new Date().toISOString().split('T')[0]
     });
   };
 
@@ -123,7 +124,6 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
             </select>
           </div>
 
-          {/* Pin Toggle */}
           <div className="form-group">
             <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <i className="fas fa-thumbtack"></i> ปักหมุดเกม
@@ -187,7 +187,6 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
             <input className="form-input" value={link} onChange={e => setLink(e.target.value)} required placeholder="https://..." />
           </div>
 
-          {/* ช่องคำอธิบายใหญ่ขึ้น + TextToolbar */}
           <div className="form-group">
             <label className="form-label">{t('modal.description')}</label>
             <div className="textarea-with-toolbar">
