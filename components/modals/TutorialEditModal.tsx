@@ -15,7 +15,6 @@ interface TutorialEditModalProps {
 export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }: TutorialEditModalProps) {
   const { t } = useLanguage();
   const [items, setItems] = useState<Tutorial[]>([]);
-  // เก็บ refs สำหรับ textarea แต่ละรายการ
   const descRefs = useRef<Map<string, React.RefObject<HTMLTextAreaElement | null>>>(new Map());
 
   useEffect(() => {
@@ -25,7 +24,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
     }
   }, [isOpen, tutorials]);
 
-  // สร้าง ref สำหรับ textarea แต่ละรายการ
   const getDescRef = (id: string): React.RefObject<HTMLTextAreaElement | null> => {
     if (!descRefs.current.has(id)) {
       descRefs.current.set(id, { current: null });
@@ -48,7 +46,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
       description: '',
       order: items.length
     };
-    // สร้าง ref สำหรับรายการใหม่
     descRefs.current.set(newId, { current: null });
     setItems([...items, newItem]);
   };
@@ -56,7 +53,6 @@ export default function TutorialEditModal({ isOpen, onClose, tutorials, onSave }
   const handleRemove = (index: number) => {
     const removedItem = items[index];
     const newItems = items.filter((_, i) => i !== index);
-    // ลบ ref ที่ไม่ใช้แล้ว
     descRefs.current.delete(removedItem.id);
     setItems(newItems.map((item, idx) => ({ ...item, order: idx })));
   };

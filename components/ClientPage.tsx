@@ -75,7 +75,6 @@ export default function ClientPage({
   const [importOpen, setImportOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
 
-  // โหลดค่า viewMode จาก localStorage
   useEffect(() => {
     const savedAdmin = localStorage.getItem('gamehub_admin');
     if (savedAdmin === 'true') {
@@ -87,7 +86,6 @@ export default function ClientPage({
     }
   }, []);
 
-  // โหลด games จาก API (client-side) เพื่อให้ข้อมูลสดเสมอ
   useEffect(() => {
     const loadGames = async () => {
       try {
@@ -102,7 +100,6 @@ export default function ClientPage({
     };
     loadGames();
   }, []);
-
 
   const refreshData = useCallback(async () => {
     try {
@@ -176,14 +173,12 @@ export default function ClientPage({
 
   const handleMoveUp = useCallback(async (index: number) => {
     if (index <= 0) return;
-
     let newGames: Game[] = [];
     setGames(prevGames => {
       newGames = [...prevGames];
       [newGames[index], newGames[index - 1]] = [newGames[index - 1], newGames[index]];
       return newGames;
     });
-
     setIsSaving(true);
     try {
       await fetch('/api/games', {
@@ -204,14 +199,12 @@ export default function ClientPage({
   const handleMoveDown = useCallback(async (index: number) => {
     const currentGames = games;
     if (index >= currentGames.length - 1) return;
-
     let newGames: Game[] = [];
     setGames(prevGames => {
       newGames = [...prevGames];
       [newGames[index], newGames[index + 1]] = [newGames[index + 1], newGames[index]];
       return newGames;
     });
-
     setIsSaving(true);
     try {
       await fetch('/api/games', {
@@ -229,13 +222,11 @@ export default function ClientPage({
     }
   }, [games.length, showToast, t, refreshData]);
 
-
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
   const handleDeleteLatestUpdate = useCallback(async () => {
     if (!latestUpdate) return;
     if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบประกาศ "${latestUpdate.title}"?`)) return;
-
     await handleSave(async () => {
       await fetch('/api/updates', {
         method: 'DELETE',
@@ -315,7 +306,6 @@ export default function ClientPage({
         </a>
         <div className="header-right">
           <LanguageSwitcher />
-
           <button className="tutorial-top-btn" onClick={() => setTutorialOpen(true)}>
             <i className="fas fa-graduation-cap"></i>
             <span>{t('tutorial.button')}</span>
@@ -445,17 +435,9 @@ export default function ClientPage({
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-      <GameDetailModal
-        isOpen={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        game={detailGame}
-      />
+      <GameDetailModal isOpen={detailOpen} onClose={() => setDetailOpen(false)} game={detailGame} />
 
-      <LoginModal 
-        isOpen={loginOpen} 
-        onClose={() => setLoginOpen(false)} 
-        onLogin={handleLogin} 
-      />
+      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
 
       <GameModal
         isOpen={gameModalOpen}
@@ -549,11 +531,7 @@ export default function ClientPage({
         }}
       />
 
-      <TutorialDetailModal
-        isOpen={tutorialDetailOpen}
-        onClose={() => setTutorialDetailOpen(false)}
-        tutorial={selectedTutorial}
-      />
+      <TutorialDetailModal isOpen={tutorialDetailOpen} onClose={() => setTutorialDetailOpen(false)} tutorial={selectedTutorial} />
 
       <TutorialEditModal
         isOpen={tutorialEditOpen}
