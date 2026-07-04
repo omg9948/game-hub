@@ -1,8 +1,8 @@
 'use client';
 
 import { Update } from '@/types';
-import { useLanguage } from './LanguageContext';
-import AutoLinkText from './AutoLinkText';
+import { useLanguage } from '../LanguageContext';
+import AutoLinkText from '../AutoLinkText';
 
 interface UpdateLogModalProps {
   isOpen: boolean;
