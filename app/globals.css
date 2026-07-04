@@ -934,6 +934,7 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
 
+
 /* Saving Overlay */
 .saving-overlay {
   position: fixed;
@@ -972,6 +973,7 @@ body {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
 
 /* ============================================
    Game Detail Modal - Pop Up แสดงข้อมูลเต็ม
@@ -1199,6 +1201,7 @@ body {
   transform: scale(1.1);
 }
 
+
 /* ============================================
    Update Log Modal - Scrollable
    ============================================ */
@@ -1365,6 +1368,7 @@ body {
   background: var(--primary);
   border-radius: 3px;
 }
+
 
 /* ============================================
    Icon Picker - แก้ไขให้แสดงสวยงามตามธีม
@@ -1607,6 +1611,7 @@ body {
   font-size: 0.9rem;
 }
 
+
 /* ============================================
    Welcome Modal - หน้าแจ้งเตือนอัปเดตตอนเปิดเว็บ
    ============================================ */
@@ -1759,6 +1764,7 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
 }
+
 
 /* ============================================
    Tutorial Modal - วิธีการใช้งาน
@@ -1995,6 +2001,7 @@ body {
   cursor: not-allowed;
 }
 
+
 /* ============================================
    Tutorial Top Button - ปุ่มวิธีการใช้งานข้างบน
    ============================================ */
@@ -2169,6 +2176,7 @@ body {
   animation: none;
 }
 
+
 /* ===== Tutorial Detail Modal - ลิงก์ในคำอธิบาย ===== */
 
 /* ลิงก์เต็มบรรทัด (ปุ่ม) */
@@ -2341,6 +2349,7 @@ body {
   font-size: 1.3rem;
 }
 
+
 /* ===== AutoLinkText - ลิงก์อัตโนมัติในข้อความ ===== */
 
 .auto-link {
@@ -2431,6 +2440,7 @@ body {
   color: #c4b5fd;
   text-decoration-color: rgba(167, 139, 250, 0.8);
 }
+
 
 /* ============================================
    View Toggle - Grid / Compact Switcher
@@ -2564,6 +2574,11 @@ body {
 }
 
 /* Compact view - แบบแนวนอน */
+.game-card.compact-horizontal {
+  flex-direction: row;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+}
 
 .game-card.compact-horizontal .game-image,
 .game-card.compact-horizontal .game-image-placeholder {
@@ -2604,63 +2619,6 @@ body {
 }
 
 /* Responsive Compact */
-
-
-/* ============================================
-   Pin Badge - มุมบนซ้ายของรูปภาพ
-   ============================================ */
-
-.game-card {
-  position: relative;
-}
-
-.game-pin-badge-image {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  z-index: 10;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
-  animation: pinPulse 2s ease-in-out infinite;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-@keyframes pinPulse {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(-15deg) scale(1.15); }
-}
-
-/* ============================================
-   Move Buttons - ปุ่มเรียงลำดับ ↑ ↓
-   ============================================ */
-
-.admin-btn-small.move-btn {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  border: 1px solid rgba(99, 102, 241, 0.5);
-  min-width: 32px;
-}
-
-.admin-btn-small.move-btn:hover {
-  background: linear-gradient(135deg, #818cf8, #6366f1);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-}
-
-.admin-btn-small.move-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  transform: none;
-}
-
 @media (max-width: 768px) {
   .games-grid.compact {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -2836,8 +2794,27 @@ body {
    Pin Badge on Game Card
    ============================================ */
 
+.game-pin-badge {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  animation: pinPulse 2s ease-in-out infinite;
+}
+
+@keyframes pinPulse {
+  0%, 100% { transform: rotate(0deg) scale(1); }
   50% { transform: rotate(-10deg) scale(1.1); }
 }
+
+
+
+
 
 /* ============================================
    FormattedText in Game Card (collapsed view)
@@ -3001,23 +2978,100 @@ body {
   text-decoration-color: rgba(167, 139, 250, 0.9);
 }
 
+
 /* ============================================
    Drag & Drop - Sortable Game Cards
    ============================================ */
 
-/* Drag Handle */
+.sortable-game-card-wrapper {
+  position: relative;
+}
 
-.sortable-game-card-wrapper:hover 
+/* Drag Handle */
+.drag-handle {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: grab;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  opacity: 0;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.sortable-game-card-wrapper:hover .drag-handle {
+  opacity: 1;
+  top: -8px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
 
 .drag-handle i {
   font-size: 0.9rem;
 }
 
+.drag-hint {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
 /* Pin Locked Badge */
+.pin-locked-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--warning), #d97706);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.pin-locked-badge i {
+  font-size: 0.8rem;
+}
 
 /* Dragging state */
+.sortable-game-card-wrapper [data-dragging="true"] {
+  opacity: 0.5;
+  transform: scale(1.05);
+  z-index: 100;
+}
 
 /* Admin mode hint */
+.admin-mode .games-grid::before {
+  content: '💡 แอดมิน: ลากที่จับ (☰) เพื่อเรียงลำดับเกม | เกมที่ปักหมุด (🔒) ล็อคไว้บนสุด';
+  display: block;
+  width: 100%;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px dashed var(--primary);
+  border-radius: 12px;
+  color: var(--primary);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
 
 /* ============================================
    Background Settings - Status & Preview
@@ -3094,21 +3148,126 @@ body {
    Drag Handle - Fix visibility
    ============================================ */
 
+.sortable-game-card-wrapper {
+  position: relative;
+}
+
+.drag-handle {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  cursor: grab;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  opacity: 1 !important; /* Force visible */
+  transition: all 0.2s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.drag-handle:hover {
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  transform: translateX(-50%) scale(0.95);
+}
+
 .drag-handle i {
   font-size: 0.85rem;
 }
 
+.drag-hint {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
 /* Pin Locked Badge */
+.pin-locked-badge {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--warning), #d97706);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.pin-locked-badge i {
+  font-size: 0.8rem;
+}
 
 /* Dragging state */
+.sortable-game-card-wrapper[data-dragging="true"] {
+  opacity: 0.5;
+  transform: scale(1.02);
+  z-index: 1000;
+}
+
 
 /* Drag Handle - Disabled state (non-admin) */
+.drag-handle.disabled {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  cursor: not-allowed;
+  opacity: 0.6 !important;
+}
 
 .drag-handle.disabled:hover {
   transform: translateX(-50%) scale(1);
   box-shadow: 0 4px 20px rgba(107, 114, 128, 0.3);
 }
 
+
 /* ============================================
    Drag Button in Admin Controls
    ============================================ */
+
+.admin-btn-small.drag-btn {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  cursor: grab;
+  border: 1px solid rgba(99, 102, 241, 0.5);
+}
+
+.admin-btn-small.drag-btn:hover {
+  background: linear-gradient(135deg, #818cf8, #6366f1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.admin-btn-small.drag-btn:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.admin-btn-small.locked-btn {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.admin-btn-small.locked-btn:hover {
+  background: rgba(245, 158, 11, 0.2);
+  transform: none;
+  box-shadow: none;
+}
