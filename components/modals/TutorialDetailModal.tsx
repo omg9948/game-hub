@@ -11,9 +11,8 @@ interface TutorialDetailModalProps {
 
 // ฟังก์ชันแปลงข้อความให้มีลิงก์กดได้
 function LinkifyText({ text }: { text: string }) {
-  // แยกบรรทัด
-  const lines = text.split('
-');
+  // แยกบรรทัดโดยใช้ regex
+  const lines = text.split(/\r?\n/);
 
   return (
     <pre className="description-text">
@@ -35,8 +34,7 @@ function LinkifyText({ text }: { text: string }) {
                 <i className="fas fa-external-link-alt"></i>
                 {match[1]}
               </a>
-              {'
-'}
+              {lineIndex < lines.length - 1 ? '\n' : null}
             </span>
           );
         }
@@ -62,8 +60,7 @@ function LinkifyText({ text }: { text: string }) {
               }
               return <span key={partIndex}>{part}</span>;
             })}
-            {'
-'}
+            {lineIndex < lines.length - 1 ? '\n' : null}
           </span>
         );
       })}
