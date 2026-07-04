@@ -5,7 +5,7 @@ import { useLanguage } from './LanguageContext';
 import { Language } from '@/lib/i18n';
 
 export default function LanguageSwitcher() {
-  const { lang, setLang, t } = useLanguage();
+  const { lang, setLang } = useLanguage();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -20,8 +20,8 @@ export default function LanguageSwitcher() {
   }, []);
 
   const languages: { code: Language; label: string; flag: string }[] = [
-    { code: 'th', label: 'TH', flag: '🇹🇭' },
-    { code: 'en', label: 'EN', flag: '🇬🇧' },
+    { code: 'th', label: 'ไทย', flag: '🇹🇭' },
+    { code: 'en', label: 'English', flag: '🇬🇧' },
   ];
 
   const current = languages.find(l => l.code === lang);
@@ -31,7 +31,7 @@ export default function LanguageSwitcher() {
       <button 
         className="language-btn" 
         onClick={() => setOpen(!open)}
-        title={t('language.title')}
+        title="Change Language"
       >
         <span className="language-flag">{current?.flag}</span>
         <span className="language-label">{current?.label}</span>

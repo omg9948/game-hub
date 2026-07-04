@@ -1,6 +1,7 @@
 'use client';
 
 import { Tutorial } from '@/types';
+import { useLanguage } from '../LanguageContext';
 
 interface TutorialModalProps {
   isOpen: boolean;
@@ -24,6 +25,8 @@ function getYoutubeThumbnail(videoId: string): string {
 }
 
 export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onEdit, onViewDetail }: TutorialModalProps) {
+  const { t } = useLanguage();
+
   if (!isOpen) return null;
 
   const sortedTutorials = [...tutorials].sort((a, b) => a.order - b.order);
@@ -33,12 +36,12 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
       <div className="modal wide tutorial-modal">
         <div className="modal-header">
           <h3 className="modal-title">
-            <i className="fas fa-graduation-cap"></i> วิธีการใช้งาน
+            <i className="fas fa-graduation-cap"></i> {t('tutorial.title')}
           </h3>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             {isAdmin && (
               <button className="admin-btn-small" onClick={onEdit}>
-                <i className="fas fa-edit"></i> จัดการวิดีโอ
+                <i className="fas fa-edit"></i> {t('tutorial.manage')}
               </button>
             )}
             <button className="modal-close" onClick={onClose}>&times;</button>
@@ -49,8 +52,8 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
           {sortedTutorials.length === 0 ? (
             <div className="empty-state">
               <i className="fas fa-video-slash"></i>
-              <h3>ยังไม่มีวิดีโอสอนใช้งาน</h3>
-              <p>แอดมินสามารถเพิ่มวิดีโอได้</p>
+              <h3>{t('tutorial.noVideos')}</h3>
+              <p>{t('tutorial.adminAdd')}</p>
             </div>
           ) : (
             <div className="tutorial-grid">
@@ -86,7 +89,7 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
                         className="read-more-btn" 
                         onClick={() => onViewDetail(tutorial)}
                       >
-                        <i className="fas fa-expand-alt"></i> ดูข้อมูลเพิ่มเติม
+                        <i className="fas fa-expand-alt"></i> {t('tutorial.viewMore')}
                       </button>
 
                       <a 
@@ -96,7 +99,7 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
                         rel="noopener noreferrer"
                       >
                         <i className="fab fa-youtube"></i>
-                        <span>ดูวิดีโอใน YouTube</span>
+                        <span>{t('tutorial.watchOnYoutube')}</span>
                       </a>
                     </div>
                   </div>
