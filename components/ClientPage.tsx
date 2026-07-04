@@ -49,6 +49,7 @@ export default function ClientPage({
   const [tutorials, setTutorials] = useState<Tutorial[]>(initialTutorials);
   const [settings, setSettings] = useState<SiteSettings>(initialSettings);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
   const [isSaving, setIsSaving] = useState(false);
   const [currentCategory, setCurrentCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -145,11 +146,6 @@ export default function ClientPage({
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleToggleView = (mode: 'grid' | 'compact') => {
-    setViewMode(mode);
-    localStorage.setItem('gamehub_view_mode', mode);
   };
 
   const handleDeleteLatestUpdate = async () => {
