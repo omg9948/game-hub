@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Game } from '@/types';
 import { useLanguage } from './LanguageContext';
+import AutoLinkText from './AutoLinkText';
 
 interface GameCardProps {
   game: Game;
@@ -41,9 +42,10 @@ export default function GameCard({ game, isAdmin, onEdit, onDelete, onViewDetail
           <span className="game-category-badge">{game.category}</span>
         </div>
         <h3 className="game-title">{game.title}</h3>
-        <p className="game-desc collapsed">{shortDesc}</p>
+        <p className="game-desc collapsed">
+          <AutoLinkText text={shortDesc} />
+        </p>
 
-        {/* ปุ่มดูเพิ่มเติม → เปิด Pop Up */}
         <button className="read-more-btn" onClick={onViewDetail}>
           <i className="fas fa-expand-alt"></i> {t('game.viewMore')}
         </button>

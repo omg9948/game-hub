@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { Game } from '@/types';
+import { useLanguage } from './LanguageContext';
+import AutoLinkText from './AutoLinkText';
 
 interface GameDetailModalProps {
   isOpen: boolean;
@@ -10,12 +12,12 @@ interface GameDetailModalProps {
 }
 
 export default function GameDetailModal({ isOpen, onClose, game }: GameDetailModalProps) {
+  const { t } = useLanguage();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imgError, setImgError] = useState<Record<number, boolean>>({});
 
   if (!isOpen || !game) return null;
 
-  // รวมรูปหลัก + รูปเพิ่มเติม
   const allImages = [
     ...(game.image ? [game.image] : []),
     ...(game.images || [])
@@ -34,25 +36,23 @@ export default function GameDetailModal({ isOpen, onClose, game }: GameDetailMod
         </div>
 
         <div className="game-detail-content">
-          {/* รูปภาพ Gallery */}
           {allImages.length > 0 && (
             <div className="image-gallery">
               <div className="main-image">
                 {!imgError[currentImageIndex] ? (
                   <img 
                     src={allImages[currentImageIndex]} 
-                    alt={`${game.title} - รูปที่ ${currentImageIndex + 1}`}
+                    alt={`${game.title} - ${t('game.description')} ${currentImageIndex + 1}`}
                     onError={() => handleImageError(currentImageIndex)}
                   />
                 ) : (
                   <div className="image-error">
                     <i className={game.icon}></i>
-                    <span>ไม่สามารถโหลดรูปภาพได้</span>
+                    <span>{t('toast.error')}</span>
                   </div>
                 )}
               </div>
 
-              {/* Thumbnails */}
               {allImages.length > 1 && (
                 <div className="image-thumbnails">
                   {allImages.map((img, idx) => (
@@ -69,7 +69,6 @@ export default function GameDetailModal({ isOpen, onClose, game }: GameDetailMod
             </div>
           )}
 
-          {/* ข้อมูลเกม */}
           <div className="game-info-section">
             <div className="game-info-header">
               <span className="game-category-badge">{game.category}</span>
@@ -78,16 +77,16 @@ export default function GameDetailModal({ isOpen, onClose, game }: GameDetailMod
               </span>
             </div>
 
-            {/* คำอธิบาย - แสดงตามที่ Admin พิมพ์เป๊ะๆ */}
             <div className="game-description">
-              <h4><i className="fas fa-align-left"></i> คำอธิบาย</h4>
-              <pre className="description-text">{game.description || 'ไม่มีคำอธิบาย'}</pre>
+              <h4><i className="fas fa-align-left"></i> {t('game.description')}</h4>
+              <pre className="description-text">
+                <AutoLinkText text={game.description || t('game.noDescription')} />
+              </pre>
             </div>
 
-            {/* ลิงก์ดาวน์โหลด */}
             <a href={game.link} className="game-link download-btn" target="_blank" rel="noopener noreferrer">
               <i className="fas fa-download"></i>
-              <span>ดาวน์โหลดเกม</span>
+              <span>{t('game.downloadBtn')}</span>
             </a>
           </div>
         </div>

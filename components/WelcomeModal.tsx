@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Update } from '@/types';
+import { useLanguage } from './LanguageContext';
+import AutoLinkText from './AutoLinkText';
 
 interface WelcomeModalProps {
   updates: Update[];
@@ -9,16 +11,15 @@ interface WelcomeModalProps {
 }
 
 export default function WelcomeModal({ updates, onClose }: WelcomeModalProps) {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // เช็คว่าเคยดูแล้วหรือยัง (ใช้ latest update timestamp)
     const lastSeen = localStorage.getItem('gamehub_last_seen_update');
     const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
     if (latestUpdate) {
       const latestTimestamp = latestUpdate.timestamp.toString();
-      // ถ้ายังไม่เคยดู หรือ มีอัปเดตใหม่กว่าที่เคยดู
       if (!lastSeen || lastSeen !== latestTimestamp) {
         setIsVisible(true);
       }
@@ -36,7 +37,6 @@ export default function WelcomeModal({ updates, onClose }: WelcomeModalProps) {
 
   if (!isVisible || updates.length === 0) return null;
 
-  // เรียงจากใหม่ → เก่า
   const sortedUpdates = [...updates].sort((a, b) => b.timestamp - a.timestamp);
   const latestUpdate = sortedUpdates[0];
 
@@ -45,25 +45,27 @@ export default function WelcomeModal({ updates, onClose }: WelcomeModalProps) {
       <div className="modal welcome-modal">
         <div className="modal-header">
           <h3 className="modal-title">
-            <i className="fas fa-bullhorn"></i> มีอัปเดตใหม่!
+            <i className="fas fa-bullhorn"></i> {t('welcome.newUpdate')}
           </h3>
           <button className="modal-close" onClick={handleClose}>&times;</button>
         </div>
 
         <div className="welcome-content">
           <div className="welcome-latest">
-            <span className="welcome-badge">ล่าสุด</span>
+            <span className="welcome-badge">{t('welcome.latest')}</span>
             <h4 className="welcome-title">{latestUpdate.title}</h4>
             <span className="welcome-date">
               <i className="fas fa-calendar"></i> {latestUpdate.date}
             </span>
-            <pre className="welcome-text">{latestUpdate.content}</pre>
+            <pre className="welcome-text">
+              <AutoLinkText text={latestUpdate.content} />
+            </pre>
           </div>
 
           {sortedUpdates.length > 1 && (
             <div className="welcome-history">
               <h5 className="welcome-history-title">
-                <i className="fas fa-history"></i> อัปเดตก่อนหน้านี้
+                <i className="fas fa-history"></i> {t('welcome.prevUpdates')}
               </h5>
               <div className="welcome-history-list">
                 {sortedUpdates.slice(1).map(update => (
@@ -79,7 +81,7 @@ export default function WelcomeModal({ updates, onClose }: WelcomeModalProps) {
 
         <div className="welcome-footer">
           <button className="welcome-close-btn" onClick={handleClose}>
-            <i className="fas fa-check"></i> เข้าใจแล้ว
+            <i className="fas fa-check"></i> {t('welcome.understood')}
           </button>
         </div>
       </div>
