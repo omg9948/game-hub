@@ -180,7 +180,16 @@ export default function ClientPage({
 
   return (
     <div className={isAdmin ? 'admin-mode' : ''} key={refreshKey}>
-      <div className="bg-animation" />
+      <div 
+        className="bg-animation" 
+        style={settings.backgroundImage ? {
+          backgroundImage: `url(${settings.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        } : {}}
+      />
       <Particles />
 
       <WelcomeModal updates={updates} onClose={() => {}} />
