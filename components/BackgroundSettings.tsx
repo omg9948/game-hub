@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useLanguage } from './LanguageContext';
 
 interface BackgroundSettingsProps {
   backgroundImage: string;
@@ -9,7 +8,6 @@ interface BackgroundSettingsProps {
 }
 
 export default function BackgroundSettings({ backgroundImage, onChange }: BackgroundSettingsProps) {
-  const { t } = useLanguage();
   const [url, setUrl] = useState(backgroundImage || '');
   const [previewError, setPreviewError] = useState(false);
 
@@ -28,7 +26,7 @@ export default function BackgroundSettings({ backgroundImage, onChange }: Backgr
   return (
     <div className="background-settings">
       <h4 className="background-settings-title">
-        <i className="fas fa-image"></i> {t('admin.backgroundTitle') || 'ตั้งค่าภาพพื้นหลัง'}
+        <i className="fas fa-image"></i> ตั้งค่าภาพพื้นหลัง
       </h4>
 
       <div className="background-info">
