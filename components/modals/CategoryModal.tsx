@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useLanguage } from '@/components/LanguageContext';
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -10,7 +9,6 @@ interface CategoryModalProps {
 }
 
 export default function CategoryModal({ isOpen, onClose, onSubmit }: CategoryModalProps) {
-  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('🎮');
 
@@ -33,20 +31,20 @@ export default function CategoryModal({ isOpen, onClose, onSubmit }: CategoryMod
     <div className="modal-overlay active" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal">
         <div className="modal-header">
-          <h3 className="modal-title">{t('modal.addCategory')}</h3>
+          <h3 className="modal-title">เพิ่มหมวดหมู่ใหม่</h3>
           <button className="modal-close" onClick={onClose}>&times;</button>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">{t('modal.categoryName')} *</label>
-            <input type="text" className="form-input" value={name} onChange={e => setName(e.target.value)} placeholder={t('modal.categoryName') + '...'} required />
+            <label className="form-label">ชื่อหมวดหมู่ *</label>
+            <input type="text" className="form-input" value={name} onChange={e => setName(e.target.value)} placeholder="ชื่อหมวดหมู่..." required />
           </div>
           <div className="form-group">
-            <label className="form-label">{t('modal.iconEmoji')}</label>
+            <label className="form-label">ไอคอน Emoji</label>
             <input type="text" className="form-input" value={icon} onChange={e => setIcon(e.target.value)} placeholder="🎮" />
           </div>
           <button type="submit" className="form-submit">
-            <i className="fas fa-plus"></i> {t('modal.add')}
+            <i className="fas fa-plus"></i> เพิ่มหมวดหมู่
           </button>
         </form>
       </div>

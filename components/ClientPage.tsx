@@ -2,30 +2,30 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Game, Category, Update, SiteSettings, Tutorial } from '@/types';
-import { useLanguage } from '@/components/LanguageContext';
-import Menu from '@/components/Menu';
-import UpdateBanner from '@/components/UpdateBanner';
-import Hero from '@/components/Hero';
-import SearchBar from '@/components/SearchBar';
-import AdminPanel from '@/components/AdminPanel';
-import CategoryTabs from '@/components/CategoryTabs';
-import GameCard from '@/components/GameCard';
-import SortableGameCard from '@/components/SortableGameCard';
-import GameDetailModal from '@/components/GameDetailModal';
-import Toast from '@/components/Toast';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
-import LoginModal from '@/components/modals/LoginModal';
-import GameModal from '@/components/modals/GameModal';
-import CategoryModal from '@/components/modals/CategoryModal';
-import UpdateModal from '@/components/modals/UpdateModal';
-import UpdateLogModal from '@/components/modals/UpdateLogModal';
-import AboutModal from '@/components/modals/AboutModal';
-import TutorialModal from '@/components/modals/TutorialModal';
-import TutorialEditModal from '@/components/modals/TutorialEditModal';
-import TutorialDetailModal from '@/components/modals/TutorialDetailModal';
-import ImportModal from '@/components/modals/ImportModal';
-import WelcomeModal from '@/components/WelcomeModal';
-import Particles from '@/components/Particles';
+import { useLanguage } from './LanguageContext';
+import Menu from './Menu';
+import UpdateBanner from './UpdateBanner';
+import Hero from './Hero';
+import SearchBar from './SearchBar';
+import AdminPanel from './AdminPanel';
+import CategoryTabs from './CategoryTabs';
+import GameCard from './GameCard';
+import SortableGameCard from './SortableGameCard';
+import GameDetailModal from './GameDetailModal';
+import Toast from './Toast';
+import LanguageSwitcher from './LanguageSwitcher';
+import LoginModal from './modals/LoginModal';
+import GameModal from './modals/GameModal';
+import CategoryModal from './modals/CategoryModal';
+import UpdateModal from './modals/UpdateModal';
+import UpdateLogModal from './modals/UpdateLogModal';
+import AboutModal from './modals/AboutModal';
+import TutorialModal from './modals/TutorialModal';
+import TutorialEditModal from './modals/TutorialEditModal';
+import TutorialDetailModal from './modals/TutorialDetailModal';
+import ImportModal from './modals/ImportModal';
+import WelcomeModal from './WelcomeModal';
+import Particles from './Particles';
 
 interface ClientPageProps {
   initialGames: Game[];
@@ -75,6 +75,7 @@ export default function ClientPage({
   const [importOpen, setImportOpen] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
 
+  // โหลดค่า viewMode จาก localStorage
   useEffect(() => {
     const savedAdmin = localStorage.getItem('gamehub_admin');
     if (savedAdmin === 'true') {
@@ -84,21 +85,6 @@ export default function ClientPage({
     if (savedView === 'grid' || savedView === 'compact') {
       setViewMode(savedView);
     }
-  }, []);
-
-  useEffect(() => {
-    const loadGames = async () => {
-      try {
-        const res = await fetch('/api/games', { cache: 'no-store' });
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setGames(data);
-        }
-      } catch (error) {
-        console.error('Failed to load games:', error);
-      }
-    };
-    loadGames();
   }, []);
 
   const refreshData = useCallback(async () => {
@@ -173,12 +159,14 @@ export default function ClientPage({
 
   const handleMoveUp = useCallback(async (index: number) => {
     if (index <= 0) return;
+
     let newGames: Game[] = [];
     setGames(prevGames => {
       newGames = [...prevGames];
       [newGames[index], newGames[index - 1]] = [newGames[index - 1], newGames[index]];
       return newGames;
     });
+
     setIsSaving(true);
     try {
       await fetch('/api/games', {
@@ -199,12 +187,14 @@ export default function ClientPage({
   const handleMoveDown = useCallback(async (index: number) => {
     const currentGames = games;
     if (index >= currentGames.length - 1) return;
+
     let newGames: Game[] = [];
     setGames(prevGames => {
       newGames = [...prevGames];
       [newGames[index], newGames[index + 1]] = [newGames[index + 1], newGames[index]];
       return newGames;
     });
+
     setIsSaving(true);
     try {
       await fetch('/api/games', {
@@ -222,11 +212,13 @@ export default function ClientPage({
     }
   }, [games.length, showToast, t, refreshData]);
 
+
   const latestUpdate = updates.length > 0 ? updates[updates.length - 1] : null;
 
   const handleDeleteLatestUpdate = useCallback(async () => {
     if (!latestUpdate) return;
     if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบประกาศ "${latestUpdate.title}"?`)) return;
+
     await handleSave(async () => {
       await fetch('/api/updates', {
         method: 'DELETE',
@@ -306,6 +298,7 @@ export default function ClientPage({
         </a>
         <div className="header-right">
           <LanguageSwitcher />
+
           <button className="tutorial-top-btn" onClick={() => setTutorialOpen(true)}>
             <i className="fas fa-graduation-cap"></i>
             <span>{t('tutorial.button')}</span>
@@ -435,9 +428,17 @@ export default function ClientPage({
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-      <GameDetailModal isOpen={detailOpen} onClose={() => setDetailOpen(false)} game={detailGame} />
+      <GameDetailModal
+        isOpen={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        game={detailGame}
+      />
 
-      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
+      <LoginModal 
+        isOpen={loginOpen} 
+        onClose={() => setLoginOpen(false)} 
+        onLogin={handleLogin} 
+      />
 
       <GameModal
         isOpen={gameModalOpen}
@@ -531,7 +532,11 @@ export default function ClientPage({
         }}
       />
 
-      <TutorialDetailModal isOpen={tutorialDetailOpen} onClose={() => setTutorialDetailOpen(false)} tutorial={selectedTutorial} />
+      <TutorialDetailModal
+        isOpen={tutorialDetailOpen}
+        onClose={() => setTutorialDetailOpen(false)}
+        tutorial={selectedTutorial}
+      />
 
       <TutorialEditModal
         isOpen={tutorialEditOpen}

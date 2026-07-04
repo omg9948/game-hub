@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Update } from '@/types';
-import { useLanguage } from '@/components/LanguageContext';
-import AutoLinkText from '@/components/AutoLinkText';
+import { useLanguage } from './LanguageContext';
+import AutoLinkText from './AutoLinkText';
 
 interface WelcomeModalProps {
   updates: Update[];

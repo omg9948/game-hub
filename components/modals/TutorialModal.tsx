@@ -12,12 +12,14 @@ interface TutorialModalProps {
   onViewDetail: (tutorial: Tutorial) => void;
 }
 
+// ดึง YouTube Video ID จาก URL
 function getYoutubeId(url: string): string | null {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
 }
 
+// ดึง thumbnail จาก YouTube
 function getYoutubeThumbnail(videoId: string): string {
   return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
 }
@@ -82,6 +84,7 @@ export default function TutorialModal({ isOpen, onClose, tutorials, isAdmin, onE
                         <p className="tutorial-desc">{tutorial.description}</p>
                       )}
 
+                      {/* ปุ่มดูข้อมูลเพิ่มเติม → เปิด Pop Up รายละเอียด */}
                       <button 
                         className="read-more-btn" 
                         onClick={() => onViewDetail(tutorial)}

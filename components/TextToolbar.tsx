@@ -40,6 +40,7 @@ export default function TextToolbar({ textareaRef, onChange, value }: TextToolba
     const newValue = value.substring(0, start) + before + text + after + value.substring(end);
     onChange(newValue);
 
+    // Restore focus and cursor position after React re-render
     setTimeout(() => {
       const textarea = textareaRef.current;
       if (textarea) {
@@ -81,9 +82,11 @@ export default function TextToolbar({ textareaRef, onChange, value }: TextToolba
     const textarea = textareaRef.current;
     if (!textarea) return;
 
+    // ใช้ instanceId ใน data attribute เพื่อแยกแต่ละ instance
     textarea.setAttribute('data-texttoolbar-id', instanceId);
 
     const handleMouseUp = (e: MouseEvent) => {
+      // ตรวจสอบว่า event มาจาก textarea ของ instance นี้หรือไม่
       const target = e.target as HTMLElement;
       if (!target.closest(`[data-texttoolbar-id="${instanceId}"]`)) return;
 

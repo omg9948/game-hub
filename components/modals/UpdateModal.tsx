@@ -44,6 +44,7 @@ export default function UpdateModal({ isOpen, onClose, onSubmit }: UpdateModalPr
             <input className="form-input" value={title} onChange={e => setTitle(e.target.value)} required />
           </div>
 
+          {/* ช่องรายละเอียดใหญ่ขึ้น + TextToolbar */}
           <div className="form-group">
             <label className="form-label">{t('modal.updateContent')}</label>
             <div className="textarea-with-toolbar">
