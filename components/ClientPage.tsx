@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Game, Category, Update, SiteSettings, Tutorial } from '@/types';
+import { useLanguage } from './LanguageContext';
 import Menu from './Menu';
 import UpdateBanner from './UpdateBanner';
 import Hero from './Hero';
@@ -11,6 +12,7 @@ import CategoryTabs from './CategoryTabs';
 import GameCard from './GameCard';
 import GameDetailModal from './GameDetailModal';
 import Toast from './Toast';
+import LanguageSwitcher from './LanguageSwitcher';
 import LoginModal from './modals/LoginModal';
 import GameModal from './modals/GameModal';
 import CategoryModal from './modals/CategoryModal';
@@ -39,6 +41,8 @@ export default function ClientPage({
   initialTutorials,
   initialSettings
 }: ClientPageProps) {
+  const { t } = useLanguage();
+
   const [games, setGames] = useState<Game[]>(initialGames);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [updates, setUpdates] = useState<Update[]>(initialUpdates);
@@ -55,7 +59,6 @@ export default function ClientPage({
   const [detailGame, setDetailGame] = useState<Game | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
-  // State สำหรับ TutorialDetailModal
   const [tutorialDetailOpen, setTutorialDetailOpen] = useState(false);
   const [selectedTutorial, setSelectedTutorial] = useState<Tutorial | null>(null);
 
@@ -85,8 +88,8 @@ export default function ClientPage({
         fetch('/api/updates').then(r => r.json()).catch(() => []),
         fetch('/api/tutorials').then(r => r.json()).catch(() => []),
         fetch('/api/settings').then(r => r.json()).catch(() => ({
-          heroTitle: 'ศูนย์รวมเกมของทีมเรา',
-          heroDesc: 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น พร้อมคำอธิบายและการจัดหมวดหมู่'
+          heroTitle: t('hero.defaultTitle'),
+          heroDesc: t('hero.defaultDesc')
         }))
       ]);
       setGames(g);
@@ -99,7 +102,7 @@ export default function ClientPage({
     } catch (error) {
       console.error('refreshData error:', error);
     }
-  }, []);
+  }, [t]);
 
   const showToast = (title: string, message: string, type: 'success'|'error' = 'success') => {
     setToast({ title, message, type });
@@ -116,28 +119,28 @@ export default function ClientPage({
       setIsAdmin(true);
       localStorage.setItem('gamehub_admin', 'true');
       setLoginOpen(false);
-      showToast('เข้าสู่ระบบสำเร็จ', 'ยินดีต้อนรับแอดมิน!');
+      showToast(t('toast.loginSuccess'), t('toast.welcomeAdmin'));
     } else {
-      showToast('รหัสผ่านไม่ถูกต้อง', 'กรุณาลองใหม่อีกครั้ง', 'error');
+      showToast(t('toast.wrongPassword'), t('toast.tryAgain'), 'error');
     }
   };
 
   const handleLogout = () => {
     setIsAdmin(false);
     localStorage.removeItem('gamehub_admin');
-    showToast('ออกจากระบบ', 'ออกจากระบบแอดมินเรียบร้อย');
+    showToast(t('toast.logout'), t('toast.logoutSuccess'));
   };
 
   const handleSave = async (saveFn: () => Promise<void>, successMsg: string) => {
     setIsSaving(true);
-    showToast('กำลังบันทึก...', 'รอสักครู่ กำลังบันทึกข้อมูล', 'success');
+    showToast(t('toast.saving'), t('toast.wait'), 'success');
     try {
       await saveFn();
       await refreshData();
-      showToast('บันทึกสำเร็จ!', successMsg, 'success');
+      showToast(t('toast.success'), successMsg, 'success');
     } catch (error) {
       console.error('handleSave error:', error);
-      showToast('บันทึกไม่สำเร็จ', 'เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+      showToast(t('toast.error'), t('toast.errorMsg'), 'error');
     } finally {
       setIsSaving(false);
     }
@@ -145,7 +148,7 @@ export default function ClientPage({
 
   const handleDeleteLatestUpdate = async () => {
     if (!latestUpdate) return;
-    if (!confirm(`คุณแน่ใจหรือไม่ที่จะลบประกาศ "${latestUpdate.title}"?`)) return;
+    if (!confirm(`${t('toast.saving')} "${latestUpdate.title}"?`)) return;
 
     await handleSave(async () => {
       await fetch('/api/updates', {
@@ -153,7 +156,7 @@ export default function ClientPage({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: latestUpdate.id })
       });
-    }, 'ประกาศถูกลบเรียบร้อย');
+    }, t('toast.success'));
   };
 
   const filteredGames = games.filter(g => {
@@ -179,7 +182,7 @@ export default function ClientPage({
         <div className="saving-overlay">
           <div className="saving-spinner">
             <i className="fas fa-spinner fa-spin"></i>
-            <span>กำลังบันทึก...</span>
+            <span>{t('toast.saving')}</span>
           </div>
         </div>
       )}
@@ -206,7 +209,7 @@ export default function ClientPage({
           a.download = `gamehub_backup_${new Date().toISOString().split('T')[0]}.json`;
           a.click();
           URL.revokeObjectURL(url);
-          showToast('สำรองข้อมูลสำเร็จ', 'ไฟล์ถูกดาวน์โหลดแล้ว');
+          showToast(t('toast.backupSuccess'), t('toast.fileDownloaded'));
           setMenuOpen(false);
         }}
         onImport={() => { setMenuOpen(false); setImportOpen(true); }}
@@ -215,12 +218,15 @@ export default function ClientPage({
       <header className="header">
         <a href="#" className="logo" onClick={(e) => { e.preventDefault(); window.location.reload(); }}>
           <i className="fas fa-gamepad"></i>
-          <span>Game Hub</span>
+          <span>{t('app.logo')}</span>
         </a>
         <div className="header-right">
+          {/* ปุ่มเลือกภาษา - อยู่ใกล้ปุ่ม 3 ขีด */}
+          <LanguageSwitcher />
+
           <button className="tutorial-top-btn" onClick={() => setTutorialOpen(true)}>
             <i className="fas fa-graduation-cap"></i>
-            <span>วิธีการใช้งาน</span>
+            <span>{t('tutorial.button')}</span>
           </button>
           <button className="hamburger-btn" onClick={() => setMenuOpen(true)}>
             <i className="fas fa-bars"></i>
@@ -250,7 +256,7 @@ export default function ClientPage({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newSettings) 
               });
-            }, 'ตั้งค่าหน้าเว็บบันทึกเรียบร้อย');
+            }, t('toast.success'));
           }}
         />
 
@@ -281,14 +287,14 @@ export default function ClientPage({
               isAdmin={isAdmin} 
               onEdit={() => { setEditingGame(game); setGameModalOpen(true); }}
               onDelete={async () => {
-                if (confirm(`คุณแน่ใจหรือไม่ที่จะลบเกม "${game.title}"?`)) {
+                if (confirm(`${t('game.delete')} "${game.title}"?`)) {
                   await handleSave(async () => {
                     await fetch('/api/games', { 
                       method: 'DELETE', 
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ id: game.id }) 
                     });
-                  }, `เกม "${game.title}" ถูกลบเรียบร้อย`);
+                  }, `${t('game.delete')} "${game.title}"`);
                 }
               }}
               onViewDetail={() => { setDetailGame(game); setDetailOpen(true); }}
@@ -299,8 +305,8 @@ export default function ClientPage({
         {filteredGames.length === 0 && (
           <div className="empty-state">
             <i className="fas fa-search"></i>
-            <h3>ไม่พบเกมที่ค้นหา</h3>
-            <p>ลองค้นหาด้วยคำอื่น หรือตรวจสอบการสะกดอีกครั้ง</p>
+            <h3>{t('empty.noResults')}</h3>
+            <p>{t('empty.tryAgain')}</p>
           </div>
         )}
       </div>
@@ -331,7 +337,7 @@ export default function ClientPage({
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(data)
             });
-          }, editingGame ? 'เกมถูกอัปเดตแล้ว' : 'เกมใหม่ถูกเพิ่มแล้ว');
+          }, editingGame ? t('modal.editGame') : t('modal.addGame'));
           setGameModalOpen(false);
         }}
       />
@@ -347,7 +353,7 @@ export default function ClientPage({
               body: JSON.stringify(data)
             });
             if (!res.ok) throw new Error('Category already exists');
-          }, `หมวดหมู่ "${data.name}" ถูกเพิ่มแล้ว`);
+          }, `${t('modal.addCategory')} "${data.name}"`);
           setCategoryModalOpen(false);
         }}
       />
@@ -362,7 +368,7 @@ export default function ClientPage({
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(data)
             });
-          }, 'อัปเดตใหม่ถูกเพิ่มแล้ว');
+          }, t('modal.send'));
           setUpdateModalOpen(false);
         }}
       />
@@ -379,7 +385,7 @@ export default function ClientPage({
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ id })
             });
-          }, 'อัปเดตถูกลบแล้ว');
+          }, t('toast.success'));
         }}
       />
 
@@ -395,7 +401,7 @@ export default function ClientPage({
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...settings, aboutContent: content })
             });
-          }, 'ข้อมูลเกี่ยวกับเราบันทึกเรียบร้อย');
+          }, t('toast.success'));
         }}
       />
 
@@ -428,7 +434,7 @@ export default function ClientPage({
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(newTutorials)
             });
-          }, 'วิดีโอสอนใช้งานบันทึกเรียบร้อย');
+          }, t('toast.success'));
           setTutorialEditOpen(false);
         }}
       />
@@ -438,7 +444,7 @@ export default function ClientPage({
         onClose={() => setImportOpen(false)}
         onImport={async (data) => {
           setIsSaving(true);
-          showToast('กำลังนำเข้า...', 'รอสักครู่ กำลังนำเข้าข้อมูล', 'success');
+          showToast(t('toast.importing'), t('toast.importWait'), 'success');
           try {
             const imported = JSON.parse(data);
             if (imported.games) {
@@ -463,9 +469,9 @@ export default function ClientPage({
               await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(imported.settings) });
             }
             await refreshData();
-            showToast('นำเข้าสำเร็จ!', 'ข้อมูลถูกนำเข้าเรียบร้อย');
+            showToast(t('toast.importSuccess'), t('toast.imported'));
           } catch (e) {
-            showToast('ข้อผิดพลาด', 'ข้อมูล JSON ไม่ถูกต้อง', 'error');
+            showToast(t('toast.jsonError'), t('toast.invalidJSON'), 'error');
           } finally {
             setIsSaving(false);
             setImportOpen(false);

@@ -1,18 +1,37 @@
+import type { Metadata } from 'next';
+import { Kanit } from 'next/font/google';
 import './globals.css';
+import { LanguageProvider } from '@/components/LanguageContext';
 
-export const metadata = {
-  title: 'Game Hub - ศูนย์รวมเกมของเรา',
-  description: 'รวมลิงก์เกมต่างๆ ที่ทีมของเราสร้างขึ้น',
+const kanit = Kanit({
+  subsets: ['thai', 'latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-kanit',
+});
+
+export const metadata: Metadata = {
+  title: 'Game Hub v3.0',
+  description: 'ศูนย์รวมเกมของทีมเรา',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="th">
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
       </head>
-      <body>{children}</body>
+      <body className={kanit.className}>
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   );
 }
