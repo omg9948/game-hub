@@ -2711,22 +2711,46 @@ body {
 }
 
 /* ============================================
-   Pin Toggle Switch
+   Pin Toggle Switch (Button-based)
    ============================================ */
 
-.pin-toggle {
+.pin-toggle-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.pin-toggle-btn {
   display: flex;
   align-items: center;
   gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
   cursor: pointer;
-  user-select: none;
+  font-family: 'Kanit', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
 }
 
-.pin-toggle input {
-  display: none;
+.pin-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
-.pin-toggle-slider {
+.pin-toggle-btn.pinned {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--primary);
+}
+
+.pin-toggle-btn.pinned:hover {
+  background: rgba(99, 102, 241, 0.15);
+}
+
+.pin-toggle-track {
   width: 44px;
   height: 24px;
   background: rgba(255, 255, 255, 0.1);
@@ -2735,10 +2759,15 @@ body {
   transition: all 0.3s ease;
   border: 1px solid var(--card-border);
   flex-shrink: 0;
+  display: inline-block;
 }
 
-.pin-toggle-slider::after {
-  content: '';
+.pin-toggle-btn.pinned .pin-toggle-track {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: var(--primary);
+}
+
+.pin-toggle-thumb {
   position: absolute;
   top: 2px;
   left: 2px;
@@ -2747,21 +2776,18 @@ body {
   background: var(--text-muted);
   border-radius: 50%;
   transition: all 0.3s ease;
+  display: block;
 }
 
-.pin-toggle input:checked + .pin-toggle-slider {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  border-color: var(--primary);
-}
-
-.pin-toggle input:checked + .pin-toggle-slider::after {
+.pin-toggle-btn.pinned .pin-toggle-thumb {
   left: 22px;
   background: white;
 }
 
-.pin-toggle-label {
-  font-size: 0.9rem;
-  color: var(--text);
+.pin-toggle-text {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 /* ============================================

@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useLanguage } from './LanguageContext';
 
 interface TextToolbarProps {
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+  onChange: (value: string) => void;
+  value: string;
 }
 
 interface ToolbarState {
@@ -13,86 +14,85 @@ interface ToolbarState {
   y: number;
 }
 
-export default function TextToolbar({ textareaRef }: TextToolbarProps) {
-  const { t } = useLanguage();
+export default function TextToolbar({ textareaRef, onChange, value }: TextToolbarProps) {
   const [toolbar, setToolbar] = useState<ToolbarState>({ visible: false, x: 0, y: 0 });
   const toolbarRef = useRef<HTMLDivElement>(null);
+  const lastSelectionRef = useRef<{ start: number; end: number; text: string } | null>(null);
 
-  const getSelectedText = useCallback(() => {
+  const getSelectionInfo = useCallback(() => {
     const textarea = textareaRef.current;
-    if (!textarea) return { text: '', start: 0, end: 0 };
+    if (!textarea) return null;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    return { text: textarea.value.substring(start, end), start, end };
+    const text = textarea.value.substring(start, end);
+    return { start, end, text };
   }, [textareaRef]);
 
   const wrapText = useCallback((before: string, after: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const { text, start, end } = getSelectedText();
-    if (!text) {
+    const info = lastSelectionRef.current;
+    if (!info || !info.text) {
       setToolbar(prev => ({ ...prev, visible: false }));
       return;
     }
 
-    const newValue = textarea.value.substring(0, start) + before + text + after + textarea.value.substring(end);
-    textarea.value = newValue;
+    const { start, end, text } = info;
+    const newValue = value.substring(0, start) + before + text + after + value.substring(end);
+    onChange(newValue);
 
-    // Dispatch input event to trigger onChange
-    const event = new Event('input', { bubbles: true });
-    textarea.dispatchEvent(event);
-
-    // Restore focus and selection
-    textarea.focus();
-    const newCursorPos = start + before.length + text.length;
-    textarea.setSelectionRange(newCursorPos, newCursorPos);
+    // Restore focus and cursor position after React re-render
+    setTimeout(() => {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        textarea.focus();
+        const newCursorPos = start + before.length + text.length;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }
+    }, 0);
 
     setToolbar(prev => ({ ...prev, visible: false }));
-  }, [textareaRef, getSelectedText]);
+    lastSelectionRef.current = null;
+  }, [value, onChange, textareaRef]);
 
   const hideText = useCallback(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const { text, start, end } = getSelectedText();
-    if (!text) {
+    const info = lastSelectionRef.current;
+    if (!info || !info.text) {
       setToolbar(prev => ({ ...prev, visible: false }));
       return;
     }
 
-    const newValue = textarea.value.substring(0, start) + '||' + text + '||' + textarea.value.substring(end);
-    textarea.value = newValue;
+    const { start, end, text } = info;
+    const newValue = value.substring(0, start) + '||' + text + '||' + value.substring(end);
+    onChange(newValue);
 
-    const event = new Event('input', { bubbles: true });
-    textarea.dispatchEvent(event);
-
-    textarea.focus();
-    const newCursorPos = start + 2 + text.length + 2;
-    textarea.setSelectionRange(newCursorPos, newCursorPos);
+    setTimeout(() => {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        textarea.focus();
+        const newCursorPos = start + 2 + text.length + 2;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }
+    }, 0);
 
     setToolbar(prev => ({ ...prev, visible: false }));
-  }, [textareaRef, getSelectedText]);
+    lastSelectionRef.current = null;
+  }, [value, onChange, textareaRef]);
 
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
     const handleMouseUp = (e: MouseEvent) => {
-      // Small delay to let selection update
       setTimeout(() => {
-        const selection = window.getSelection();
-        const selectedText = selection?.toString() || '';
+        const info = getSelectionInfo();
+        if (info && info.text.length > 0 && textarea.contains(e.target as Node)) {
+          lastSelectionRef.current = info;
 
-        if (selectedText.length > 0 && textarea.contains(e.target as Node)) {
-          const rect = textarea.getBoundingClientRect();
           const toolbarWidth = 280;
-          const toolbarHeight = 40;
+          const toolbarHeight = 44;
 
           let x = e.clientX - toolbarWidth / 2;
-          let y = e.clientY - toolbarHeight - 10;
+          let y = e.clientY - toolbarHeight - 12;
 
-          // Keep within viewport
           if (x < 10) x = 10;
           if (x + toolbarWidth > window.innerWidth - 10) x = window.innerWidth - toolbarWidth - 10;
           if (y < 10) y = e.clientY + 20;
@@ -100,19 +100,22 @@ export default function TextToolbar({ textareaRef }: TextToolbarProps) {
           setToolbar({ visible: true, x, y });
         } else {
           setToolbar(prev => ({ ...prev, visible: false }));
+          lastSelectionRef.current = null;
         }
       }, 10);
     };
 
     const handleKeyDown = () => {
       setToolbar(prev => ({ ...prev, visible: false }));
+      lastSelectionRef.current = null;
     };
 
     const handleClickOutside = (e: MouseEvent) => {
       if (toolbarRef.current && !toolbarRef.current.contains(e.target as Node)) {
-        const selection = window.getSelection();
-        if (!selection || selection.toString().length === 0) {
+        const info = getSelectionInfo();
+        if (!info || info.text.length === 0) {
           setToolbar(prev => ({ ...prev, visible: false }));
+          lastSelectionRef.current = null;
         }
       }
     };
@@ -126,7 +129,7 @@ export default function TextToolbar({ textareaRef }: TextToolbarProps) {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [textareaRef]);
+  }, [textareaRef, getSelectionInfo]);
 
   if (!toolbar.visible) return null;
 
@@ -156,7 +159,7 @@ export default function TextToolbar({ textareaRef }: TextToolbarProps) {
           key={tool.key}
           type="button"
           className="text-toolbar-btn"
-          onClick={(e) => {
+          onMouseDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
             tool.action();

@@ -125,24 +125,27 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
 
           {/* Pin Toggle */}
           <div className="form-group">
-            <label className="form-label">
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <i className="fas fa-thumbtack"></i> ปักหมุดเกม
             </label>
-            <label className="pin-toggle">
-              <input
-                type="checkbox"
-                checked={pinned}
-                onChange={e => setPinned(e.target.checked)}
-              />
-              <span className="pin-toggle-slider"></span>
-              <span className="pin-toggle-label">
-                {pinned ? (
-                  <><i className="fas fa-thumbtack" style={{ color: 'var(--primary)', marginRight: '0.3rem' }}></i> ปักหมุดแล้ว (แสดงแรกสุด)</>
-                ) : (
-                  <><i className="fas fa-thumbtack" style={{ opacity: 0.4, marginRight: '0.3rem' }}></i> ไม่ปักหมุด</>
-                )}
-              </span>
-            </label>
+            <div className="pin-toggle-wrapper">
+              <button
+                type="button"
+                className={`pin-toggle-btn ${pinned ? 'pinned' : ''}`}
+                onClick={() => setPinned(!pinned)}
+              >
+                <span className="pin-toggle-track">
+                  <span className="pin-toggle-thumb"></span>
+                </span>
+                <span className="pin-toggle-text">
+                  {pinned ? (
+                    <><i className="fas fa-thumbtack"></i> ปักหมุดแล้ว (แสดงแรกสุด)</>
+                  ) : (
+                    <><i className="fas fa-thumbtack" style={{ opacity: 0.4 }}></i> ไม่ปักหมุด</>
+                  )}
+                </span>
+              </button>
+            </div>
           </div>
 
           <div className="form-group">
@@ -196,7 +199,11 @@ export default function GameModal({ isOpen, onClose, game, categories, onSubmit 
                 placeholder={t('modal.description')}
                 rows={6}
               />
-              <TextToolbar textareaRef={descRef} />
+              <TextToolbar 
+                textareaRef={descRef} 
+                value={description}
+                onChange={setDescription}
+              />
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
               <i className="fas fa-mouse-pointer"></i> ลากคลุมข้อความเพื่อตั้งค่า Bold, Italic, Underline, Strikethrough, Quote, Code, Spoiler
